@@ -16,18 +16,20 @@ module.exports = function (app, config, passport) {
       return /json|text|javascript|css/.test(res.getHeader('Content-Type'))
     },
     level: 9
-  }))
+  }));
 
-  app.use(express.favicon())
-  app.use(express.static(config.root + '/public'))
+  app.use(express.favicon());
+  app.use(express.static(config.root + '/public'));
 
   // Logging
   // Don't log during tests
-  if (env !== 'test') app.use(express.logger('dev'))
+  if (env !== 'test') app.use(express.logger('dev'));
 
   // set views path, template engine and default layout
-  app.set('views', config.root + '/app/views')
-  app.set('view engine', 'html')
+  app.enable('view cache');
+  app.engine('html', require('hogan-express'));
+  app.set('views', config.root + '/app/views');
+  app.set('view engine', 'html');
 
   app.configure(function () {
     // bodyParser should be above methodOverride

@@ -9,13 +9,13 @@ module.exports = {
     app: {
       name: 'BBOFans Website'
     },
-  }
+  },
   test: {
     db: 'mongodb://localhost/bbofans_test',
     root: rootPath,
     app: {
       name: 'BBOFans Website'
     },
-  }
+  },
   production: {}
 }

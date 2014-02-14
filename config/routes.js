@@ -16,5 +16,5 @@ var index = require('../app/controllers/index');
 
 module.exports = function (app, passport) {
   // home route
-  app.get('/', articles.index);
+  app.get('/', index.index);
 }

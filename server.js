@@ -53,15 +53,15 @@ fs.readdirSync(models_path).forEach(function (file) {
 
 var app = express()
 // express settings
-require('./config/express')(app, config, passport)
+require('./config/express')(app, config)
 
 // Bootstrap routes
-require('./config/routes')(app, passport)
+require('./config/routes')(app)
 
 // Start the app by listening on <port>
 var port = process.env.PORT || 3000
-app.listen(port, function (){
-	console.log('BBOFans Express app started on port ' + port);
+app.listen(port, function () {
+  console.log('BBOFans express server listening on port ' + port);
 });
 
 // expose app
