@@ -1,0 +1,41 @@
+{
+  "name": "BBO-Fans",
+  "description": "BBO Fans website app",
+  "keywords": [
+    "bbofans",
+    "bbo",
+    "bridge",
+    "club",
+    "express",
+    "mongoose",
+    "mongodb",
+    "passport"
+  ],
+  "version": "0.0.1",
+  "private": false,
+  "author": "Ronald van Uffelen <ronald.vanuffelen@gmail.com>",
+  "repository" : {
+    "type" : "git",
+    "url" : "https://github.com/madhums/node-express-mongoose-demo.git"
+  },
+  "engines": {
+    "node": "0.10.x",
+    "npm": "1.3.x"
+  },
+  "scripts": {
+    "start": "NODE_ENV=development ./node_modules/.bin/nodemon server.js",
+    "test": "NODE_ENV=test ./node_modules/jasmine-node/bin/jasmine-node spec"
+  },
+  "dependencies": {
+    "express": "3.4.8",
+    "mongoose": "3.8.6",
+    "hogan.js": "2.0.0",
+    "hogan-express": "0.5.2",
+    "passport": "0.2.0",
+    "stylus": "0.42.2"
+  }
+  "devDependencies": {
+    "jasmine-node": "1.13.1",
+    "request": "2.33.0"
+  }
+}
