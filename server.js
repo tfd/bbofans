@@ -1,6 +1,6 @@
 
 /*!
-* nbbofans
+* bbofans
 * Copyright(c) 2014 Ronald van Uffelen <ronald.vanuffelen@gmail.com>
 * GPL v2 Licensed
 */
@@ -20,7 +20,7 @@ var fs = require('fs');
 
 // Load configurations
 // if test env, load example file
-var env = process.env.NODE_ENV || 'development';
+var env = process.env.NODE_ENV || 'dev';
 var config = require('./config/config')[env];
 var mongoose = require('mongoose');
 

@@ -1,5 +1,5 @@
 {
-  "name": "BBO-Fans",
+  "name": "BBOFans",
   "description": "BBO Fans website app",
   "keywords": [
     "bbofans",
@@ -27,16 +27,31 @@
     "test": "NODE_ENV=test ./node_modules/jasmine-node/bin/jasmine-node spec"
   },
   "dependencies": {
-    "express": "3.4.8",
-    "mongoose": "3.8.6",
-    "hogan.js": "2.0.0",
-    "hogan-express": "0.5.2",
+    "express": "~3.4.8",
+    "mongoose": "~3.8.6",
+    "hogan.js": "~2.0.0",
+    "hogan-express": "~0.5.2",
     "passport": "0.2.0",
     "stylus": "0.42.2",
     "async": "0.2.10"
   },
   "devDependencies": {
-    "jasmine-node": "1.13.1",
-    "request": "2.33.0"
+    "jasmine-node": "~1.13.1",
+    "browserify": "5.10.1",
+    "browserify-hogan": "0.3.0",
+    "bower": "~1.3.9",
+    "grunt": "~0.4.5",
+    "grunt-bower-task": "~0.4.0",
+    "grunt-hogan": "~0.3.0",
+    "grunt-karma": "~0.8.3",
+    "grunt-browserify": "~2.1.4",
+    "karma": "~0.12.22",
+    "karma-html2js-preprocessor": "~0.1.0",
+    "karma-jasmine": "~0.1.5",
+    "karma-requirejs": "~0.2.2",
+    "karma-phantomjs-launcher": "~0.1.4",
+    "load-grunt-tasks": "~0.6.0",
+    "time-grunt": "~0.4.0",
+    "request": "~2.33.0"
   }
 }

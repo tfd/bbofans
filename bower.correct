@@ -1,0 +1,28 @@
+{
+  "name": "BBOFans",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "backbone.marionette": "~2.1.0",
+    "backbone": "~1.1.2",
+    "jquery": "~1.11.1",
+    "lodash": "~2.4.1"
+  },
+  "devDependencies": {
+    "jasmine": "~2.0.1"
+  },
+  "exportsOverride": {
+    "jquery": {
+      "js": "jquery.js"
+    },
+    "lodash": {
+      "js": "lodash.js"
+    },
+    "backbone": {
+      "js": "backbone.js"
+    },
+    "backbone.marionette": {
+      "js": "backbone.marionette.js"
+    }
+  }
+}
