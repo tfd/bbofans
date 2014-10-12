@@ -3,7 +3,7 @@ var path = require('path');
 var rootPath = path.normalize(__dirname + '/..');
 
 module.exports = {
-  development: {
+  dev: {
     db: 'mongodb://localhost/bbofans_dev',
     root: rootPath,
     app: {
@@ -17,5 +17,5 @@ module.exports = {
       name: 'BBOFans Website'
     },
   },
-  production: {}
+  prod: {}
 }
