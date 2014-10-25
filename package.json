@@ -57,6 +57,7 @@
     "karma-requirejs": "~0.2.0",
     "karma-phantomjs-launcher": "~0.1.1",
     "load-grunt-tasks": "~0.2.0",
+    "proxyquire": "~0.5.2",
     "request": "~2.33.0",
     "sinon": "~1.8.1",
     "sinon-chai": "~2.5.0",

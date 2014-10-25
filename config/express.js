@@ -4,7 +4,7 @@
  */
 
 var express = require('express');
-var env = process.env.NODE_ENV || 'development'
+var env = process.env.NODE_ENV || 'dev'
 
 module.exports = function (app, config, passport) {
 
@@ -27,9 +27,9 @@ module.exports = function (app, config, passport) {
 
   // set views path, template engine and default layout
   app.enable('view cache');
-  app.engine('html', require('hogan-express'));
+  app.engine('hogan', require('hogan-express'));
   app.set('views', config.root + '/app/views');
-  app.set('view engine', 'html');
+  app.set('view engine', 'hogan');
 
   app.configure(function () {
     // bodyParser should be above methodOverride
@@ -41,7 +41,7 @@ module.exports = function (app, config, passport) {
   });
 
   // development env config
-  app.configure('development', function () {
+  app.configure('dev', function () {
     app.locals.pretty = true
   });
 }
