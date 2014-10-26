@@ -1,5 +1,5 @@
 
-/**
+/*
  * Module dependencies.
  */
 
@@ -11,18 +11,41 @@ var useTimestamps = mongooseTypes.useTimestamps;
 mongooseTypes.loadTypes(mongoose);
 var Email = mongoose.SchemaTypes.Email;
 
-/**
+/*
+ * Helper functions.
+ */
+
+function updateScores(scores, result) {
+  var numTournaments = scores.numTournaments || 0;
+  var sumOfScores = (scores.averageScore || 0) * numTournaments + (result.score || 0);
+  var sumOfMatchPoints = (scores.averageMatchPoints || 0) * numTournaments + (result.matchPoints || 0);
+  numTournaments += 1;
+
+  scores.numTournaments = numTournaments;
+  scores.averageScore = sumOfScores / numTournaments;
+  scores.averageMatchPoints = sumOfMatchPoints / numTournaments;
+  scores.awards += result.awards || 0;
+}
+
+function handleError(msg) {
+  if (typeof cb === 'function') {
+    cb(MongooseError(msg), null);
+  }
+}
+
+/*
  * Player Schema
  */
 
 var emailValidator = [validate({
     validator: 'isEmail',
     message: 'Email isn\'t a valid address'
-  }, {
+  }),
+  validate({
     validator: 'isLength',
     arguments: 1,
-    message 'Email cannot be blank' 
-  }
+    message: 'Email cannot be blank' 
+  })
 ];
 
 var PlayerSchema = new Schema({
@@ -56,7 +79,7 @@ var PlayerSchema = new Schema({
     validatedAt         : {type : Date}
 });
 
-/**
+/*
  * Methods
  */
 
@@ -86,29 +109,11 @@ PlayerSchema.methods = {
     var newMonthlyScore = {
       month: tournament.date.getMonth(),
       year: tournament.date.getFullYear(),
-      numTournaments: 0;
-      averageScore: 0;
-      averageMatchPoints: 0;
+      numTournaments: 0,
+      averageScore: 0,
+      averageMatchPoints: 0,
       awards: 0
     };
-
-    function updateScores(scores, result) {
-      var numTournaments = scores.numTournaments || 0;
-      var sumOfScores = (scores.averageScore || 0) * numTournaments + (result.score || 0);
-      var sumOfMatchPoints = (scores.averageMatchPoints || 0) * numTournaments + (result.matchPoints || 0);
-      numTournaments += 1;
-
-      scores.numTournaments = numTournaments;
-      scores.averageScore = sumOfScores / numTournaments;
-      scores.averageMatchPoints = sumOfMatchPoints / numTournaments;
-      scores.awards += result.awards || 0;
-    }
-
-    function handleError(msg) {
-      if (typeof cb === 'function') {
-        cb(MongooseError(msg), null);
-      }
-    }
 
     // Check if scores of this tournament have already been added.
     if (this.playedInTournament(tournament)) {
@@ -148,6 +153,7 @@ PlayerSchema.methods = {
   }
 };
 
+// add createdAd and updatedAd fields
 PlayerSchema.plugin(useTimestamps);
 
 module.exports = {

@@ -18,9 +18,18 @@ module.exports = {
     add: function(req, res) {
         var newTournament = new model.Tournament(req.body);
         newTournament.save(function(err, tournament) {
+            console.log('save(' + err + ', ' + tournament + ')');
             if (err) {
                 res.json({error: 'Error adding Tournament.'});
             } else {
+                tournament.results.forEach(function (result) {
+                  result.players.forEach(function (bboName) {
+                    this.model('Player').find({bboName: bboName}, function (err, player) {
+                      if (err) { console.err('Could not find player ' + bboName + ': ' + err); return; }
+                      player.addTournament(this);
+                    })
+                  });
+                });
                 res.json(tournament);
             }
         });

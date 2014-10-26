@@ -1,5 +1,5 @@
 
-/**
+/*
  * Module dependencies.
  */
 
@@ -8,7 +8,7 @@ var Schema = mongoose.Schema;
 var mongooseTypes = require("nifty-mongoose-types");
 var useTimestamps = mongooseTypes.useTimestamps;
 
-/**
+/*
  * Tournament Schema
  */
 
@@ -19,29 +19,28 @@ var TournamentSchema = new Schema({
   isPair        : {type : Boolean, default : false},
   isBD          : {type : Boolean, default : false},
   results       : [{
-    players       : [{type : Schema.Types.ObjectId, ref : 'Player'}],
+    players       : [{type : String}],
     score         : {type : Number, default : 0 },
     matchPoints   : {type : Number, default : 0 },
     awards        : {type : Number, default : 0 }}]
 });
 
 
-/**
+/*
  * Methods
  */
 
 TournamentSchema.methods = {
 
-  playedInTournament: function (player) {
-    return findPlayerScores(player) !== null;
-  }
+  playedInTournament: function (bboName) {
+    return findPlayerScores(bboName) !== null;
+  },
 
-  findPlayerScores: function (player) {
+  findPlayerScores: function (bboName) {
     var score = null;
 
     this.results.every(function (result) {
-      var arr = result.populated('players') || result.players;
-      if (arr.indexOf(player.id) >= 0) {
+      if (result.players.indexOf(bboName) >= 0) {
         score = result;
         return false;
       }
@@ -53,6 +52,7 @@ TournamentSchema.methods = {
 
 };
 
+// add createdAd and updatedAd fields
 TournamentSchema.plugin(useTimestamps);
 
 module.exports = {
