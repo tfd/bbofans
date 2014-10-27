@@ -1,14 +1,14 @@
 /* jshint -W030 */
 var proxyquire = require('proxyquire'),
     modelStub = {},
-    tournaments = proxyquire('../../app/controllers/tournaments', {
-      '../models/tournament' : modelStub,
+    players = proxyquire('../../../app/controllers/players', {
+        '../models/player' : modelStub,
     });
 
 var res = {},
     req = {};
 
-describe('Tournaments Controller', function() {
+describe('Players Controller', function() {
     beforeEach(function() {
         res = {
             json: sinon.spy()
@@ -18,7 +18,7 @@ describe('Tournaments Controller', function() {
                 id : 1
             }
         };
-        modelStub.Tournament = {
+        modelStub.Player = {
             find: function(query, callback) {
                 callback(null, {});
             },
@@ -29,80 +29,77 @@ describe('Tournaments Controller', function() {
     });
 
     it('should exist', function() {
-        expect(tournaments).to.exist;
+        expect(players).to.exist;
     });
 
     describe('index', function() {
         it('should be defined', function() {
-            expect(tournaments.index).to.be.a('function');
+            expect(players.index).to.be.a('function');
         });
 
         it('should send json', function() {
-            tournaments.index(req, res);
+            players.index(req, res);
             expect(res.json).calledOnce;
         });
     });
 
     describe('getById', function() {
         it('should be defined', function() {
-            expect(tournaments.getById).to.be.a('function');
+            expect(players.getById).to.be.a('function');
         });
 
         it('should send json on successful retrieve', function() {
-            tournaments.getById(req, res);
+            players.getById(req, res);
             expect(res.json).calledOnce;
         });
 
         it('should send json error on error', function() {
-            modelStub.Tournament = {
+            modelStub.Player = {
                 find: function(query, callback) {
-                    callback({}, null);
+                    callback(null, {error: 'Player not found.'});
                 }
             };
-            tournaments.getById(req, res);
-            expect(res.json).calledWith({error: 'Tournament not found.'});
+            players.getById(req, res);
+            expect(res.json).calledWith({error: 'Player not found.'});
         });
     });
 
     describe('add', function() {
         beforeEach(function() {
             req.body = {
-                id: '1',
                 name: 'testing',
-                date: Date.now,
-                numPlayers: 0,
-                isPair: false,
-                isBD: false,
-                results: []
+                email: 'test@testing.com',
+                phone: '123-456-7890'
             };
         });
 
         it('should be defined', function() {
-            expect(tournaments.add).to.be.a('function');
+            expect(players.add).to.be.a('function');
         });
 
         it('should return json on save', function() {
-            modelStub.Tournament = sinon.spy(function() {
-                modelStub.Tournament.prototype.save = function(callback) {
+
+            modelStub.Player = sinon.spy(function() {
+                modelStub.Player.prototype.save = function(callback) {
                     callback(null, req.body);
                 };
                 return;
             });
 
-            tournaments.add(req, res);
+            players.add(req, res);
             expect(res.json).calledWith(req.body);
         });
-
         it('should return error on failed save', function() {
-            modelStub.Tournament = sinon.spy(function() {
-                modelStub.Tournament.prototype.save = function(callback) {
-                    callback({}, null);
+
+            modelStub.Player = sinon.spy(function() {
+                modelStub.Player.prototype.save = function(callback) {
+                    callback({}, req.body);
                 };
                 return;
             });
 
-            tournaments.add(req, res);
-            expect(res.json).calledWith({error: 'Error adding Tournament.'});
+            players.add(req, res);
+            expect(res.json).calledWith({error: 'Error adding player.'});
         });
     });
 
@@ -111,39 +108,35 @@ describe('Tournaments Controller', function() {
             req.body = {
                 id: '1',
                 name: 'testing',
-                date: Date.now,
-                numPlayers: 0,
-                isPair: false,
-                isBD: false,
-                results: []
+                email: 'test@testing.com',
+                phone: '123-456-7890'
             };
         });
 
         it('should be defined', function() {
-            expect(tournaments.delete).to.be.a('function');
+            expect(players.delete).to.be.a('function');
         });
 
         it('should return json on delete', function() {
             var contactSpy = {remove: sinon.spy()};
-            modelStub.Tournament = {
+            modelStub.Player = {
                 findOne: function(query, callback) {
                     callback(null, contactSpy);
                 }
             };
 
-            tournaments.delete(req, res);
+            players.delete(req, res);
             expect(contactSpy.remove).calledOnce;
         });
-
         it('should return error on failed save', function() {
-            modelStub.Tournament = {
+            modelStub.Player = {
                 findOne: function(query, callback) {
-                    callback({}, null);
+                    callback({}, {});
                 }
             };
 
-            tournaments.delete(req, res);
-            expect(res.json).calledWith({error: 'Tournament not found.'});
+            players.delete(req, res);
+            expect(res.json).calledWith({error: 'Player not found.'});
         });
     });
 });

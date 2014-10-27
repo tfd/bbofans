@@ -29,6 +29,7 @@
     "hogan-express": "~0.5.2"
   },
   "devDependencies": {
+    "async": "~0.9.0",
     "bower": "~1.2.8",
     "browserify": "2.36.1",
     "chai": "~1.9.0",

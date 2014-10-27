@@ -7,31 +7,8 @@ var mongoose = require('mongoose');
 var validate = require('mongoose-validator');
 var Schema = mongoose.Schema;
 var mongooseTypes = require("nifty-mongoose-types");
-var useTimestamps = mongooseTypes.useTimestamps;
 mongooseTypes.loadTypes(mongoose);
 var Email = mongoose.SchemaTypes.Email;
-
-/*
- * Helper functions.
- */
-
-function updateScores(scores, result) {
-  var numTournaments = scores.numTournaments || 0;
-  var sumOfScores = (scores.averageScore || 0) * numTournaments + (result.score || 0);
-  var sumOfMatchPoints = (scores.averageMatchPoints || 0) * numTournaments + (result.matchPoints || 0);
-  numTournaments += 1;
-
-  scores.numTournaments = numTournaments;
-  scores.averageScore = sumOfScores / numTournaments;
-  scores.averageMatchPoints = sumOfMatchPoints / numTournaments;
-  scores.awards += result.awards || 0;
-}
-
-function handleError(msg) {
-  if (typeof cb === 'function') {
-    cb(MongooseError(msg), null);
-  }
-}
 
 /*
  * Player Schema
@@ -76,8 +53,31 @@ var PlayerSchema = new Schema({
       averageScore        : {type : Number, default : 0},
       averageMatchPoints  : {type : Number, default : 0},
       awards              : {type : Number, default : 0}}],
-    validatedAt         : {type : Date}
+    validatedAt         : {type : Date},
+    createdAt           : {type : Date, default: Date.now}
 });
+
+/*
+ * Helper functions.
+ */
+
+function updateScores(scores, result) {
+  var numTournaments = scores.numTournaments || 0;
+  var sumOfScores = (scores.averageScore || 0) * numTournaments + (result.score || 0);
+  var sumOfMatchPoints = (scores.averageMatchPoints || 0) * numTournaments + (result.matchPoints || 0);
+  numTournaments += 1;
+
+  scores.numTournaments = numTournaments;
+  scores.averageScore = sumOfScores / numTournaments;
+  scores.averageMatchPoints = sumOfMatchPoints / numTournaments;
+  scores.awards += result.awards || 0;
+}
+
+function handleError(msg, cb) {
+  if (typeof cb === 'function') {
+    cb(new Error(msg), null);
+  }
+}
 
 /*
  * Methods
@@ -99,11 +99,11 @@ PlayerSchema.methods = {
 
   /**
    * Add tournament result. This will update the total and monthly scores.
+   * The resulting scores are NOT saved to the database!
    *
    * @param {Object} tournament 
-   * @param {Function} cb callback called after the tournament is added
    */
-  addTournament: function (tournament, cb) {
+  addTournament: function (tournament) {
     var score = null;
     var newMonth = true;
     var newMonthlyScore = {
@@ -117,15 +117,13 @@ PlayerSchema.methods = {
 
     // Check if scores of this tournament have already been added.
     if (this.playedInTournament(tournament)) {
-      handleError('Tournament ' + tournament.name + ' scores are already added for player ' + this.bboName);
-      return;
+      throw new Error('Tournament ' + tournament.name + ' scores are already added for player ' + this.bboName);
     }
 
     // Check if the player actually played in the tournament.
-    score = tournament.findPlayerScore(this);
+    score = tournament.findPlayerScores(this.bboName);
     if (score ===  null) {
-      handleError('Player ' + this.bboName + ' did\'t play in tournament ' + tournament.name);
-      return;
+      throw new Error('Player ' + this.bboName + ' did\'t play in tournament ' + tournament.name);
     }
 
     // Update total scores
@@ -148,13 +146,8 @@ PlayerSchema.methods = {
     }
 
     this.playedInTournaments.push(tournament);
-
-    this.save(cb);
   }
 };
-
-// add createdAd and updatedAd fields
-PlayerSchema.plugin(useTimestamps);
 
 module.exports = {
     Player: mongoose.model('Player', PlayerSchema)
