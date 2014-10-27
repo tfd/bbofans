@@ -16,7 +16,7 @@ function addScoreToPlayer(tournament, callback) {
       console.log('Exception thrown when adding scores for tournament ' + tournament.name + ' to player ' + player.bboName + ': ' + e.message);
       callback(); // ignore error!
     }
-  }
+  };
 }
 
 function processPlayer(Players, tournament) {
@@ -28,7 +28,7 @@ function processPlayer(Players, tournament) {
 function processResult(Players, tournament) {
   return function (result, callback) {
     async.eachSeries(result.players, processPlayer(Players, tournament), callback);
-  }
+  };
 }
 
 function addTournamentToPlayers(tournament, callback) {
@@ -80,7 +80,7 @@ module.exports = {
       } else {
         tournament.remove(function(err, tournament){
           res.json(200, {status: 'Success'});
-        })
+        });
       }
     });
   }

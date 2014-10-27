@@ -134,7 +134,8 @@ PlayerSchema.methods = {
       if (monthlyScore.year === tournament.date.getFullYear() &&
           monthlyScore.month === tournament.date.getMonth()) {
         updateScores(monthlyScore, score);
-        return newMonth = false;
+        newMonth = false;
+        return false;
       }
       return true;
     });

@@ -1,3 +1,4 @@
+/* jshint -W030 */
 var mongoose = require('../load-mongoose');
 var model = require('../../../app/models/tournament');
 var dbutils = require('../db-utils')(model);
@@ -48,7 +49,7 @@ describe('Tournament Model', function () {
         },
         function (tournament, callback) {
           model.Tournament.findOne({_id: tournament.id}, function (err, tournament) {
-            callback(err, tournament)
+            callback(err, tournament);
           });
         },
         function (tournament, callback) {

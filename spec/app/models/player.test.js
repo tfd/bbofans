@@ -1,3 +1,4 @@
+/* jshint -W030 */
 var mongoose = require('../load-mongoose');
 var model = require('../../../app/models/player');
 var dbutils = require('../db-utils')(model);

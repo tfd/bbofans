@@ -68,7 +68,7 @@ module.exports = function(grunt) {
             test: {
                 files: {
                     'build/tests.js': [
-                        'client/spec/**/*.test.js'
+                        'spec/client/**/*.test.js'
                     ]
                 },
                 options: {
@@ -225,10 +225,12 @@ module.exports = function(grunt) {
             }
         },
 
+        // Cjeck JavaScript correctness
         jshint: {
-            all: ['Gruntfile.js', 'client/src/**/*.js', 'client/spec/**/*.js'],
-            dev: ['client/src/**/*.js'],
-            test: ['client/spec/**/*.js']
+            all: ['Gruntfile.js', 'app/**/*.js', 'client/src/**/*.js', 'spec/**/*.js'],
+            server: ['app/**/*.js', 'spec/app/**/*.js'],
+            client: ['client/src/**/*.js', 'spec/client/**/*.js'],
+            dev: ['app/**/*.js', 'client/src/**/*.js'],
         }
     });
 
@@ -240,9 +242,9 @@ module.exports = function(grunt) {
     grunt.registerTask('heroku', ['init:dev', 'build:dev']);
 
     grunt.registerTask('server', ['build:dev', 'concurrent:dev']);
-    grunt.registerTask('test:server', ['simplemocha:server']);
+    grunt.registerTask('test:server', ['jshint:server', 'simplemocha:server']);
 
-    grunt.registerTask('test:client', ['karma:test']);
+    grunt.registerTask('test:client', ['jshint:client', 'karma:test']);
     grunt.registerTask('tdd', ['karma:watcher:start', 'concurrent:test']);
 
     grunt.registerTask('test', ['test:server', 'test:client']);

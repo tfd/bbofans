@@ -42,7 +42,7 @@ module.exports = {
             } else {
                 player.remove(function(err, player){
                     res.json(200, {status: 'Success'});
-                })
+                });
             }
         });
     }

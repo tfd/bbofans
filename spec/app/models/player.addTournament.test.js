@@ -1,3 +1,4 @@
+/* jshint -W030 */
 var mongoose = require('../load-mongoose');
 var model = require('../../../app/models/tournament');
 model.Player = require('../../../app/models/player').Player;
@@ -9,7 +10,7 @@ describe('Player addTournament function', function () {
   after(function (done) {
     async.map(['Player', 'Tournament'], dbutils.clearTable, function (err) {
       done();
-    })
+    });
   });
 
   beforeEach(function (done) {
@@ -28,7 +29,7 @@ describe('Player addTournament function', function () {
       }, function (err) {
         done();
       });
-    })
+    });
   });
 
   it('schould exist', function (done) {
@@ -232,7 +233,7 @@ describe('Player addTournament function', function () {
         });
       },
       function(tournament, player, callback) {
-        expect(function () {player.addTournament(tournament)}).to.throw();
+        expect(function () { player.addTournament(tournament); }).to.throw();
         done();
       }
     ]);
