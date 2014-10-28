@@ -10,7 +10,7 @@ module.exports = function(grunt) {
             install: {
                 options: {
                     targetDir: 'client/requires',
-                    layout: 'byComponent'
+                    layout: 'byType'
                 }
             }
         },
@@ -30,27 +30,47 @@ module.exports = function(grunt) {
                 options: {
                     shim: {
                         jquery: {
-                            path: 'client/requires/jquery/js/jquery.js',
+                            path: 'client/requires/js/jquery/jquery.js',
                             exports: '$'
                         },
                         underscore: {
-                            path: 'client/requires/underscore/js/underscore.js',
+                            path: 'client/requires/js/underscore/underscore.js',
                             exports: '_'
                         },
                         backbone: {
-                            path: 'client/requires/backbone/js/backbone.js',
+                            path: 'client/requires/js/backbone/backbone.js',
                             exports: 'Backbone',
                             depends: {
                                 underscore: 'underscore'
                             }
                         },
-                        'backbone.marionette': {
-                            path: 'client/requires/backbone.marionette/js/backbone.marionette.js',
-                            exports: 'Marionette',
+                        'backbone.babysitter': {
+                            path: 'client/requires/js/backbone.babysitter/backbone.babysitter.js',
+                            exports: 'Babysitter',
                             depends: {
                                 jquery: '$',
                                 backbone: 'Backbone',
                                 underscore: '_'
+                            }
+                        },
+                        'backbone.wreqr': {
+                            path: 'client/requires/js/backbone.wreqr/backbone.wreqr.js',
+                            exports: 'Wreqr',
+                            depends: {
+                                jquery: '$',
+                                backbone: 'Backbone',
+                                underscore: '_'
+                            }
+                        },
+                        'backbone.marionette': {
+                            path: 'client/requires/js/backbone.marionette/backbone.marionette.js',
+                            exports: 'Marionette',
+                            depends: {
+                                jquery: '$',
+                                backbone: 'Backbone',
+                                underscore: '_',
+                                wreqr: 'Wreqr',
+                                babysitter: 'Babysitter'
                             }
                         }
                     }
@@ -62,18 +82,18 @@ module.exports = function(grunt) {
                 },
                 options: {
                     transform: ['hbsfy'],
-                    external: ['jquery', 'underscore', 'backbone', 'backbone.marionette']
+                    external: ['backbone.marionette']
                 }
             },
             test: {
                 files: {
                     'build/tests.js': [
-                        'spec/client/**/*.test.js'
+                        'client/test/**/*.test.js'
                     ]
                 },
                 options: {
                     transform: ['hbsfy'],
-                    external: ['jquery', 'underscore', 'backbone', 'backbone.marionette']
+                    external: ['backbone.marionette']
                 }
             }
         },
@@ -83,7 +103,7 @@ module.exports = function(grunt) {
                 files: {
                     'build/<%= pkg.name %>.css': [
                         'client/styles/reset.css',
-                        'client/requires/*/css/*',
+                        'client/requires/css/**/*',
                         'client/styles/less/main.less'
                     ]
                 }
@@ -103,13 +123,13 @@ module.exports = function(grunt) {
                     src: 'build/<%= pkg.name %>.css',
                     dest: 'public/css/<%= pkg.name %>.css'
                 }, {
-                    src: 'client/img/*',
-                    dest: 'public/img/'
+                    src: 'client/img/**/*',
+                    dest: 'public/img/**/*'
                 }]
             },
             prod: {
                 files: [{
-                    src: ['client/img/*'],
+                    src: ['client/img/**/*'],
                     dest: 'dist/img/'
                 }]
             }
@@ -140,7 +160,7 @@ module.exports = function(grunt) {
         // for changes to the front-end code
         watch: {
             scripts: {
-                files: ['client/templates/*.hbs', 'client/src/**/*.js'],
+                files: ['client/templates/*.hogan', 'client/src/**/*.js'],
                 tasks: ['clean:dev', 'browserify:app', 'concat', 'copy:dev']
             },
             less: {
@@ -148,7 +168,7 @@ module.exports = function(grunt) {
                 tasks: ['less:transpile', 'copy:dev']
             },
             test: {
-                files: ['build/app.js', 'client/spec/**/*.test.js'],
+                files: ['build/app.js', 'client/test/**/*.test.js'],
                 tasks: ['browserify:test']
             },
             karma: {
@@ -163,7 +183,7 @@ module.exports = function(grunt) {
                 options: {
                     file: 'server.js',
                     nodeArgs: ['--debug'],
-                    watchedFolders: ['controllers', 'app'],
+                    watchedFolders: ['server/src', 'server/src/controllers'],
                     env: {
                         PORT: '3300'
                     }
@@ -182,7 +202,7 @@ module.exports = function(grunt) {
             },
 
             server: {
-                src: ['spec/spechelper.js', 'spec/**/*.test.js']
+                src: ['server/test/spechelper.js', 'server/test/**/*.test.js']
             }
         },
 
@@ -225,12 +245,12 @@ module.exports = function(grunt) {
             }
         },
 
-        // Cjeck JavaScript correctness
+        // Check JavaScript correctness
         jshint: {
-            all: ['Gruntfile.js', 'app/**/*.js', 'client/src/**/*.js', 'spec/**/*.js'],
-            server: ['app/**/*.js', 'spec/app/**/*.js'],
-            client: ['client/src/**/*.js', 'spec/client/**/*.js'],
-            dev: ['app/**/*.js', 'client/src/**/*.js'],
+            all: ['Gruntfile.js', 'server/src/**/*.js', 'client/src/**/*.js', 'server/test/**/*.js', 'client/test/**/*.js'],
+            server: ['server/src/**/*.js', 'server/test/**/*.js'],
+            client: ['client/src/**/*.js', 'client/test/**/*.js'],
+            dev: ['server/src/**/*.js', 'client/src/**/*.js'],
         }
     });
 

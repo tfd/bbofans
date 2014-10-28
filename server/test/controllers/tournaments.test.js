@@ -1,7 +1,7 @@
 /* jshint -W030 */
 var proxyquire = require('proxyquire'),
     modelStub = {},
-    tournaments = proxyquire('../../../app/controllers/tournaments', {
+    tournaments = proxyquire('../../src/controllers/tournaments', {
       '../models/tournament' : modelStub,
     });
 

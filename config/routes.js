@@ -8,7 +8,7 @@ var async = require('async')
  * Controllers
  */
 
-var index = require('../app/controllers/index');
+var index = require('../server/src/controllers/index');
 
 /**
  * Expose routes

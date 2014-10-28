@@ -1,7 +1,7 @@
 /* jshint -W030 */
 var mongoose = require('../load-mongoose');
-var model = require('../../../app/models/tournament');
-model.Player = require('../../../app/models/player').Player;
+var model = require('../../src/models/tournament');
+model.Player = require('../../src/models/player').Player;
 var async = require('async');
 var dbutils = require('../db-utils')(model);
 

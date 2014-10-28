@@ -1,7 +1,7 @@
 /* jshint -W030 */
 var proxyquire = require('proxyquire'),
     modelStub = {},
-    players = proxyquire('../../../app/controllers/players', {
+    players = proxyquire('../../src/controllers/players', {
         '../models/player' : modelStub,
     });
 

@@ -28,7 +28,7 @@ module.exports = function (app, config, passport) {
   // set views path, template engine and default layout
   app.enable('view cache');
   app.engine('hogan', require('hogan-express'));
-  app.set('views', config.root + '/app/views');
+  app.set('views', config.root + '/server/src/views');
   app.set('view engine', 'hogan');
 
   app.configure(function () {

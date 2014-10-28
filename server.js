@@ -43,7 +43,7 @@ mongoose.connection.on('disconnected', function () {
 connect();
 
 // Bootstrap models
-var models_path = __dirname + '/app/models'
+var models_path = __dirname + '/server/src/models'
 fs.readdirSync(models_path).forEach(function (file) {
   if (~file.indexOf('.js')) require(models_path + '/' + file);
 });
@@ -56,7 +56,7 @@ var app = express();
 require('./config/express')(app, config);
 
 // Bootstrap routes
-require('./config/routes')(app);
+require('./config/routes')(app, config);
 
 // Start the app by listening on <port>
 var port = process.env.PORT || 3000;
