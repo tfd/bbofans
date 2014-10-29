@@ -10,7 +10,6 @@
 */
 
 var express = require('express');
-var fs = require('fs');
 // var passport = require('passport');
 
 /*
@@ -22,36 +21,15 @@ var fs = require('fs');
 // if test env, load example file
 var env = process.env.NODE_ENV || 'dev';
 var config = require('./config/config')[env];
-var mongoose = require('mongoose');
 
-// Bootstrap db connection
-// Connect to mongodb
-var connect = function () {
-  var options = { server: { socketOptions: { keepAlive: 1 } } }
-  mongoose.connect(config.db, options)
-};
-
-// Error handler
-mongoose.connection.on('error', function (err) {
-  console.log(err)
-});
-
-// Reconnect when closed
-mongoose.connection.on('disconnected', function () {
-  connect()
-});
-connect();
-
-// Bootstrap models
-var models_path = __dirname + '/server/src/models'
-fs.readdirSync(models_path).forEach(function (file) {
-  if (~file.indexOf('.js')) require(models_path + '/' + file);
-});
+// connect to database
+require('./config/mongoose')(config);
 
 // bootstrap passport config
 // require('./config/passport')(passport, config)
 
 var app = express();
+
 // express settings
 require('./config/express')(app, config);
 

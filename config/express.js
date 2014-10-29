@@ -4,6 +4,7 @@
  */
 
 var express = require('express');
+var exphbs = require('express-handlebars');
 var env = process.env.NODE_ENV || 'dev'
 
 module.exports = function (app, config, passport) {
@@ -25,11 +26,19 @@ module.exports = function (app, config, passport) {
   // Don't log during tests
   if (env !== 'test') app.use(express.logger('dev'));
 
+  // Create handlebars engine
+  var hbs = exphbs.create({
+    defaultLayout: 'main',
+    extname: '.hbs',
+    layoutsDir: 'server/src/views/layouts',
+    partialsDir: 'server/src/views/partials'
+  });
+
   // set views path, template engine and default layout
   app.enable('view cache');
-  app.engine('hogan', require('hogan-express'));
+  app.engine('hbs', hbs.engine);
   app.set('views', config.root + '/server/src/views');
-  app.set('view engine', 'hogan');
+  app.set('view engine', 'hbs');
 
   app.configure(function () {
     // bodyParser should be above methodOverride
