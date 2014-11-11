@@ -1,6 +1,6 @@
 // Load configurations
 var env = process.env.NODE_ENV || 'test';
-var config = require('../../config/config')[env];
+var config = require('../config/config')[env];
 var mongoose = require('mongoose');
 
 console.log('env=' + env);

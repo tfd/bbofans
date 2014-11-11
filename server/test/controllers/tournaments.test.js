@@ -66,17 +66,17 @@ describe('Tournaments Controller', function() {
 
   describe('add', function() {
     var newTournament = null;
-    var playerStub = null;
-    var playerModelStub = null;
+    var memberStub = null;
+    var memberModelStub = null;
     var results = [];
 
     beforeEach(function() {
       req.body = {
         results: []
       };
-      playerModelStub = {
+      memberModelStub = {
         find: sinon.spy(function(query, callback) {
-          callback(null, playerStub);
+          callback(null, memberStub);
         })
       };
       modelStub.Tournament = sinon.spy(function() {
@@ -86,7 +86,7 @@ describe('Tournaments Controller', function() {
           callback(null, newTournament);
         });
         modelStub.Tournament.prototype.model = sinon.spy(function(name) {
-          return playerModelStub;
+          return memberModelStub;
         });
         modelStub.Tournament.prototype.results = [];
       });
@@ -103,9 +103,9 @@ describe('Tournaments Controller', function() {
     });
 
     it('should add tournament to players', function() {
-      playerStub = {
+      memberStub = {
         addTournament: sinon.spy(function (t) {}),
-        save: sinon.spy(function (cb) { cb(null, playerStub); })
+        save: sinon.spy(function (cb) { cb(null, memberStub); })
       };
       
       results = [
@@ -115,10 +115,10 @@ describe('Tournaments Controller', function() {
       ];
 
       tournaments.add(req, res);
-      expect(newTournament.model).calledWith('Player');
-      expect(playerModelStub.find).calledWith({bboName: 'bill'});
-      expect(playerStub.addTournament).calledWith(newTournament);
-      expect(playerStub.save).calledAfter(playerStub.addTournament);
+      expect(newTournament.model).calledWith('Member');
+      expect(memberModelStub.find).calledWith({bboName: 'bill'});
+      expect(memberStub.addTournament).calledWith(newTournament);
+      expect(memberStub.save).calledAfter(memberStub.addTournament);
       expect(res.json).calledWith(newTournament);
     });
 

@@ -1,6 +1,6 @@
 
 var path = require('path');
-var rootPath = path.normalize(__dirname + '/..');
+var rootPath = path.normalize(__dirname + '/../..');
 
 module.exports = {
   dev: {
@@ -9,6 +9,7 @@ module.exports = {
     app: {
       name: 'BBOFans Website'
     },
+    omitRecaptcha: true
   },
   test: {
     db: 'mongodb://localhost/bbofans_test',
@@ -16,6 +17,7 @@ module.exports = {
     app: {
       name: 'BBOFans Website'
     },
+    omitRecaptcha: true
   },
   prod: {}
 }

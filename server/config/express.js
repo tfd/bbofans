@@ -30,8 +30,8 @@ module.exports = function (app, config, passport) {
   var hbs = exphbs.create({
     defaultLayout: 'main',
     extname: '.hbs',
-    layoutsDir: 'server/src/views/layouts',
-    partialsDir: 'server/src/views/partials'
+    layoutsDir: config.root + '/server/src/views/layouts',
+    partialsDir: config.root + '/server/src/views/partials'
   });
 
   // set views path, template engine and default layout

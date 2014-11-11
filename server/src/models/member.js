@@ -11,7 +11,7 @@ mongooseTypes.loadTypes(mongoose);
 var Email = mongoose.SchemaTypes.Email;
 
 /*
- * Player Schema
+ * Member Schema
  */
 
 var emailValidator = [validate({
@@ -25,7 +25,7 @@ var emailValidator = [validate({
   })
 ];
 
-var PlayerSchema = new Schema({
+var MemberSchema = new Schema({
     bboName             : {type : String, required : 'BBO name cannot be blank', unique: true, trim : true},
     name                : {type : String, required : 'Name cannot be blank', trim : true},
     nation              : {type : String, required : 'Nation cannot be blank', trim : true},
@@ -83,7 +83,7 @@ function handleError(msg, cb) {
  * Methods
  */
 
-PlayerSchema.methods = {
+MemberSchema.methods = {
 
   /**
    * Did player play in specified tournament?
@@ -123,7 +123,7 @@ PlayerSchema.methods = {
     // Check if the player actually played in the tournament.
     score = tournament.findPlayerScores(this.bboName);
     if (score ===  null) {
-      throw new Error('Player ' + this.bboName + ' did\'t play in tournament ' + tournament.name);
+      throw new Error('Member ' + this.bboName + ' did\'t play in tournament ' + tournament.name);
     }
 
     // Update total scores
@@ -151,5 +151,5 @@ PlayerSchema.methods = {
 };
 
 module.exports = {
-    Player: mongoose.model('Player', PlayerSchema)
+    Member: mongoose.model('Member', MemberSchema)
 };

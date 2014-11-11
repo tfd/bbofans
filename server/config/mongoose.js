@@ -21,7 +21,7 @@ module.exports = function (config) {
   connect();
 
   // Bootstrap models
-  var models_path = __dirname + '/../server/src/models'
+  var models_path = __dirname + '/../src/models'
   fs.readdirSync(models_path).forEach(function (file) {
     if (~file.indexOf('.js')) require(models_path + '/' + file);
   });

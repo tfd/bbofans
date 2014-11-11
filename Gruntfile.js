@@ -1,3 +1,5 @@
+var through = require('through');
+
 module.exports = function(grunt) {
 
   require('time-grunt')(grunt);
@@ -9,16 +11,26 @@ module.exports = function(grunt) {
     bower: {
       install: {
         options: {
-          targetDir: 'client/vendor',
-          layout: 'byType'
+          targetDir: 'build/vendor',
+          layout: function (type, component, source) {
+            return component; 
+          }
         }
       }
     },
 
     clean: {
       build: ['build'],
+      vendor: {
+        src: ['bower_components', 'build/vendor']
+      },
       dev: {
-        src: ['build/app.js', 'build/<%= pkg.name %>.css', 'build/<%= pkg.name %>.js', 'public/js/<%= pkg.name %>.js', 'public/css/<%= pkg.name %>.css']
+        js: {
+          src: ['build/client.js', 'build/<%= pkg.name %>.js', 'public/js/<%= pkg.name %>.js']
+        },
+        css: {
+          src: ['build/<%= pkg.name %>.css', 'public/css/<%= pkg.name %>.css']
+        }
       },
       prod: ['dist']
     },
@@ -26,11 +38,30 @@ module.exports = function(grunt) {
     browserify: {
       client: {
         files: {
-          'build/app.js': ['client/src/main.js']
+          'build/client.js': ['client/src/main.js']
         },
         options: {
-          transform: ['hbsfy'],
-          external: ['backbone.marionette']
+          transform: ['hbsfy']
+          /*
+                      function (file) {
+                        // This is needed to make backbone work: when detecting node.js
+                        // it assumes (wrongly) that jQuery isn't needed. So we inject
+                        // jQuery into the factory.
+                        var data = '';
+                        var match_require = "var _ = require('underscore')";
+                        var replace_require = match_require + ", $ = require('jquery')";
+                        var match_factory = "factory(root, exports, _);";
+                        var replace_factory = "factory(root, exports, _, $);";
+                        return through(write, end);
+
+                        function write (buf) { data += buf }
+                        function end () {
+                          this.queue(data.replace(match_require, replace_require)
+                                         .replace(match_factory, replace_factory));
+                          this.queue(null);
+                        }
+                      }]
+          */
         }
       },
       test: {
@@ -38,7 +69,7 @@ module.exports = function(grunt) {
           'build/tests.js': ['client/test/**/*.test.js']
         },
         options: {
-          external: ['backbone.marionette']
+          external: ['backbone.marionette', 'backbone.wreqr', 'backbone.babysitter', 'backbone', 'underscore', 'jquery']
         }
       }
     },
@@ -47,8 +78,8 @@ module.exports = function(grunt) {
       transpile: {
         files: {
           'build/<%= pkg.name %>.css': [
-            'client/styles/reset.css',
-            'client/vendor/css/**/*.css',
+            // 'client/styles/reset.css',
+            'client/vendor/**/*.css',
             'client/styles/less/main.less'
           ]
         }
@@ -56,16 +87,8 @@ module.exports = function(grunt) {
     },
 
     concat: {
-      vendor: {
-        src: ['client/vendor/js/modernizr/modernizr.js',
-              'client/vendor/js/underscore/underscore.js',
-              'client/vendor/js/backbone/backbone.js',
-              'client/vendor/js/backbone.marionette/backbone.marionette.js',
-              'client/js/**/*.js'],
-        dest: 'build/vendor.js'
-      },
-      client: {
-        src: ['build/vendor.js', 'build/app.js'],
+      dist: {
+        src: ['build/client.js'],
         dest: 'build/<%= pkg.name %>.js'
       }
     },
@@ -116,15 +139,15 @@ module.exports = function(grunt) {
     // for changes to the front-end code
     watch: {
       scripts: {
-        files: ['client/templates/*.hbs', 'client/src/**/*.js'],
-        tasks: ['clean:dev', 'browserify:client', 'concat', 'copy:dev']
+        files: ['client/src/**/*.hbs', 'client/src/**/*.js'],
+        tasks: ['clean:dev:js', 'browserify:client', 'concat', 'copy:dev']
       },
       less: {
         files: ['client/styles/**/*.less'],
-        tasks: ['less:transpile', 'copy:dev']
+        tasks: ['clean:dev:css', 'less:transpile', 'copy:dev']
       },
       test: {
-        files: ['build/app.js', 'client/test/**/*.test.js'],
+        files: ['build/client.js', 'client/test/**/*.test.js'],
         tasks: ['browserify:test']
       },
       karma: {
@@ -136,13 +159,14 @@ module.exports = function(grunt) {
     // for changes to the node code
     nodemon: {
       dev: {
-        script: 'server.js',
+        script: 'server/server.js',
         options: {
           nodeArgs: ['--debug'],
-          watch: ['server/src', 'config'],
+          watch: ['server/src', 'server/config'],
           env: {
             PORT: '3000'
-          }
+          },
+          ext: 'js,hbs'
         }
       }
     },
@@ -211,10 +235,11 @@ module.exports = function(grunt) {
     }
   });
 
-  grunt.registerTask('init:dev', ['clean', 'bower', 'concat:vendor']);
-
+  grunt.registerTask('build:vendor', ['clean:vendor', 'bower']);
   grunt.registerTask('build:dev', ['clean:dev', 'browserify:client', 'browserify:test', 'jshint:dev', 'less:transpile', 'concat', 'copy:dev']);
-  grunt.registerTask('build:prod', ['clean:prod', 'concat:vendor', 'browserify:client', 'jshint:all', 'less:transpile', 'concat', 'cssmin', 'uglify', 'copy:prod']);
+  grunt.registerTask('build:prod', ['clean:prod', 'concat', 'browserify:client', 'jshint:all', 'less:transpile', 'concat', 'cssmin', 'uglify', 'copy:prod']);
+
+  grunt.registerTask('init:dev', ['clean', 'build:vendor']);
 
   grunt.registerTask('heroku', ['init:dev', 'build:dev']);
 

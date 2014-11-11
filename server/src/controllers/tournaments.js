@@ -1,39 +1,40 @@
 var model = require('../models/tournament');
 var async = require('async');
 
-function addScoreToPlayer(tournament, callback) {
-  return function(err, player) {
+function addScoreToMember(tournament, callback) {
+  return function(err, member) {
     if (err) {
-      console.log('Could not find player ' + bboName + ': ' + err);
+      console.log('Could not find member ' + bboName + ': ' + err);
       callback(); // ignore error!
+      return;
     }
     
     try {
-      player.addTournament(tournament);
-      player.save(callback);
+      member.addTournament(tournament);
+      member.save(callback);
     }
     catch(e) {
-      console.log('Exception thrown when adding scores for tournament ' + tournament.name + ' to player ' + player.bboName + ': ' + e.message);
+      console.log('Exception thrown when adding scores for tournament ' + tournament.name + ' to member ' + member.bboName + ': ' + e.message);
       callback(); // ignore error!
     }
   };
 }
 
-function processPlayer(Players, tournament) {
+function processPlayer(Member, tournament) {
   return function (bboName, callback) {
-    Players.find({bboName: bboName}, addScoreToPlayer(tournament, callback));
+    Member.find({bboName: bboName}, addScoreToMember(tournament, callback));
   };
 }
 
-function processResult(Players, tournament) {
+function processResult(Member, tournament) {
   return function (result, callback) {
-    async.eachSeries(result.players, processPlayer(Players, tournament), callback);
+    async.eachSeries(result.players, processPlayer(Member, tournament), callback);
   };
 }
 
 function addTournamentToPlayers(tournament, callback) {
-  var Players = tournament.model('Player');
-  async.eachSeries(tournament.results, processResult(Players, tournament), callback);
+  var Member = tournament.model('Member');
+  async.eachSeries(tournament.results, processResult(Member, tournament), callback);
 }
  
 module.exports = {

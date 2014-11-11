@@ -16,7 +16,7 @@ describe('Tournament Model', function () {
 
   it('should exist', function () {
     expect(model.Tournament).to.exist;
-    expect(model.Player).to.exist;
+    expect(model.Member).to.exist;
   });
 
   describe('create', function () {
