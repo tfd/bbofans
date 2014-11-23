@@ -31,7 +31,7 @@ describe('Tournament Model', function () {
       expect(tournament.date).to.be.a('Date');
       expect(tournament.numPlayers).to.equal(4);
       expect(tournament.isPair).to.equal(false);
-      expect(tournament.isBD).to.equal(false);
+      expect(tournament.isRbd).to.equal(false);
       expect(tournament.results).to.be.an('Array');
       expect(tournament.results).to.have.length(0);
       expect(tournament.createdAt).to.be.a('Date');
@@ -57,7 +57,7 @@ describe('Tournament Model', function () {
           expect(tournament.date).to.be.a('Date');
           expect(tournament.numPlayers).to.equal(4);
           expect(tournament.isPair).to.equal(false);
-          expect(tournament.isBD).to.equal(false);
+          expect(tournament.isRbd).to.equal(false);
           expect(tournament.results).to.be.an('Array');
           expect(tournament.results).to.have.length(0);
           expect(tournament.createdAt).to.be.a('Date');

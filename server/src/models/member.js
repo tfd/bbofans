@@ -32,27 +32,41 @@ var MemberSchema = new Schema({
     email               : {type : Email, required : 'Email cannot be blank', unique: true, trim : true, validate: emailValidator},
     level               : {type : String, default : 'Beginner', trim : true},
     isStarPlayer        : {type : Boolean, default : false},
-    isBDPlayer          : {type : Boolean, default : false},
+    isRbdPlayer         : {type : Boolean, default : false},
     isEnabled           : {type : Boolean, default : false},
     isBlackListed       : {type : Boolean, default : false},
     isBanned            : {type : Boolean, default : false},
-    blackList           : [{
-      from                : {type : Date},
-      to                  : {type : Date},
-      reason              : {type : String, default : '', trim : true} }],
-    playedInTournaments : [{type : Schema.Types.ObjectId, ref : 'Tournament'}],
-    totalScores         : {
-      numTournaments      : {type : Number, default : 0},
-      averageScore        : {type : Number, default : 0},
-      averageMatchPoints  : {type : Number, default : 0},
-      awards              : {type : Number, default : 0}},
-    monthlyScores       : [{
-      month               : {type : Number},
-      year                : {type : Number},
-      numTournaments      : {type : Number, default : 0},
-      averageScore        : {type : Number, default : 0},
-      averageMatchPoints  : {type : Number, default : 0},
-      awards              : {type : Number, default : 0}}],
+    rock: {
+      playedInTournaments : [{type : Schema.Types.ObjectId, ref : 'Tournament'}],
+      totalScores         : {
+        numTournaments      : {type : Number, default : 0},
+        averageScore        : {type : Number, default : 0},
+        averageMatchPoints  : {type : Number, default : 0},
+        awards              : {type : Number, default : 0}},
+      monthlyScores       : [{
+        month               : {type : Number},
+        year                : {type : Number},
+        numTournaments      : {type : Number, default : 0},
+        averageScore        : {type : Number, default : 0},
+        averageMatchPoints  : {type : Number, default : 0},
+        awards              : {type : Number, default : 0}}],
+    },
+    rbd: {
+      playedInTournaments : [{type : Schema.Types.ObjectId, ref : 'Tournament'}],
+      totalScores         : {
+        numTournaments      : {type : Number, default : 0},
+        averageScore        : {type : Number, default : 0},
+        averageMatchPoints  : {type : Number, default : 0},
+        awards              : {type : Number, default : 0}},
+      monthlyScores       : [{
+        month               : {type : Number},
+        year                : {type : Number},
+        numTournaments      : {type : Number, default : 0},
+        averageScore        : {type : Number, default : 0},
+        averageMatchPoints  : {type : Number, default : 0},
+        awards              : {type : Number, default : 0}}],
+    },
+    registeredAt        : {type : Date},
     validatedAt         : {type : Date},
     createdAt           : {type : Date, default: Date.now}
 });
@@ -91,8 +105,8 @@ MemberSchema.methods = {
    * @param {Object} tournament
    * @return true if the player played in the tournament, false otherwise.
    */
-  playedInTournament: function (tournament) {
-    var arr = this.populated('playedInTournaments') || this.playedInTournaments;
+  playedInTournament: function (league, tournament) {
+    var arr = league.populated('playedInTournaments') || league.playedInTournaments;
     return arr.indexOf(tournament.id) >= 0;
   },
 
@@ -114,9 +128,14 @@ MemberSchema.methods = {
       averageMatchPoints: 0,
       awards: 0
     };
+    var league = tournament.isRbd ? this.rbd : this.rock;
+
+    if (tournament.isRbd && ! this.isRbdPlayer) { 
+      throw new Error('Member ' + this.bboName + ' is not enabled to play in RBD Tournaments');
+    }
 
     // Check if scores of this tournament have already been added.
-    if (this.playedInTournament(tournament)) {
+    if (this.playedInTournament(league, tournament)) {
       throw new Error('Tournament ' + tournament.name + ' scores are already added for player ' + this.bboName);
     }
 
@@ -127,10 +146,10 @@ MemberSchema.methods = {
     }
 
     // Update total scores
-    updateScores(this.totalScores, score);
+    updateScores(league.totalScores, score);
 
     // Update monthly scores
-    this.monthlyScores.every(function (monthlyScore, i) {
+    league.monthlyScores.every(function (monthlyScore, i) {
       if (monthlyScore.year === tournament.date.getFullYear() &&
           monthlyScore.month === tournament.date.getMonth()) {
         updateScores(monthlyScore, score);
@@ -143,10 +162,10 @@ MemberSchema.methods = {
     if (newMonth) {
       // First tournament in this month
       updateScores(newMonthlyScore, score);
-      this.monthlyScores.push(newMonthlyScore);
+      league.monthlyScores.push(newMonthlyScore);
     }
 
-    this.playedInTournaments.push(tournament);
+    league.playedInTournaments.push(tournament);
   }
 };
 

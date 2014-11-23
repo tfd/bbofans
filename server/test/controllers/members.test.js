@@ -11,6 +11,9 @@ var res = {},
 describe('Members Controller', function() {
   beforeEach(function() {
     res = {
+      status: sinon.spy(function (code) {
+        return res;
+      }),
       json: sinon.spy()
     };
     req = {
@@ -88,16 +91,18 @@ describe('Members Controller', function() {
       members.add(req, res);
       expect(res.json).calledWith(req.body);
     });
+
     it('should return error on failed add', function() {
       modelStub.Member = sinon.spy(function() {
         modelStub.Member.prototype.save = function(callback) {
-          callback({}, req.body);
+          callback({err: 'E11000 duplicate key error members.$bboName_1 dup key: { : "name" }'}, req.body);
         };
         return;
       });
 
       members.add(req, res);
-      expect(res.json).calledWith({error: 'Error adding member.'});
+      expect(res.status).calledWith(409);
+      expect(res.json).calledWith({bboName: 'Value "name" already present in database'});
     });
   });
 
@@ -117,7 +122,6 @@ describe('Members Controller', function() {
 
     it('should call findByIdAndUpdate', function() {
       modelStub.Member.findByIdAndUpdate = sinon.spy(function (id, update, callback) {
-        console.log(update);
         callback(null, req.body);
       });
 

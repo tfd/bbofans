@@ -1,7 +1,7 @@
 var Backbone = require('backbone');
 var $ = require('jquery');
 
-module.exports = function (app, pagename, routes) {
+module.exports = function (app, subApp, pagename, routes) {
   var router = {
     routes: {}
   };
@@ -10,12 +10,14 @@ module.exports = function (app, pagename, routes) {
     var functionName = commandName.replace(':', '_');
 
     app.on(pagename + ':' + route, function () {
+      app.setApp(subApp);
       app.navigate(route);
       app.execute(commandName);
     });
 
     router.routes[route] = functionName;
     router[functionName] = function () {
+      app.setApp(subApp);
       app.execute(commandName);
     };
   });

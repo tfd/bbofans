@@ -5,9 +5,13 @@ var CarouselView = require('./view');
 
 var TdCarouselController = Marionette.Controller.extend({
   initialize: function (options) {
-    var carouselView = new CarouselView();
-    options.region.show(carouselView);
+    this.view = new CarouselView();
+    this.region = options.region;
   },
+
+  show: function () {
+    this.region.show(this.view);
+  }
 });
 
 

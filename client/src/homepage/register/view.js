@@ -61,14 +61,12 @@ var RegisterView = Marionette.ItemView.extend({
       });
     };
 
-    var markErrors = function(value, key){
+    clearFormErrors();
+    $.each(errors, function (key, value) {
       var $controlGroup = $view.find("#member-" + key).parent().parent();
       var $errorEl = $("<span>", { class: "help-inline error", text: value });
       $controlGroup.append($errorEl).addClass("error");
-    };
-
-    clearFormErrors();
-    _.each(errors, markErrors);
+    });
   }
 });
 

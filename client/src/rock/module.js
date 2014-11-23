@@ -2,9 +2,9 @@ var Backbone = require('backbone');
 var Marionette = require('backbone.marionette');
 var bbofansApp = require('../bbofans');
 var LayoutController = require('./layout/controller');
-var PageController = require('./pages/controller');
-var RegisterController = require('./register/controller');
-var TdCarouselController = require('./td_carousel/controller');
+var MembersController = require('./members/controller');
+var AwardsController = require('./awards/controller');
+var MatchpointsController = require('./matchpoints/controller');
 var NavbarController = require('../common/controllers/navbar');
 var routerFactory = require('../common/utils/router_command_factory');
 
@@ -14,12 +14,10 @@ var homepageApp = bbofansApp.module('homepage', {
     this.app = app;
 
     homepageApp.Router = routerFactory(app, this, 'homepage', {
-      "home": "home:show",
-      "register": "register:show",
-      "rules": "rules:show",
-      "awards": "awards:show",
-      "matchpoints": "matchpoints:show",
-      "bbolinks": "bbolinks:show"
+      "rock": "rock:home:show",
+      "rock/members": "rock:members:show",
+      "rock/awards": "rock:awards:show",
+      "rock/matchpoints": "rock:matchpoints:show"
     });
 
     app.addInitializer(function () {
@@ -35,15 +33,15 @@ var homepageApp = bbofansApp.module('homepage', {
         region: self.layout.navbar,
         collection: require('./navbar/collection')
       });
-      self.page = new PageController({
+      self.members = new MembersController({
         app: app,
         region: self.layout.content
       });
-      self.register = new RegisterController({
+      self.awards = new AwardsController({
         app: app,
         region: self.layout.content
       });
-      self.carousel = new TdCarouselController({
+      self.matchpoints = new MatchpointsController({
         app: app,
         region: self.layout.td
       });
@@ -52,8 +50,7 @@ var homepageApp = bbofansApp.module('homepage', {
     this.activate = function () {
       this.layout.show();
       this.navbar.show();
-      this.page.showHome();
-      this.carousel.show();
+      this.members.show();
     };
   }
 });

@@ -14,7 +14,6 @@ var PageController = Marionette.Controller.extend({
     
     this.region = options.region;
     this.app = options.app;
-    this.showHome();
 
     this.app.commands.setHandler('home:show', function () {
       self.showHome();

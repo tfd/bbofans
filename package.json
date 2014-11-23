@@ -20,6 +20,8 @@
     "backbone.marionette": "./build/vendor/backbone.marionette/backbone.marionette.js",
     "backbone.syphon": "./build/vendor/backbone.syphon/backbone.syphon.js",
     "bootstrap": "./client/vendor/bootstrap/js/bootstrap.js",
+    "bootstrap-table": "./build/vendor/bootstrap-table/bootstrap-table.js",
+    "bootstrap-table-en-US": "./build/vendor/bootstrap-table/bootstrap-table-en-US.js",
     "ie10-viewport-bug-workaround": "./client/vendor/bootstrap/js/ie10-viewport-bug-workaround.js"
   },
   "repository": {
@@ -41,6 +43,14 @@
     "backbone.syphon": {
       "exports": "",
       "depends": ["backbone:Backbone", "underscore:_", "jquery:jQuery"]
+    },
+    "bootstrap-table" : {
+      "exports": "",
+      "depends": ["jquery:jQuery"]
+    },
+    "bootstrap-table-en-US" : {
+      "exports": "",
+      "depends": ["jquery:jQuery"]
     }
   },
   "browserify": {

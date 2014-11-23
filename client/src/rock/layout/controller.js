@@ -9,7 +9,6 @@ var LayoutController = Marionette.Controller.extend({
 
     this.navbar = this.view.navbar;
     this.content = this.view.content;
-    this.td = this.view.td;
     this.winners = this.view.winners;
   },
 

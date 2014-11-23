@@ -1,19 +1,20 @@
 var Backbone = require('backbone');
 var $ = require('jquery');
-var bbofansApp = require('../../bbofans');
 
-module.exports = function (pagename, controller, routes) {
+module.exports = function (app, subApp, pagename, controller, routes) {
   var router = {
     routes: routes
   };
 
   $.each(routes, function (route, functionName) {
-    bbofansApp.on(pagename + ':' + route, function () {
-      bbofansApp.navigate(route);
+    app.on(pagename + ':' + route, function () {
+      app.setApp(subApp);
+      app.navigate(route);
       controller[functionName]();
     });
 
     router[functionName] = function () {
+      app.setApp(subApp);
       controller[functionName]();
     };
   });

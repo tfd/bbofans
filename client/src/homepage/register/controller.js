@@ -17,6 +17,7 @@ var RegisterController = Marionette.Controller.extend({
   },
 
   show: function () {
+    var self = this;
     var member = new Member();
     var registerView = new RegisterView({
       model: member
@@ -24,24 +25,23 @@ var RegisterController = Marionette.Controller.extend({
 
     registerView.on('form:submit', function (data) {
       if (!Recaptcha.get_response()) {
-        member.validationError = { errors: { 'recaptcha': "can't be blank" } };
-        registerView.triggerMethod("form:data:invalid", member.validationError);
+        registerView.triggerMethod("form:data:invalid", { 'recaptcha': "can't be blank" });
       }
       else {
-        $.getJSON('/recaptcha/' + Recaptcha.get_challenge() + '/' + Recaptcha.get_response(), function (check) {
-          if (!check.passed) {
-            member.validationError = { errors: { 'recaptcha': check.error } };
-            registerView.triggerMethod("form:data:invalid", member.validationError);
-          }
-          else if (!member.save(data)) {
-            registerView.triggerMethod("form:data:invalid", member.validationError);
-          }
-          else {
-            this.app.trigger("member:show", member.get("id"));
-          }
-        });
+        var xhr = member.save(data);
+        if (xhr === false) {
+          registerView.triggerMethod("form:data:invalid", member.validationError);
+        }
+        else {
+          xhr.done(function (data) {
+            console.log("done", data);
+            self.app.trigger("member:show", member.get("id"));
+          }).fail(function (xhr) {
+            console.log("fail", xhr.responseJSON);
+            registerView.triggerMethod("form:data:invalid", xhr.responseJSON);
+          });
+        }
       }
-
     });
 
     this.region.show(registerView);
