@@ -4,14 +4,14 @@ var $ = require('jquery');
 var View = require('./view');
 var Member = require('../../common/models/member');
 
-var AwardsController = Marionette.Controller.extend({
+var MatchpointsController = Marionette.Controller.extend({
   initialize: function (options) {
     var self = this;
     
     this.region = options.region;
     this.app = options.app;
 
-    this.app.commands.setHandler('rock:awards:show', function () {
+    this.app.commands.setHandler('rock:matchpoints:show', function () {
       self.show();
     });
   },
@@ -27,4 +27,4 @@ var AwardsController = Marionette.Controller.extend({
   }
 });
 
-module.exports = AwardsController;
+module.exports = MatchpointsController;

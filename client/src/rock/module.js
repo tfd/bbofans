@@ -13,11 +13,11 @@ var homepageApp = bbofansApp.module('homepage', {
     var self = this;
     this.app = app;
 
-    homepageApp.Router = routerFactory(app, this, 'homepage', {
-      "rock": "rock:home:show",
-      "rock/members": "rock:members:show",
-      "rock/awards": "rock:awards:show",
-      "rock/matchpoints": "rock:matchpoints:show"
+    homepageApp.Router = routerFactory(app, this, 'rock', {
+      "rock": "members:show",
+      "rock/members": "members:show",
+      "rock/awards": "awards:show",
+      "rock/matchpoints": "matchpoints:show"
     });
 
     app.addInitializer(function () {

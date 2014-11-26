@@ -1,15 +1,95 @@
 var model = require('../models/member');
 var recaptcha = require('../controllers/recaptcha');
 
+function getLimit (req) {
+  var limit = 10;
+  if (req.query.limit) {
+    limit = parseInt(req.query.limit, 10);
+    if (isNaN(limit) || limit < 10) {
+      limit = 10;
+    }
+    else if (limit > 100) {
+      limit = 100;
+    }
+  }
+  return limit;
+}
+
+function getSkip (req) {
+  var skip = 0;
+  if (req.query.offset) {
+    skip = parseInt(req.query.offset, 10);
+    if (isNaN(skip) || skip < 0) {
+      skip = 0;
+    }
+  }
+  return skip;
+}
+
+function getSort (req, fields) {
+  var sort = {};
+  var field = 'bboName';
+  var order = 'asc';
+  if (req.query.sort && fields.indexOf(req.query.sort) >= 0) {
+    field = req.query.sort;
+  } 
+  if (req.query.order && ['asc', 'desc'].indexOf(req.query.order) >= 0) {
+    order = req.query.order;
+  }
+  var sort = {};
+  sort[field] = (order === 'asc' ? 1 : -1);
+  return sort;
+}
+
+function getOrder (req) {
+  if (req.query.order && ['asc', 'desc'].indexOf(req.query.order) >= 0) {
+    return req.query.order;
+  }
+  return 'asc';
+}
+
 module.exports = {
   
-  index: function(req, res) {
-    model.Member.find({}, function (err, data) {
+  index: function (req, res) {
+    console.log(req.query);
+    var limit = getLimit(req);
+    var skip = getSkip(req);
+    var sort = getSort(req, ['bboName', 'nation', 'level', 'awards', 'averageMatchPoints']);
+    model.Member.find({})
+                .exec(function (err, data) {
       res.json(data);
     });
   },
   
-  getById: function(req, res) {
+  getRock: function (req, res) {
+    var limit = getLimit(req);
+    var skip = getSkip(req);
+    var sort = getSort(req, ['bboName', 'nation', 'level', 'awards', 'averageMatchPoints']);
+    model.Member.find({}).count().exec(function (err, count) {
+      model.Member.aggregate({
+                     $project: {
+                       bboName: 1,
+                       nation: 1,
+                       level: 1,
+                       awards: "$rock.totalScores.awards",
+                       averageMatchPoints: "$rock.totalScores.averageMatchPoints"
+                   }})
+                  .sort(sort)
+                  .skip(skip)
+                  .limit(limit)
+                  .exec(function (err, data) {
+        res.json({
+          skip: skip,
+          limit: limit,
+          sort: sort,
+          total: count,
+          rows: data
+        });
+      });
+    });
+  },
+
+  getById: function (req, res) {
     model.Member.find({ _id: req.params.id }, function (err, player) {
       if (err) {
         res.json({error: 'Member not found.'});
