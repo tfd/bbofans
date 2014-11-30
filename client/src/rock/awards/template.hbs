@@ -1,12 +1,24 @@
 <div class="well">
-  <h1>Rock Members</h1>
-  <table data-toggle="table" data-url="/members">
+  <h1>Awards</h1>
+  <table data-toggle="table"
+         data-url="/members/rock"
+         data-cache="false"
+         data-classes="table table-hover"
+         data-striped="true"
+         data-sort-name="awards"
+         data-sort-order="desc"
+         data-search="true"
+         data-pagination="true"
+         data-page-size="10"
+         data-page-list="[10, 25, 50, 100]"
+         data-smart-display="true"
+         data-side-pagination="server">
     <thead>
-      <th data-field="bboName">BBO login</th>
-      <th data-field="nation">Country</th>
-      <th data-field="level">Level</th>
-      <th data-field="rock.totalScores.awards">Awards</th>
-      <th data-field="rock.totalScores.averageMatchPoints">Matchpoints</th>
+      <th data-field="bboName" data-sortable="true">BBO login</th>
+      <th data-field="nation" data-sortable="true">Country</th>
+      <th data-field="level" data-sortable="true">Level</th>
+      <th data-field="awards" data-sortable="true">Awards</th>
+      <th data-field="averageMatchPoints" data-sortable="true">Matchpoints</th>
     </thead>
   </table>
 </div>

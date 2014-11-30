@@ -1,8 +1,10 @@
 /* jshint -W030 */
 var proxyquire = require('proxyquire'),
-    modelStub = {},
+    tournamentStub = sinon.spy(function () { return; }),
+    memberStub = {},
+    mongooseStub = { model: function (name) { return (name === 'Tournament' ? tournamentStub : memberStub); } },
     tournaments = proxyquire('../../src/controllers/tournaments', {
-      '../models/tournament' : modelStub,
+      'mongoose' : mongooseStub,
     });
 
 var res = {},
@@ -18,13 +20,11 @@ describe('Tournaments Controller', function() {
         id : 1
       }
     };
-    modelStub.Tournament = {
-      find: function(query, callback) {
-        callback(null, {});
-      },
-      save: function(err, callback) {
-        callback(null, req.body);
-      }
+    tournamentStub.find = function(query, callback) {
+      callback(null, {});
+    };
+    tournamentStub.save = function(err, callback) {
+      callback(null, req.body);
     };
   });
 
@@ -54,10 +54,8 @@ describe('Tournaments Controller', function() {
     });
 
     it('should send json error on error', function() {
-      modelStub.Tournament = {
-        find: function(query, callback) {
-          callback({}, null);
-        }
+      tournamentStub.find = function(query, callback) {
+        callback({}, null);
       };
       tournaments.getById(req, res);
       expect(res.json).calledWith({error: 'Tournament not found.'});
@@ -66,29 +64,18 @@ describe('Tournaments Controller', function() {
 
   describe('add', function() {
     var newTournament = null;
-    var memberStub = null;
-    var memberModelStub = null;
-    var results = [];
+    var member = null;
 
     beforeEach(function() {
       req.body = {
         results: []
       };
-      memberModelStub = {
-        find: sinon.spy(function(query, callback) {
-          callback(null, memberStub);
-        })
-      };
-      modelStub.Tournament = sinon.spy(function() {
-        newTournament = this;
-        newTournament.results = results;
-        modelStub.Tournament.prototype.save = sinon.spy(function(callback) {
-          callback(null, newTournament);
-        });
-        modelStub.Tournament.prototype.model = sinon.spy(function(name) {
-          return memberModelStub;
-        });
-        modelStub.Tournament.prototype.results = [];
+      newTournament = { results: [] };
+      tournamentStub.prototype.save = sinon.spy(function(callback) {
+        callback(null, newTournament);
+      });
+      memberStub.find = sinon.spy(function(query, callback) {
+        callback(null, member);
       });
     });
 
@@ -98,37 +85,31 @@ describe('Tournaments Controller', function() {
 
     it('should return json on save', function() {
       tournaments.add(req, res);
-      expect(modelStub.Tournament).calledWith(req.body);
+      expect(tournamentStub).calledWith(req.body);
       expect(res.json).calledWith(newTournament);
     });
 
     it('should add tournament to players', function() {
-      memberStub = {
+      member = {
         addTournament: sinon.spy(function (t) {}),
-        save: sinon.spy(function (cb) { cb(null, memberStub); })
+        save: sinon.spy(function (cb) { cb(null, member); })
       };
       
-      results = [
-        {
-          players: ['bill'],
-        }
-      ];
+      newTournament.results = [{
+        players: ['bill'],
+      }];
 
       tournaments.add(req, res);
-      expect(newTournament.model).calledWith('Member');
-      expect(memberModelStub.find).calledWith({bboName: 'bill'});
-      expect(memberStub.addTournament).calledWith(newTournament);
-      expect(memberStub.save).calledAfter(memberStub.addTournament);
+      expect(memberStub.find).calledWith({bboName: 'bill'});
+      expect(member.addTournament).calledWith(newTournament);
+      expect(member.save).calledAfter(member.addTournament);
       expect(res.json).calledWith(newTournament);
     });
 
     it('should return error on failed save', function() {
-      modelStub.Tournament = sinon.spy(function() {
-        modelStub.Tournament.prototype.save = function(callback) {
-          callback({}, null);
-        };
-        return;
-      });
+      tournamentStub.prototype.save = function(callback) {
+        callback({}, null);
+      };
 
       tournaments.add(req, res);
       expect(res.json).calledWith({error: 'Error adding Tournament.'});
@@ -154,10 +135,8 @@ describe('Tournaments Controller', function() {
 
     it('should return json on delete', function() {
       var contactSpy = {remove: sinon.spy()};
-      modelStub.Tournament = {
-        findOne: function(query, callback) {
-          callback(null, contactSpy);
-        }
+      tournamentStub.findOne = function(query, callback) {
+        callback(null, contactSpy);
       };
 
       tournaments.delete(req, res);
@@ -165,10 +144,8 @@ describe('Tournaments Controller', function() {
     });
 
     it('should return error on failed save', function() {
-      modelStub.Tournament = {
-        findOne: function(query, callback) {
-          callback({}, null);
-        }
+      tournamentStub.findOne = function(query, callback) {
+        callback({}, null);
       };
 
       tournaments.delete(req, res);

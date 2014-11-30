@@ -39,6 +39,4 @@ function handleError(msg, cb) {
 BlacklistSchema.methods = {
 };
 
-module.exports = {
-    Blacklist: mongoose.model('Blacklist', BlacklistSchema)
-};
+module.exports = mongoose.model('Blacklist', BlacklistSchema);

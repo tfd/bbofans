@@ -2,6 +2,7 @@
 var env = process.env.NODE_ENV || 'test';
 var config = require('../config/config')[env];
 var mongoose = require('mongoose');
+var fs = require('fs');
 
 console.log('env=' + env);
 console.log('db=' + config.db);
@@ -23,6 +24,12 @@ mongoose.connection.on('disconnected', function () {
   connect();
 });
 
+// Bootstrap models
+var models_path = __dirname + '/../src/models';
+fs.readdirSync(models_path).forEach(function (file) {
+  if (~file.indexOf('.js')) require(models_path + '/' + file);
+});
+
 connect();
 
-module.export = mongoose;
+module.exports = mongoose;

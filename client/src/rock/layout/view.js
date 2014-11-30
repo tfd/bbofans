@@ -4,9 +4,9 @@ var LayoutView = Marionette.LayoutView.extend({
   template: require('./template.hbs'),
 
   regions: {
-    'navbar': '#homepage-navbar',
-    'content': '#homepage-content',
-    'winners': '#homepage-winners-box'
+    'navbar': '#rock-navbar',
+    'content': '#rock-content',
+    'winners': '#rock-winners-box'
   }
 });
 

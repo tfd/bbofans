@@ -169,6 +169,4 @@ MemberSchema.methods = {
   }
 };
 
-module.exports = {
-    Member: mongoose.model('Member', MemberSchema)
-};
+module.exports = mongoose.model('Member', MemberSchema);

@@ -5,7 +5,7 @@ var LayoutController = require('./layout/controller');
 var PageController = require('./pages/controller');
 var RegisterController = require('./register/controller');
 var TdCarouselController = require('./td_carousel/controller');
-var NavbarController = require('../common/controllers/navbar');
+var NavbarController = require('../common/navbar/controller');
 var routerFactory = require('../common/utils/router_command_factory');
 
 var homepageApp = bbofansApp.module('homepage', {
@@ -25,7 +25,9 @@ var homepageApp = bbofansApp.module('homepage', {
     app.addInitializer(function () {
       app.vent.trigger('app:log', 'homepageApp: addInitializer');
       new homepageApp.Router();
+    });
 
+    this.activate = function () {
       self.layout = new LayoutController({
         app: app,
         region: bbofansApp.content
@@ -47,9 +49,7 @@ var homepageApp = bbofansApp.module('homepage', {
         app: app,
         region: self.layout.td
       });
-    });
 
-    this.activate = function () {
       this.layout.show();
       this.navbar.show();
       this.page.showHome();

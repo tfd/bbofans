@@ -5,25 +5,27 @@ var LayoutController = require('./layout/controller');
 var MembersController = require('./members/controller');
 var AwardsController = require('./awards/controller');
 var MatchpointsController = require('./matchpoints/controller');
-var NavbarController = require('../common/controllers/navbar');
+var NavbarController = require('../common/navbar/controller');
 var routerFactory = require('../common/utils/router_command_factory');
 
-var homepageApp = bbofansApp.module('homepage', {
+var rockApp = bbofansApp.module('rock', {
   define: function(homepageApp, app, Backbone, Marionette, $, _) {
     var self = this;
     this.app = app;
 
     homepageApp.Router = routerFactory(app, this, 'rock', {
-      "rock": "members:show",
-      "rock/members": "members:show",
-      "rock/awards": "awards:show",
-      "rock/matchpoints": "matchpoints:show"
+      "rock": "rock:members:show",
+      "rock/members": "rock:members:show",
+      "rock/awards": "rock:awards:show",
+      "rock/matchpoints": "rock:matchpoints:show"
     });
 
     app.addInitializer(function () {
-      app.vent.trigger('app:log', 'homepageApp: addInitializer');
+      app.vent.trigger('app:log', 'rockApp: addInitializer');
       new homepageApp.Router();
+    });
 
+    this.activate = function () {
       self.layout = new LayoutController({
         app: app,
         region: bbofansApp.content
@@ -43,11 +45,9 @@ var homepageApp = bbofansApp.module('homepage', {
       });
       self.matchpoints = new MatchpointsController({
         app: app,
-        region: self.layout.td
+        region: self.layout.content
       });
-    });
 
-    this.activate = function () {
       this.layout.show();
       this.navbar.show();
       this.members.show();
@@ -55,4 +55,4 @@ var homepageApp = bbofansApp.module('homepage', {
   }
 });
 
-module.exports = homepageApp;
+module.exports = rockApp;

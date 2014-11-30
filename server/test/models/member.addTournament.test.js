@@ -1,28 +1,28 @@
 /* jshint -W030 */
 var mongoose = require('../load-mongoose');
-var model = require('../../src/models/tournament');
-model.Member = require('../../src/models/member').Member;
+var Tournament = mongoose.model('Tournament');
+var Member = mongoose.model('Member');
 var async = require('async');
-var dbutils = require('../db-utils')(model);
+var dbutils = require('../db-utils');
 
 describe('Member addTournament function', function () {
 
   after(function (done) {
-    async.map(['Member', 'Tournament'], dbutils.clearTable, function (err) {
+    async.map([Member, Tournament], dbutils.clearTable, function (err) {
       done();
     });
   });
 
   beforeEach(function (done) {
-    async.map(['Member', 'Tournament'], dbutils.clearTable, function (err) {
+    async.map([Member, Tournament], dbutils.clearTable, function (err) {
       var Members = [
-        new model.Member({
+        new Member({
           bboName: 'member1',
           name: '1',
           email: 'name@company.com',
           nation: 'Italy'
         }),
-        new model.Member({
+        new Member({
           bboName: 'member2',
           name: '2',
           email: 'surname@company.com',
@@ -40,7 +40,7 @@ describe('Member addTournament function', function () {
   });
 
   it('schould exist', function (done) {
-    model.Member.findOne({bboName: 'member1'}, function (err, member) {
+    Member.findOne({bboName: 'member1'}, function (err, member) {
       expect(member.addTournament).to.be.a('Function');
       done();
     });
@@ -49,7 +49,7 @@ describe('Member addTournament function', function () {
   it('should update the scores', function (done) {
     async.waterfall([
       function(callback) {
-        new model.Tournament({
+        new Tournament({
           name: 'Tournament1',
           date: new Date(2014, 9, 26, 18, 0, 0, 0),
           numPlayers: 4,
@@ -64,7 +64,7 @@ describe('Member addTournament function', function () {
         });
       },
       function(tournament, callback) {
-        model.Member.findOne({bboName: 'member1'}, function (err, member) {
+        Member.findOne({bboName: 'member1'}, function (err, member) {
           callback(err, tournament, member);
         });
       },
@@ -92,7 +92,7 @@ describe('Member addTournament function', function () {
   it('should update the scores for RBD', function (done) {
     async.waterfall([
       function(callback) {
-        new model.Tournament({
+        new Tournament({
           name: 'Tournament1',
           date: new Date(2014, 9, 26, 18, 0, 0, 0),
           numPlayers: 4,
@@ -108,7 +108,7 @@ describe('Member addTournament function', function () {
         });
       },
       function(tournament, callback) {
-        model.Member.findOne({bboName: 'member2'}, function (err, member) {
+        Member.findOne({bboName: 'member2'}, function (err, member) {
           callback(err, tournament, member);
         });
       },
@@ -136,7 +136,7 @@ describe('Member addTournament function', function () {
   it('should add new monthly scores', function (done) {
     async.waterfall([
       function (callback) {
-        new model.Tournament({
+        new Tournament({
           name: 'Tournament1',
           date: new Date(2014, 9, 26, 18, 0, 0, 0),
           numPlayers: 4,
@@ -151,7 +151,7 @@ describe('Member addTournament function', function () {
         });
       },
       function (tournament1, callback) {
-        new model.Tournament({
+        new Tournament({
           name: 'Tournament2',
           date: new Date(2014, 8, 26, 18, 0, 0, 0),
           numPlayers: 4,
@@ -166,7 +166,7 @@ describe('Member addTournament function', function () {
         });
       },
       function (tournament1, tournament2, callback) {
-        model.Member.findOne({bboName: 'member1'}, function (err, member) {
+        Member.findOne({bboName: 'member1'}, function (err, member) {
           callback(err, member, tournament1, tournament2);
         });
       },
@@ -203,7 +203,7 @@ describe('Member addTournament function', function () {
   it('should merge monthly scores', function (done) {
     async.waterfall([
       function (callback) {
-        new model.Tournament({
+        new Tournament({
           name: 'Tournament1',
           date: new Date(2014, 9, 26, 18, 0, 0, 0),
           numPlayers: 4,
@@ -218,7 +218,7 @@ describe('Member addTournament function', function () {
         });
       },
       function (tournament1, callback) {
-        new model.Tournament({
+        new Tournament({
           name: 'Tournament2',
           date: new Date(2014, 9, 15, 18, 0, 0, 0),
           numPlayers: 4,
@@ -233,7 +233,7 @@ describe('Member addTournament function', function () {
         });
       },
       function (tournament1, tournament2, callback) {
-        model.Member.findOne({bboName: 'member1'}, function (err, member) {
+        Member.findOne({bboName: 'member1'}, function (err, member) {
           callback(err, member, tournament1, tournament2);
         });
       },
@@ -264,7 +264,7 @@ describe('Member addTournament function', function () {
   it('should throw an error if member didn\'t play in the tournament', function (done) {
     async.waterfall([
       function(callback) {
-        new model.Tournament({
+        new Tournament({
           name: 'Tournament1',
           date: new Date(2014, 9, 26, 18, 0, 0, 0),
           numPlayers: 4,
@@ -279,7 +279,7 @@ describe('Member addTournament function', function () {
         });
       },
       function(tournament, callback) {
-        model.Member.findOne({bboName: 'member1'}, function (err, member) {
+        Member.findOne({bboName: 'member1'}, function (err, member) {
           callback(err, tournament, member);
         });
       },
@@ -293,7 +293,7 @@ describe('Member addTournament function', function () {
   it('should throw an error when same tournament is added twice', function (done) {
     async.waterfall([
       function (callback) {
-        new model.Tournament({
+        new Tournament({
           name: 'Tournament',
           date: new Date(2014, 9, 26, 18, 0, 0, 0),
           numPlayers: 4,
@@ -308,7 +308,7 @@ describe('Member addTournament function', function () {
         });
       },
       function (tournament, callback) {
-        model.Member.findOne({bboName: 'member1'}, function (err, member) {
+        Member.findOne({bboName: 'member1'}, function (err, member) {
           callback(err, member, tournament);
         });
       },
@@ -323,7 +323,7 @@ describe('Member addTournament function', function () {
   it('should throw an error if member isn\'t a RBD player', function (done) {
     async.waterfall([
       function(callback) {
-        new model.Tournament({
+        new Tournament({
           name: 'Tournament1',
           date: new Date(2014, 9, 26, 18, 0, 0, 0),
           numPlayers: 4,
@@ -339,7 +339,7 @@ describe('Member addTournament function', function () {
         });
       },
       function(tournament, callback) {
-        model.Member.findOne({bboName: 'member1'}, function (err, member) {
+        Member.findOne({bboName: 'member1'}, function (err, member) {
           callback(err, tournament, member);
         });
       },
@@ -353,7 +353,7 @@ describe('Member addTournament function', function () {
   it('should not save the data in the database', function (done) {
     async.waterfall([
       function(callback) {
-        new model.Tournament({
+        new Tournament({
           name: 'Tournament1',
           date: new Date(2014, 9, 26, 18, 0, 0, 0),
           numPlayers: 4,
@@ -368,13 +368,13 @@ describe('Member addTournament function', function () {
         });
       },
       function(tournament, callback) {
-        model.Member.findOne({bboName: 'member1'}, function (err, member) {
+        Member.findOne({bboName: 'member1'}, function (err, member) {
           callback(err, tournament, member);
         });
       },
       function(tournament, member, callback) {
         member.addTournament(tournament);
-        model.Member.findOne({bboName: 'member1'}, function (err, member) {
+        Member.findOne({bboName: 'member1'}, function (err, member) {
           callback(err, tournament, member);
         });
       },

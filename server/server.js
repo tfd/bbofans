@@ -10,7 +10,7 @@
 */
 
 var express = require('express');
-// var passport = require('passport');
+var passport = require('passport');
 
 /*
 * Main application entry file.
@@ -26,15 +26,15 @@ var config = require('./config/config')[env];
 require('./config/mongoose')(config);
 
 // bootstrap passport config
-// require('./config/passport')(passport, config)
+require('./config/passport')(passport, config)
 
 var app = express();
 
 // express settings
-require('./config/express')(app, config);
+require('./config/express')(app, config, passport);
 
 // Bootstrap routes
-require('./config/routes')(app, config);
+require('./config/routes')(app, config, passport);
 
 // Start the app by listening on <port>
 var port = process.env.PORT || 3000;
@@ -43,4 +43,4 @@ app.listen(port, function () {
 });
 
 // expose app
-exports = module.exports = app;
+module.exports = app;

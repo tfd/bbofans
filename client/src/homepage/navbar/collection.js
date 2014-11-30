@@ -1,21 +1,17 @@
-var MenuCollection = require('../../common/models/navbar');
+var MenuCollection = require('../../common/navbar/model');
 
 var collection = new MenuCollection();
 collection.add([{
-  href: 'rules',
-  trigger: 'homepage:rules',
+  href: '/rules',
   title: 'Rules'
 }, {
-  href: 'awards',
-  trigger: 'homepage:awards',
+  href: '/awards',
   title: 'Award System'
 }, {
-  href: 'matchpoints',
-  trigger: 'homepage:matchpoints',
+  href: '/matchpoints',
   title: 'Matchpoint System'
 }, {
-  href: 'bbolinks',
-  trigger: 'homepage:bbolinks',
+  href: '/bbolinks',
   title: 'Links to BBO'
 }]);
 

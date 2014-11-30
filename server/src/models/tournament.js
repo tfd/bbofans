@@ -52,6 +52,4 @@ TournamentSchema.methods = {
 
 };
 
-module.exports = {
-    Tournament: mongoose.model('Tournament', TournamentSchema)
-};
+module.exports = mongoose.model('Tournament', TournamentSchema);

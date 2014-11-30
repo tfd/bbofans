@@ -1,26 +1,26 @@
 /* jshint -W030 */
 var mongoose = require('../load-mongoose');
-var model = require('../../src/models/member');
-var dbutils = require('../db-utils')(model);
+var Member = require('../../src/models/member');
+var dbutils = require('../db-utils');
 var async = require('async');
 
 describe('Member Model', function () {
 
   beforeEach(function (done) {
-    dbutils.clearTable('Member', done);
+    dbutils.clearTable(Member, done);
   });
 
   after(function (done) {
-    dbutils.clearTable('Member', done);
+    dbutils.clearTable(Member, done);
   });
 
   it('should exist', function () {
-    expect(model.Member).to.exist;
+    expect(Member).to.exist;
   });
 
   describe('create', function () {
     it('should have defaults', function () {
-      var member = new model.Member({
+      var member = new Member({
         bboName: 'bboname',
         name: 'name',
         email: 'pluto@minnie.com',
@@ -63,7 +63,7 @@ describe('Member Model', function () {
     it('should save to the database', function (done) {
       async.waterfall([
         function (callback) {
-          new model.Member({
+          new Member({
             bboName: 'bboname',
             name: 'name',
             email: 'pluto@minnie.com',
@@ -73,7 +73,7 @@ describe('Member Model', function () {
           });
         },
         function (callback) {
-          model.Member.findOne({ 'bboName': 'bboname' }, function (err, member) {
+          Member.findOne({ 'bboName': 'bboname' }, function (err, member) {
             callback(err, member);
           });
         },
@@ -121,7 +121,7 @@ describe('Member Model', function () {
     it('should update the database', function (done) {
       async.waterfall([
         function (callback) {
-          new model.Member({
+          new Member({
             bboName: 'bboname',
             name: 'name',
             email: 'pluto@minnie.com',
@@ -136,12 +136,12 @@ describe('Member Model', function () {
           delete obj._id; // And you can't change the _id.
           obj.name = 'changed';
           obj.level = 'Expert';
-          model.Member.findByIdAndUpdate(id, { $set: obj }, function (err) {
+          Member.findByIdAndUpdate(id, { $set: obj }, function (err) {
             callback(err);
           });
         },
         function (callback) {
-          model.Member.findOne({ bboName: 'bboname' }, function (err, member) {
+          Member.findOne({ bboName: 'bboname' }, function (err, member) {
             callback(err, member);
           });
         },
@@ -156,7 +156,7 @@ describe('Member Model', function () {
 
   describe('validation', function () {
     it('should throw an error on empty BBO name', function (done) {
-      new model.Member({
+      new Member({
         bboName: '',
         name: 'name',
         email: 'pluto@minnie.com',
@@ -168,7 +168,7 @@ describe('Member Model', function () {
     });
 
     it('should throw an error on empty name', function (done) {
-      new model.Member({
+      new Member({
         bboName: 'bboname',
         name: '',
         email: 'pluto@minnie.com',
@@ -180,7 +180,7 @@ describe('Member Model', function () {
     });
 
     it('should throw an error on empty email', function (done) {
-      new model.Member({
+      new Member({
         bboName: 'bboname',
         name: 'name',
         email: '',
@@ -192,7 +192,7 @@ describe('Member Model', function () {
     });
 
     it('should throw an error on empty nation', function (done) {
-      new model.Member({
+      new Member({
         bboName: 'bboname',
         name: 'name',
         email: 'pluto@minnie.com',
@@ -204,7 +204,7 @@ describe('Member Model', function () {
     });
 
     it('should throw an error on multiple empty fields', function (done) {
-      new model.Member({
+      new Member({
         bboName: '',
         name: '',
         email: '',
@@ -219,7 +219,7 @@ describe('Member Model', function () {
     });
 
     it('should throw an error on invalid email', function (done) {
-      new model.Member({
+      new Member({
         bboName: 'bboname',
         name: 'name',
         email: 'not_an_valid_email',
@@ -233,7 +233,7 @@ describe('Member Model', function () {
     it('should throw an error on duplicate BBO name', function (done) {
       async.waterfall([
         function (callback) {
-          new model.Member({
+          new Member({
             bboName: 'bboname',
             name: 'name',
             email: 'pluto@minnie.com',
@@ -243,7 +243,7 @@ describe('Member Model', function () {
           });
         },
         function (callback) {
-          new model.Member({
+          new Member({
             bboName: 'bboname',
             name: 'pippo',
             email: 'pippo@minnie.com',

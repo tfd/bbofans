@@ -9,7 +9,7 @@ module.exports = function (app, subApp, pagename, routes) {
   $.each(routes, function (route, commandName) {
     var functionName = commandName.replace(':', '_');
 
-    app.on(pagename + ':' + route, function () {
+    app.on(route, function () {
       app.setApp(subApp);
       app.navigate(route);
       app.execute(commandName);

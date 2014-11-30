@@ -10,6 +10,7 @@ var async = require('async')
 
 var index = require('../src/controllers/index');
 var members = require('../src/controllers/members');
+// var admin = require('../src/controllers/admin');
 var recaptcha = require('../src/controllers/recaptcha');
 
 /**
@@ -25,5 +26,13 @@ module.exports = function (app, passport) {
   app.post('/members', members.add);
   app.put('/members', members.update);
   app.delete('/members/:id', members.delete);
+  /*
+  app.get('/admin/session',
+    passport.authenticate('local', {
+      failureRedirect: '/login',
+      failureFlash: 'Invalid email or password.'
+    }), admin.index);
+  app.get('/admin/logout', admin.logout);
+  */
   app.get('/*', index.index);
 }

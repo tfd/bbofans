@@ -4,6 +4,18 @@
  */
 
 var express = require('express');
+var express = require('express');
+var session = require('express-session');
+var compression = require('compression');
+var morgan = require('morgan');
+// var cookieParser = require('cookie-parser');
+var cookieSession = require('cookie-session');
+var bodyParser = require('body-parser');
+var methodOverride = require('method-override');
+// var csrf = require('csurf');
+var multer = require('multer');
+var serveFavicon = require('serve-favicon');
+var serveStatic = require('serve-static');
 var exphbs = require('express-handlebars');
 var env = process.env.NODE_ENV || 'dev'
 
@@ -11,20 +23,22 @@ module.exports = function (app, config, passport) {
 
   app.set('showStackError', true)
 
+  // Favicon handling should be the very first middleware
+  app.use(serveFavicon(config.root + '/public/favicon.ico'));
+
   // should be placed before express.static
-  app.use(express.compress({
+  app.use(compression({
     filter: function (req, res) {
       return /json|text|javascript|css/.test(res.getHeader('Content-Type'))
     },
-    level: 9
+    level: 9,
+    threshold: 512
   }));
-
-  app.use(express.favicon());
-  app.use(express.static(config.root + '/public'));
+  app.use(serveStatic(config.root + '/public'));
 
   // Logging
   // Don't log during tests
-  if (env !== 'test') app.use(express.logger('dev'));
+  if (env !== 'test') app.use(morgan('dev'));
 
   // Create handlebars engine
   var hbs = exphbs.create({
@@ -40,17 +54,24 @@ module.exports = function (app, config, passport) {
   app.set('views', config.root + '/server/src/views');
   app.set('view engine', 'hbs');
 
-  app.configure(function () {
-    // bodyParser should be above methodOverride
-    app.use(express.bodyParser())
-    app.use(express.methodOverride())
+  // bodyParser should be above methodOverride
+  app.use(bodyParser.json());
+  app.use(bodyParser.urlencoded({ extended: true }));
+  app.use(multer());
+  app.use(methodOverride());
 
-    // routes should be at the last
-    app.use(app.router)
-  });
+  // Passport using a cookie sesssion to store user info.
+  // app.use(cookieParser('Th1s i3 a l0Ng S3cre7'));
+  app.use(session({
+    secret: 'Th1s i3 a l0Ng S3cre7',
+    resave: false,
+    saveUninitialized: false,
+    unset: 'destroy'
+  }));
+  app.use(passport.initialize());
+  app.use(passport.session());
 
-  // development env config
-  app.configure('dev', function () {
-    app.locals.pretty = true
-  });
+  // routes should be at the last
+  // app.use(app.router)
+
 }

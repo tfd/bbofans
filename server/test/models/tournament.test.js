@@ -1,28 +1,27 @@
 /* jshint -W030 */
 var mongoose = require('../load-mongoose');
-var model = require('../../src/models/tournament');
-var dbutils = require('../db-utils')(model);
+var Tournament = require('../../src/models/tournament');
+var dbutils = require('../db-utils');
 var async = require('async');
 
 describe('Tournament Model', function () {
 
   after(function (done) {
-    dbutils.clearTable('Tournament', done);
+    dbutils.clearTable(Tournament, done);
   });
 
   beforeEach(function (done) {
-    dbutils.clearTable('Tournament', done);
+    dbutils.clearTable(Tournament, done);
   });
 
   it('should exist', function () {
-    expect(model.Tournament).to.exist;
-    expect(model.Member).to.exist;
+    expect(Tournament).to.exist;
   });
 
   describe('create', function () {
 
     it('should have default values', function () {
-      var tournament = new model.Tournament({
+      var tournament = new Tournament({
         name: 'Tournament',
         numPlayers: 4
       });
@@ -40,7 +39,7 @@ describe('Tournament Model', function () {
     it('should save to the database', function (done) {
       async.waterfall([
         function (callback) {
-          new model.Tournament({
+          new Tournament({
             name: 'Tournament',
             numPlayers: 4
           }).save(function (err, tournament) {
@@ -48,7 +47,7 @@ describe('Tournament Model', function () {
           });
         },
         function (tournament, callback) {
-          model.Tournament.findOne({_id: tournament.id}, function (err, tournament) {
+          Tournament.findOne({_id: tournament.id}, function (err, tournament) {
             callback(err, tournament);
           });
         },
@@ -71,11 +70,11 @@ describe('Tournament Model', function () {
   describe('validation', function () {
 
     it('should throw an error on duplicate name', function (done) {
-      new model.Tournament({
+      new Tournament({
         name: 'Tournament',
         numPlayers: 4
       }).save(function (err, tournament) {
-        new model.Tournament({
+        new Tournament({
           name: 'Tournament',
           numPlayers: 8
         }).save(function (err, tournament) {
@@ -86,7 +85,7 @@ describe('Tournament Model', function () {
     });
 
     it('should throw an error on less than 4 players', function (done) {
-      new model.Tournament({
+      new Tournament({
         name: 'Tournament',
         numPlayers: 3
       }).save(function (err, tournament) {
@@ -100,7 +99,7 @@ describe('Tournament Model', function () {
   describe('playedInTournament', function () {
 
     it('should recognize that player played in the tournament', function (done) {
-      new model.Tournament({
+      new Tournament({
         name: 'Tournament',
         numPlayers: 4,
         results: [{
@@ -113,7 +112,7 @@ describe('Tournament Model', function () {
     });
 
     it('should recognize that player didn\'t play in the tournament', function (done) {
-      new model.Tournament({
+      new Tournament({
         name: 'Tournament',
         numPlayers: 4,
         results: [{
@@ -126,7 +125,7 @@ describe('Tournament Model', function () {
     });
 
     it('should recognize that player played in the tournament at last resuts', function (done) {
-      new model.Tournament({
+      new Tournament({
         name: 'Tournament',
         numPlayers: 4,
         results: [{
@@ -146,7 +145,7 @@ describe('Tournament Model', function () {
   describe('findPlayerScores', function () {
 
     it('should return scores for player', function (done) {
-      new model.Tournament({
+      new Tournament({
         name: 'Tournament',
         numPlayers: 4,
         results: [{
@@ -175,7 +174,7 @@ describe('Tournament Model', function () {
     });
 
     it('should return null scores for player that didn\'t play', function (done) {
-      new model.Tournament({
+      new Tournament({
         name: 'Tournament',
         numPlayers: 4,
         results: [{

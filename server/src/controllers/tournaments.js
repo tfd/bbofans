@@ -1,5 +1,8 @@
-var model = require('../models/tournament');
+var mongoose = require('mongoose');
 var async = require('async');
+
+var Tournament = mongoose.model('Tournament');
+var Member = mongoose.model('Member');
 
 function addScoreToMember(tournament, callback) {
   return function(err, member) {
@@ -20,31 +23,30 @@ function addScoreToMember(tournament, callback) {
   };
 }
 
-function processPlayer(Member, tournament) {
+function processPlayer(tournament) {
   return function (bboName, callback) {
     Member.find({bboName: bboName}, addScoreToMember(tournament, callback));
   };
 }
 
-function processResult(Member, tournament) {
+function processResult(tournament) {
   return function (result, callback) {
-    async.eachSeries(result.players, processPlayer(Member, tournament), callback);
+    async.eachSeries(result.players, processPlayer(tournament), callback);
   };
 }
 
 function addTournamentToPlayers(tournament, callback) {
-  var Member = tournament.model('Member');
-  async.eachSeries(tournament.results, processResult(Member, tournament), callback);
+  async.eachSeries(tournament.results, processResult(tournament), callback);
 }
  
 module.exports = {
   index: function(req, res) {
-    model.Tournament.find({}, function(err, tournament) {
+    Tournament.find({}, function(err, tournament) {
       res.json(tournament);
     });
   },
   getById: function(req, res) {
-    model.Tournament.find({ _id: req.params.id }, function(err, tournament) {
+    Tournament.find({ _id: req.params.id }, function(err, tournament) {
       if (err) {
         res.json({error: 'Tournament not found.'});
       } else {
@@ -53,7 +55,7 @@ module.exports = {
     });
   },
   add: function(req, res) {
-    var newTournament = new model.Tournament(req.body);
+    var newTournament = new Tournament(req.body);
     newTournament.save(function(err, tournament) {
       if (err) {
         res.json({error: 'Error adding Tournament.'});
@@ -75,7 +77,7 @@ module.exports = {
   //     })
   // },
   delete: function(req, res) {
-    model.Tournament.findOne({ _id: req.params.id }, function(err, tournament) {
+    Tournament.findOne({ _id: req.params.id }, function(err, tournament) {
       if (err) {
         res.json({error: 'Tournament not found.'});
       } else {

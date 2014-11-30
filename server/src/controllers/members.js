@@ -1,6 +1,12 @@
-var model = require('../models/member');
+var mongoose = require('mongoose');
 var recaptcha = require('../controllers/recaptcha');
+var Member = mongoose.model('Member');
 
+/**
+ * Read limit from the query parameters.
+ *
+ * @returns The integer value of the limit query parameter if present, 10 otherwise.
+ */
 function getLimit (req) {
   var limit = 10;
   if (req.query.limit) {
@@ -15,6 +21,11 @@ function getLimit (req) {
   return limit;
 }
 
+/**
+ * Read offset from the query parameters.
+ *
+ * @returns The integer value of the offset query parameter if present, 0 otherwise.
+ */
 function getSkip (req) {
   var skip = 0;
   if (req.query.offset) {
@@ -26,6 +37,12 @@ function getSkip (req) {
   return skip;
 }
 
+
+/**
+ * Read sort and order from the query parameters.
+ *
+ * @returns An object with the sort field name as key and 1 or -1 as value.
+ */
 function getSort (req, fields) {
   var sort = {};
   var field = 'bboName';
@@ -36,27 +53,14 @@ function getSort (req, fields) {
   if (req.query.order && ['asc', 'desc'].indexOf(req.query.order) >= 0) {
     order = req.query.order;
   }
-  var sort = {};
   sort[field] = (order === 'asc' ? 1 : -1);
   return sort;
-}
-
-function getOrder (req) {
-  if (req.query.order && ['asc', 'desc'].indexOf(req.query.order) >= 0) {
-    return req.query.order;
-  }
-  return 'asc';
 }
 
 module.exports = {
   
   index: function (req, res) {
-    console.log(req.query);
-    var limit = getLimit(req);
-    var skip = getSkip(req);
-    var sort = getSort(req, ['bboName', 'nation', 'level', 'awards', 'averageMatchPoints']);
-    model.Member.find({})
-                .exec(function (err, data) {
+    Member.find({}, function (err, data) {
       res.json(data);
     });
   },
@@ -65,8 +69,8 @@ module.exports = {
     var limit = getLimit(req);
     var skip = getSkip(req);
     var sort = getSort(req, ['bboName', 'nation', 'level', 'awards', 'averageMatchPoints']);
-    model.Member.find({}).count().exec(function (err, count) {
-      model.Member.aggregate({
+    Member.find({}).count(function (err, count) {
+      Member.aggregate({
                      $project: {
                        bboName: 1,
                        nation: 1,
@@ -88,9 +92,39 @@ module.exports = {
       });
     });
   },
+  
+  getRbd: function (req, res) {
+    var limit = getLimit(req);
+    var skip = getSkip(req);
+    var sort = getSort(req, ['bboName', 'nation', 'level', 'awards', 'averageMatchPoints']);
+    Member.find({}).count(function (err, count) {
+      Member.aggregate([
+              { $match: { isRbdPlayer: true } },
+              { $project: {
+                  bboName: 1,
+                  nation: 1,
+                  level: 1,
+                  awards: "$rock.totalScores.awards",
+                  averageMatchPoints: "$rock.totalScores.averageMatchPoints"
+                }}
+             ])
+            .sort(sort)
+            .skip(skip)
+            .limit(limit)
+            .exec(function (err, data) {
+        res.json({
+          skip: skip,
+          limit: limit,
+          sort: sort,
+          total: count,
+          rows: data
+        });
+      });
+    });
+  },
 
   getById: function (req, res) {
-    model.Member.find({ _id: req.params.id }, function (err, player) {
+    Member.find({ _id: req.params.id }, function (err, player) {
       if (err) {
         res.json({error: 'Member not found.'});
       } else {
@@ -106,7 +140,7 @@ module.exports = {
         res.status(403).json({errors: {recaptcha: data.error}});
       }
       else {
-        var newMember = new model.Member(req.body);
+        var newMember = new Member(req.body);
         newMember.save(function (err, player) {
           if (err) {
             var error = err.err.toString();
@@ -132,7 +166,7 @@ module.exports = {
   update: function(req, res) {
     var id = req.body._id;
     delete req.body._id;
-    model.Member.findByIdAndUpdate(id, { $set: req.body }, function (err, updated) {
+    Member.findByIdAndUpdate(id, { $set: req.body }, function (err, updated) {
       if (err) {
         res.json({error: 'Error updating member.'});
       } else {
@@ -142,7 +176,7 @@ module.exports = {
   },
 
   delete: function(req, res) {
-    model.Member.findOne({ _id: req.params.id }, function (err, player) {
+    Member.findOne({ _id: req.params.id }, function (err, player) {
       if (err) {
         res.json({error: 'Member not found.'});
       } else {

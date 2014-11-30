@@ -1,17 +1,14 @@
-var MenuCollection = require('../../common/models/navbar');
+var MenuCollection = require('../../common/navbar/model');
 
 var collection = new MenuCollection();
 collection.add([{
-  href: 'rock/members',
-  trigger: 'rock:members',
+  href: '/rock/members',
   title: 'Members'
 }, {
-  href: 'rock/awards',
-  trigger: 'rock:awards',
+  href: '/rock/awards',
   title: 'Award Points'
 }, {
-  href: 'rock/matchpoints',
-  trigger: 'rock:matchpoints',
+  href: '/rock/matchpoints',
   title: 'Matchpoints'
 }]);
 
