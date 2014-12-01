@@ -78,7 +78,7 @@ describe('Tournament Model', function () {
           name: 'Tournament',
           numPlayers: 8
         }).save(function (err, tournament) {
-          expect(err.message).to.equal('E11000 duplicate key error index: bbofans_test.tournaments.$name_1  dup key: { : "Tournament" }');
+          expect(err.message).to.contain('E11000 duplicate key error index: bbofans_test.tournaments.$name_1  dup key: { : "Tournament" }');
           done();
         });
       });

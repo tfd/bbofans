@@ -253,7 +253,7 @@ describe('Member Model', function () {
           });
         },
         function (err) {
-          expect(err.message).to.equal('E11000 duplicate key error index: bbofans_test.members.$bboName_1  dup key: { : "bboname" }');
+          expect(err.message).to.contain('E11000 duplicate key error index: bbofans_test.members.$bboName_1  dup key: { : "bboname" }');
           done();
         }
       ]);
