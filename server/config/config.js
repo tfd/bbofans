@@ -30,7 +30,7 @@ module.exports = {
     app: {
       name: 'BBOFans Website'
     },
-    omitRecaptcha: true
+    omitRecaptcha: false
   },
   test: {
     db: 'mongodb://localhost/bbofans_test',
