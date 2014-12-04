@@ -8,6 +8,18 @@ module.exports = function(grunt) {
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
 
+    env: {
+      test: {
+        NODE_ENV: 'test'
+      },
+      dev: {
+        NODE_ENV: 'dev'
+      },
+      prod: {
+        NODE_ENV: 'prod'
+      }
+    },
+
     bower: {
       install: {
         options: {
@@ -241,12 +253,12 @@ module.exports = function(grunt) {
 
   grunt.registerTask('init:dev', ['clean', 'build:vendor']);
 
-  grunt.registerTask('heroku', ['init:dev', 'build:dev']);
+  grunt.registerTask('heroku', ['env:prod', 'init:dev', 'build:dev']);
 
-  grunt.registerTask('server', ['build:dev', 'concurrent:dev']);
-  grunt.registerTask('test:server', ['jshint:server', 'simplemocha:server']);
+  grunt.registerTask('server', ['env:dev', 'build:dev', 'concurrent:dev']);
+  grunt.registerTask('test:server', ['env:test', 'jshint:server', 'simplemocha:server']);
 
-  grunt.registerTask('test:client', ['jshint:client', 'karma:test']);
+  grunt.registerTask('test:client', ['env:test', 'jshint:client', 'karma:test']);
   grunt.registerTask('tdd', ['karma:watcher:start', 'concurrent:test']);
 
   grunt.registerTask('test', ['test:server', 'test:client']);

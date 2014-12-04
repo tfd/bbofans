@@ -12,13 +12,14 @@ var Schema = mongoose.Schema;
  */
 
 var UserSchema = new Schema({
-    username           : {type : String, required : 'Username cannot be blank', unique: true, trim : true},
-    hashed_password    : {type : String, required : 'Password cannot be blank', trim : true},
-    salt               : {type : String},
-    isMemberManager    : {type : Boolean, default : false},
-    isBlacklistManager : {type : Boolean, default : false},
-    isTdManager        : {type : Boolean, default : false},
-    createdAt          : {type : Date, default: Date.now}
+  username           : {type : String, required : 'Username cannot be blank', unique: true, trim : true},
+  hashed_password    : {type : String, required : 'Password cannot be blank', trim : true},
+  salt               : {type : String},
+  isUserManager      : {type : Boolean, default : false},
+  isMemberManager    : {type : Boolean, default : false},
+  isBlacklistManager : {type : Boolean, default : false},
+  isTdManager        : {type : Boolean, default : false},
+  createdAt          : {type : Date, default: Date.now}
 });
 
 /*
@@ -62,7 +63,7 @@ UserSchema.virtual('password')
           .set(function(password) {
             this._password = password;
             this.salt = makeSalt();
-            this.hashed_password = encryptPassword(password, salt);
+            this.hashed_password = encryptPassword(password, this.salt);
           })
           .get(function() { return this._password; });
 

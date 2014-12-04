@@ -8,20 +8,20 @@ var MatchpointsController = require('./matchpoints/controller');
 var NavbarController = require('../common/navbar/controller');
 var routerFactory = require('../common/utils/router_command_factory');
 
-var rockApp = bbofansApp.module('rock', {
-  define: function(rockApp, app, Backbone, Marionette, $, _) {
+var rbdApp = bbofansApp.module('rbd', {
+  define: function(rbdApp, app, Backbone, Marionette, $, _) {
     var self = this;
     this.app = app;
 
-    rockApp.Router = routerFactory(app, this, 'rock', {
-      "rock": "rock:members:show",
-      "rock/members": "rock:members:show",
-      "rock/awards": "rock:awards:show",
-      "rock/matchpoints": "rock:matchpoints:show"
+    rbdApp.Router = routerFactory(app, this, 'rbd', {
+      "rbd": "rbd:members:show",
+      "rbd/members": "rbd:members:show",
+      "rbd/awards": "rbd:awards:show",
+      "rbd/matchpoints": "rbd:matchpoints:show"
     });
 
     app.addInitializer(function () {
-      new rockApp.Router();
+      new rbdApp.Router();
     });
 
     this.activate = function () {
@@ -54,4 +54,4 @@ var rockApp = bbofansApp.module('rock', {
   }
 });
 
-module.exports = rockApp;
+module.exports = rbdApp;

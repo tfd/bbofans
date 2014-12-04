@@ -97,7 +97,7 @@ module.exports = {
     var limit = getLimit(req);
     var skip = getSkip(req);
     var sort = getSort(req, ['bboName', 'nation', 'level', 'awards', 'averageMatchPoints']);
-    Member.find({}).count(function (err, count) {
+    Member.find({isRbdPlayer: true}).count(function (err, count) {
       Member.aggregate([
               { $match: { isRbdPlayer: true } },
               { $project: {

@@ -26,49 +26,49 @@ var emailValidator = [validate({
 ];
 
 var MemberSchema = new Schema({
-    bboName             : {type : String, required : 'BBO name cannot be blank', unique: true, trim : true},
-    name                : {type : String, required : 'Name cannot be blank', trim : true},
-    nation              : {type : String, required : 'Nation cannot be blank', trim : true},
-    email               : {type : Email, required : 'Email cannot be blank', unique: true, trim : true, validate: emailValidator},
-    level               : {type : String, default : 'Beginner', trim : true},
-    isStarPlayer        : {type : Boolean, default : false},
-    isRbdPlayer         : {type : Boolean, default : false},
-    isEnabled           : {type : Boolean, default : false},
-    isBlackListed       : {type : Boolean, default : false},
-    isBanned            : {type : Boolean, default : false},
-    rock: {
-      playedInTournaments : [{type : Schema.Types.ObjectId, ref : 'Tournament'}],
-      totalScores         : {
-        numTournaments      : {type : Number, default : 0},
-        averageScore        : {type : Number, default : 0},
-        averageMatchPoints  : {type : Number, default : 0},
-        awards              : {type : Number, default : 0}},
-      monthlyScores       : [{
-        month               : {type : Number},
-        year                : {type : Number},
-        numTournaments      : {type : Number, default : 0},
-        averageScore        : {type : Number, default : 0},
-        averageMatchPoints  : {type : Number, default : 0},
-        awards              : {type : Number, default : 0}}],
-    },
-    rbd: {
-      playedInTournaments : [{type : Schema.Types.ObjectId, ref : 'Tournament'}],
-      totalScores         : {
-        numTournaments      : {type : Number, default : 0},
-        averageScore        : {type : Number, default : 0},
-        averageMatchPoints  : {type : Number, default : 0},
-        awards              : {type : Number, default : 0}},
-      monthlyScores       : [{
-        month               : {type : Number},
-        year                : {type : Number},
-        numTournaments      : {type : Number, default : 0},
-        averageScore        : {type : Number, default : 0},
-        averageMatchPoints  : {type : Number, default : 0},
-        awards              : {type : Number, default : 0}}],
-    },
-    registeredAt        : {type : Date},
-    validatedAt         : {type : Date},
-    createdAt           : {type : Date, default: Date.now}
+  bboName             : {type : String, required : 'BBO name cannot be blank', unique: true, trim : true},
+  name                : {type : String, required : 'Name cannot be blank', trim : true},
+  nation              : {type : String, required : 'Nation cannot be blank', trim : true},
+  email               : {type : Email, required : 'Email cannot be blank', unique: true, trim : true, validate: emailValidator},
+  level               : {type : String, default : 'Beginner', trim : true},
+  isStarPlayer        : {type : Boolean, default : false},
+  isRbdPlayer         : {type : Boolean, default : false},
+  isEnabled           : {type : Boolean, default : false},
+  isBlackListed       : {type : Boolean, default : false},
+  isBanned            : {type : Boolean, default : false},
+  rock: {
+    playedInTournaments : [{type : Schema.Types.ObjectId, ref : 'Tournament'}],
+    totalScores         : {
+      numTournaments      : {type : Number, default : 0},
+      averageScore        : {type : Number, default : 0},
+      averageMatchPoints  : {type : Number, default : 0},
+      awards              : {type : Number, default : 0}},
+    monthlyScores       : [{
+      month               : {type : Number},
+      year                : {type : Number},
+      numTournaments      : {type : Number, default : 0},
+      averageScore        : {type : Number, default : 0},
+      averageMatchPoints  : {type : Number, default : 0},
+      awards              : {type : Number, default : 0}}],
+  },
+  rbd: {
+    playedInTournaments : [{type : Schema.Types.ObjectId, ref : 'Tournament'}],
+    totalScores         : {
+      numTournaments      : {type : Number, default : 0},
+      averageScore        : {type : Number, default : 0},
+      averageMatchPoints  : {type : Number, default : 0},
+      awards              : {type : Number, default : 0}},
+    monthlyScores       : [{
+      month               : {type : Number},
+      year                : {type : Number},
+      numTournaments      : {type : Number, default : 0},
+      averageScore        : {type : Number, default : 0},
+      averageMatchPoints  : {type : Number, default : 0},
+      awards              : {type : Number, default : 0}}],
+  },
+  registeredAt        : {type : Date},
+  validatedAt         : {type : Date},
+  createdAt           : {type : Date, default: Date.now}
 });
 
 /*
