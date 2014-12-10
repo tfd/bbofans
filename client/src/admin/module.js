@@ -2,7 +2,8 @@ var Backbone = require('backbone');
 var Marionette = require('backbone.marionette');
 var bbofansApp = require('../bbofans');
 var LayoutController = require('./layout/controller');
-var LoginController = require('./login/controller');
+var MenuController = require('./menu/controller');
+var HomeController = require('./home/controller');
 var NavbarController = require('../common/navbar/controller');
 var routerFactory = require('../common/utils/router_command_factory');
 
@@ -11,9 +12,9 @@ var adminApp = bbofansApp.module('admin', {
     var self = this;
     this.app = app;
 
-    adminApp.Router = routerFactory(app, this, 'rbd', {
-      "admin": "admin:login:show",
-      "admin/login": "admin:login:show"
+    adminApp.Router = routerFactory(app, this, 'admin', {
+      "admin/home": "admin:home:show",
+      "admin/members/manage": "admin:members:manage:show"
     });
 
     app.addInitializer(function () {
@@ -23,21 +24,25 @@ var adminApp = bbofansApp.module('admin', {
     this.activate = function () {
       self.layout = new LayoutController({
         app: app,
-        region: bbofansApp.content
+        region: app.content
+      });
+      self.menu = new MenuController({
+        app: app,
+        region: self.layout.menu
       });
       self.navbar = new NavbarController({
         app: app,
         region: self.layout.navbar,
         collection: require('./navbar/collection')
       });
-      self.login = new LoginController({
+      self.home = new HomeController({
         app: app,
         region: self.layout.content
       });
 
       this.layout.show();
+      this.menu.show();
       this.navbar.show();
-      this.login.show();
     };
   }
 });

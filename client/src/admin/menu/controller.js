@@ -1,15 +1,16 @@
 var Marionette = require('backbone.marionette');
-var NavbarView = require('./view');
+var MenuView = require('./view');
 
-var NavbarController = Marionette.Controller.extend({
+var MenuController = Marionette.Controller.extend({
   initialize: function (options) {
-    var self = this;
-    this.view = new NavbarView({ collection: options.collection });
+    this.view = new MenuView({
+      model: options.app.currentUser
+    });
     this.region = options.region;
     this.app = options.app;
 
     this.view.on('navigate', (function (route) {
-      self.app.trigger('route:' + route);
+      options.app.trigger('route:' + route);
     }).bind(this));
   },
 
@@ -18,4 +19,4 @@ var NavbarController = Marionette.Controller.extend({
   }
 });
 
-module.exports = NavbarController;
+module.exports = MenuController;

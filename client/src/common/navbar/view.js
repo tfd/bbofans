@@ -1,7 +1,6 @@
 var Backbone = require('backbone');
 var Marionette = require('backbone.marionette');
 var $ = require('jquery');
-var bbofansApp = require('../../bbofans');
 
 var NavbarItemView = Backbone.Marionette.ItemView.extend({
   tagName: 'li',

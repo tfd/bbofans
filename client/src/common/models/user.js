@@ -1,11 +1,15 @@
 var Backbone = require('backbone');
 
 User = Backbone.Model.extend({
-  urlRoot: "admin/login",
+  urlRoot: "users",
 
   defaults: {
     username: "",
-    password: ""
+    password: "",
+    isMemberManager: false,
+    isBlacklistManager: false,
+    isTdManager: false,
+    isUserManager: false
   },
 
   validate: function(attrs, options) {

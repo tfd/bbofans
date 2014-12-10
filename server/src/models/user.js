@@ -81,7 +81,7 @@ UserSchema.methods = {
    * @api public
    */
   authenticate: function (plainText) {
-    return this.encryptPassword(plainText, this.salt) === this.hashed_password;
+    return encryptPassword(plainText, this.salt) === this.hashed_password;
   },
 
 };

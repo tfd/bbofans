@@ -6,6 +6,7 @@ var PageController = require('./pages/controller');
 var RegisterController = require('./register/controller');
 var TdCarouselController = require('./td_carousel/controller');
 var NavbarController = require('../common/navbar/controller');
+var LoginController = require('./login/controller');
 var routerFactory = require('../common/utils/router_command_factory');
 
 var homepageApp = bbofansApp.module('homepage', {
@@ -19,7 +20,8 @@ var homepageApp = bbofansApp.module('homepage', {
       "rules": "rules:show",
       "awards": "awards:show",
       "matchpoints": "matchpoints:show",
-      "bbolinks": "bbolinks:show"
+      "bbolinks": "bbolinks:show",
+      "login": "login:show"
     });
 
     app.addInitializer(function () {
@@ -30,7 +32,7 @@ var homepageApp = bbofansApp.module('homepage', {
     this.activate = function () {
       self.layout = new LayoutController({
         app: app,
-        region: bbofansApp.content
+        region: app.content
       });
       self.navbar = new NavbarController({
         app: app,
@@ -42,6 +44,10 @@ var homepageApp = bbofansApp.module('homepage', {
         region: self.layout.content
       });
       self.register = new RegisterController({
+        app: app,
+        region: self.layout.content
+      });
+      self.login = new LoginController({
         app: app,
         region: self.layout.content
       });

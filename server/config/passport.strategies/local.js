@@ -7,18 +7,14 @@ module.exports = new LocalStrategy({
     passwordField: 'password'
   },
   function(username, password, done) {
-    var options = {
-      criteria: { username: username },
-      select: 'username hashed_password salt'
-    };
     User.findOne( { username: username }, function (err, user) {
       if (err) return done(err)
 
       if (!user) {
-        return done(null, false, { message: 'Invalid user or password' });
+        return done(null, false, { message: 'Invalid user' });
       }
       if (!user.authenticate(password)) {
-        return done(null, false, { message: 'Invalid user or password' });
+        return done(null, false, { message: 'Invalid password' });
       }
 
       return done(null, user);

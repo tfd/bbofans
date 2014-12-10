@@ -17,6 +17,7 @@ var multer = require('multer');
 var serveFavicon = require('serve-favicon');
 var serveStatic = require('serve-static');
 var exphbs = require('express-handlebars');
+var flash = require('express-flash');
 var env = process.env.NODE_ENV || 'dev'
 
 module.exports = function (app, config, passport) {
@@ -70,6 +71,7 @@ module.exports = function (app, config, passport) {
   }));
   app.use(passport.initialize());
   app.use(passport.session());
+  app.use(flash());
 
   // routes should be at the last
   // app.use(app.router)

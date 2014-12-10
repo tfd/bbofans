@@ -1,0 +1,78 @@
+<!--
+Members
+  Members Mngr
+  BlackList Mngr
+  Export Members
+  Send Newsletter
+  Statistics
+  Import B.Dancer
+TD's
+  TD's Manager
+  TD's Schedule
+Upload Results
+Winners Manager
+  Rock
+  Best Dancer
+News Manager
+  Rock
+  Best Dancer
+-->
+
+<div class="panel-group" id="admin-menu-accordion" role="tablist" aria-multiselectable="false">
+  <div class="panel panel-default">
+{{#if isBlacklistManager}}
+    <div class="panel-heading" role="tab" id="headingMembers">
+      <h4 class="panel-title">
+        <a data-toggle="collapse" data-parent="#accordion" href="#collapseMembers" aria-expanded="true" aria-controls="collapseMembers">
+          Members
+        </a>
+      </h4>
+    </div>
+    <div id="collapseMembers" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingMembers">
+      <div class="list-group">
+  {{#if isMemberManager}}
+        <a class="list-group-item" href="/admin/members/manage">Manage</a>
+  {{/if}}
+        <a class="list-group-item" href="/admin/members/blacklist">Blacklist</a>
+  {{#if isMemberManager}}
+        <a class="list-group-item" href="/admin/members/newsletter">Newsletter</a>
+  {{/if}}
+      </div>
+    </div>
+  </div>
+{{/if}}
+{{#if isTdManager}}
+  <div class="panel panel-default">
+    <div class="panel-heading" role="tab" id="headingTds">
+      <h4 class="panel-title">
+        <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseTds" aria-expanded="false" aria-controls="collapseTds">
+          TD's
+        </a>
+      </h4>
+    </div>
+    <div id="collapseTds" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTds">
+      <div class="list-group">
+        <a class="list-group-item" href="/admin/tds/manage">Manage</a>
+        <a class="list-group-item" href="/admin/tds/schedule">Schedule</a>
+      </div>
+    </div>
+  </div>
+{{/if}}
+{{#if isMemberManager}}
+  <div class="panel panel-default">
+    <div class="panel-heading" role="tab" id="headingUpload">
+      <h4 class="panel-title">
+        <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseUpload" aria-expanded="false" aria-controls="collapseUpload">
+          Upload Results
+        </a>
+      </h4>
+    </div>
+    <div id="collapseUpload" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingUpload">
+      <div class="list-group">
+        <a class="list-group-item" href="/admin/upload/rock">Rock</a>
+        <a class="list-group-item" href="/admin/upload/rbd">R.B.D.</a>
+      </div>
+    </div>
+  </div>
+{{/if}}
+</div>

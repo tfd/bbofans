@@ -38,7 +38,7 @@ module.exports = function(grunt) {
       },
       dev: {
         js: {
-          src: ['build/client.js', 'build/<%= pkg.name %>.js', 'public/js/<%= pkg.name %>.js']
+          src: ['build/test.js', 'build/<%= pkg.name %>.js', 'public/js/<%= pkg.name %>.js']
         },
         css: {
           src: ['build/<%= pkg.name %>.css', 'public/css/<%= pkg.name %>.css']
@@ -48,11 +48,14 @@ module.exports = function(grunt) {
     },
 
     browserify: {
-      client: {
+      dev: {
         files: {
-          'build/client.js': ['client/src/main.js']
+          'build/<%= pkg.name %>.js': ['client/src/main.js']
         },
         options: {
+          browserifyOptions: {
+            debug: true
+          },
           transform: ['hbsfy']
           /*
                       function (file) {
@@ -74,6 +77,14 @@ module.exports = function(grunt) {
                         }
                       }]
           */
+        }
+      },
+      prod: {
+        files: {
+          'build/<%= pkg.name %>.js': ['client/src/main.js']
+        },
+        options: {
+          transform: ['hbsfy']
         }
       },
       test: {
@@ -98,17 +109,10 @@ module.exports = function(grunt) {
       }
     },
 
-    concat: {
-      dist: {
-        src: ['build/client.js'],
-        dest: 'build/<%= pkg.name %>.js'
-      }
-    },
-
     copy: {
       dev: {
         files: [{
-          src: 'build/<%= pkg.name %>.js',
+          src: 'build/<%= pkg.name %>.js*',
           dest: 'public/js/<%= pkg.name %>.js'
         }, {
           src: 'build/<%= pkg.name %>.css',
@@ -120,6 +124,12 @@ module.exports = function(grunt) {
       },
       prod: {
         files: [{
+          src: 'build/<%= pkg.name %>.js',
+          dest: 'public/js/<%= pkg.name %>.js'
+        }, {
+          src: 'build/<%= pkg.name %>.css',
+          dest: 'public/css/<%= pkg.name %>.css'
+        }, {
           src: ['client/img/**/*'],
           dest: 'dist/img/'
         }]
@@ -152,7 +162,7 @@ module.exports = function(grunt) {
     watch: {
       scripts: {
         files: ['client/src/**/*.hbs', 'client/src/**/*.js'],
-        tasks: ['clean:dev:js', 'browserify:client', 'concat', 'copy:dev']
+        tasks: ['clean:dev:js', 'browserify:dev', 'copy:dev']
       },
       less: {
         files: ['client/styles/**/*.less'],
@@ -248,18 +258,19 @@ module.exports = function(grunt) {
   });
 
   grunt.registerTask('build:vendor', ['clean:vendor', 'bower']);
-  grunt.registerTask('build:dev', ['clean:dev', 'browserify:client', 'browserify:test', 'jshint:dev', 'less:transpile', 'concat', 'copy:dev']);
-  grunt.registerTask('build:prod', ['clean:prod', 'concat', 'browserify:client', 'jshint:all', 'less:transpile', 'concat', 'cssmin', 'uglify', 'copy:prod']);
+  grunt.registerTask('build:dev', ['clean:dev', 'browserify:dev', 'browserify:test', 'jshint:dev', 'less:transpile', 'copy:dev']);
+  grunt.registerTask('build:prod', ['clean:prod', 'concat', 'browserify:prod', 'jshint:all', 'less:transpile', 'concat', 'cssmin', 'uglify', 'copy:prod']);
 
   grunt.registerTask('init:dev', ['clean', 'build:vendor']);
 
-  grunt.registerTask('heroku', ['env:prod', 'init:dev', 'build:dev']);
+  grunt.registerTask('heroku', ['env:dev', 'init:dev', 'build:dev']);
 
-  grunt.registerTask('server', ['env:dev', 'build:dev', 'concurrent:dev']);
+  grunt.registerTask('server:dev', ['env:dev', 'build:dev', 'concurrent:dev']);
+  grunt.registerTask('server:prod', ['env:prod', 'build:prod', 'concurrent:dev']);
   grunt.registerTask('test:server', ['env:test', 'jshint:server', 'simplemocha:server']);
 
   grunt.registerTask('test:client', ['env:test', 'jshint:client', 'karma:test']);
-  grunt.registerTask('tdd', ['karma:watcher:start', 'concurrent:test']);
+  grunt.registerTask('tdd', ['env:test', 'karma:watcher:start', 'concurrent:test']);
 
   grunt.registerTask('test', ['test:server', 'test:client']);
 };

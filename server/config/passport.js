@@ -1,6 +1,6 @@
 var passport = require('passport');
 var localStrategy = require('./passport.strategies/local');
-var model = require('../src/models/user');
+var User = require('../src/models/user');
 
 /**
  * Initialize passport.

@@ -1,0 +1,18 @@
+<h1>Hello {{username}}</h1>
+
+<p>You are enabled for the following tasks:</p>
+
+<ul>
+{{#if isMemberManager}}
+  <li>Members</li>
+{{/if}}
+{{#if isBlacklistManager}}
+  <li>Blacklist</li>
+{{/if}}
+{{#if isTdManager}}
+  <li>TD's</li>
+{{/if}}
+{{#if isUserManager}}
+  <li>Users</li>
+{{/if}}
+</ul>

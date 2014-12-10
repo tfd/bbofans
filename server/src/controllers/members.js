@@ -122,6 +122,27 @@ module.exports = {
       });
     });
   },
+  
+  getAll: function (req, res) {
+    var limit = getLimit(req);
+    var skip = getSkip(req);
+    var sort = getSort(req, ['bboName', 'nation', 'level', 'awards', 'averageMatchPoints']);
+    Member.find({}).count(function (err, count) {
+      Member.find()
+            .sort(sort)
+            .skip(skip)
+            .limit(limit)
+            .exec(function (err, data) {
+        res.json({
+          skip: skip,
+          limit: limit,
+          sort: sort,
+          total: count,
+          rows: data
+        });
+      });
+    });
+  },
 
   getById: function (req, res) {
     Member.find({ _id: req.params.id }, function (err, player) {

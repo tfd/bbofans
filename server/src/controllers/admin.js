@@ -30,14 +30,14 @@ User.find({ username : 'admin' }).count(function (err, count) {
 module.exports = {
   
   session: function (req, res) {
-    var redirectTo = req.session.returnTo ? req.session.returnTo : 'admin/home';
+    var redirectTo = req.session.returnTo ? req.session.returnTo : '/admin/home';
     delete req.session.returnTo;
     res.redirect(redirectTo);
   },
 
   logout: function (req, res) {
     req.logout();
-    res.redirect('admin/login');
+    res.redirect('/admin/login');
   }
 
 };
