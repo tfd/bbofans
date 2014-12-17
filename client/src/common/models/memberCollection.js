@@ -2,7 +2,7 @@ var Backbone = require('backbone');
 var Member = require('./member');
 
 MemberCollection = Backbone.Collection.extend({
-  url: "members",
+  url: "admin/members",
   model: Contact,
   comparator: "bboName"
 });

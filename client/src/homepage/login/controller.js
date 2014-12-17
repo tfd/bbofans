@@ -31,7 +31,7 @@ var LoginController = Marionette.Controller.extend({
         }
         else {
           self.app.currentUser = new User(rsp.user);
-          self.app.trigger('route:admin/home');
+          self.app.vent.trigger('route:admin/home');
         }
       });
     });

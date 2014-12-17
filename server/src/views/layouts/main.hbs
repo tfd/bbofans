@@ -14,11 +14,17 @@
   </head>
 
   <body>
+    <div class="modal fade" id="popupModal" tabindex="-1" role="dialog" aria-labelledby="popupModalLabel" aria-hidden="true" data-backdrop="static">
+      <div class="modal-dialog">
+        <div class="modal-content" id="bbofans-popup">
+        </div>
+      </div>
+    </div>
     <div id="bbofans-container">{{{body}}}</div>
 {{#if user}}
     <script type="text/javascript">
-        var user = {
-          username: {{user.username}},
+        var bbofansUser = {
+          username: "{{user.username}}",
           isMemberManager: {{user.isMemberManager}},
           isBlacklistManager: {{user.isBlacklistManager}},
           isTdManager: {{user.isTdManager}},

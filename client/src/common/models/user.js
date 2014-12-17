@@ -2,7 +2,8 @@ var Backbone = require('backbone');
 
 User = Backbone.Model.extend({
   urlRoot: "users",
-
+  idAttribute: "_id",
+  
   defaults: {
     username: "",
     password: "",

@@ -25,6 +25,9 @@ describe('Members Controller', function () {
       }
     };
     memberStub.find = function (query, callback) {
+      callback(null, [{}]);
+    };
+    memberStub.findOne = function (query, callback) {
       callback(null, {});
     };
     memberStub.save = function (err, callback) {
@@ -70,15 +73,17 @@ describe('Members Controller', function () {
     it('should have default values', function () {
       req.query = {};
       members.getRock(req, res);
-      expect(memberStub.aggregate).calledWith({
-        $project: {
-          bboName: 1,
-          nation: 1,
-          level: 1,
-          awards: "$rock.totalScores.awards",
-          averageMatchPoints: "$rock.totalScores.averageMatchPoints"
+      expect(memberStub.aggregate).calledWith([
+        { $match: {} },
+        { $project: {
+            bboName: 1,
+            nation: 1,
+            level: 1,
+            awards: "$rock.totalScores.awards",
+            averageMatchPoints: "$rock.totalScores.averageMatchPoints"
+          }
         }
-      });
+      ]);
       expect(aggr.sort).calledWith({ bboName: 1 });
       expect(aggr.skip).calledWith(0);
       expect(aggr.limit).calledWith(10);
@@ -182,8 +187,8 @@ describe('Members Controller', function () {
             bboName: 1,
             nation: 1,
             level: 1,
-            awards: "$rock.totalScores.awards",
-            averageMatchPoints: "$rock.totalScores.averageMatchPoints"
+            awards: "$rbd.totalScores.awards",
+            averageMatchPoints: "$rbd.totalScores.averageMatchPoints"
           }
         }
       ]);
@@ -272,7 +277,7 @@ describe('Members Controller', function () {
     });
 
     it('should send json error on error', function () {
-      memberStub.find = function (query, callback) {
+      memberStub.findOne = function (query, callback) {
         callback(null, {error: 'Player not found.'});
       };
       members.getById(req, res);

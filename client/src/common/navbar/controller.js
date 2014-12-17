@@ -9,7 +9,7 @@ var NavbarController = Marionette.Controller.extend({
     this.app = options.app;
 
     this.view.on('navigate', (function (route) {
-      self.app.trigger('route:' + route);
+      self.app.vent.trigger('route:' + route);
     }).bind(this));
   },
 

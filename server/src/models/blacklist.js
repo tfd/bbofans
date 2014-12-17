@@ -37,6 +37,12 @@ function handleError(msg, cb) {
  */
 
 BlacklistSchema.methods = {
+  isMember: function (cb) {
+    var Member = mongoose.model('Member');
+    Member.findOne({ bboName : this.bboName }, function (err, member) {
+      if (cb) cb(err || (member === null) ? false : true);
+    });
+  }
 };
 
 module.exports = mongoose.model('Blacklist', BlacklistSchema);

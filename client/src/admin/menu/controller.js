@@ -10,7 +10,7 @@ var MenuController = Marionette.Controller.extend({
     this.app = options.app;
 
     this.view.on('navigate', (function (route) {
-      options.app.trigger('route:' + route);
+      options.app.vent.trigger('route:' + route);
     }).bind(this));
   },
 

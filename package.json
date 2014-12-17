@@ -22,7 +22,10 @@
     "bootstrap": "./client/vendor/bootstrap/js/bootstrap.js",
     "bootstrap-table": "./build/vendor/bootstrap-table/bootstrap-table.js",
     "bootstrap-table-en-US": "./build/vendor/bootstrap-table/bootstrap-table-en-US.js",
-    "ie10-viewport-bug-workaround": "./client/vendor/bootstrap/js/ie10-viewport-bug-workaround.js"
+    "bootstrap-table-filter": "./build/vendor/bootstrap-table-filter/bootstrap-table-filter.js",
+    "bootstrap-table-flatJSON": "./build/vendor/bootstrap-table-flatJSON/bootstrap-table-flatJSON.js",
+    "ie10-viewport-bug-workaround": "./client/vendor/bootstrap/js/ie10-viewport-bug-workaround.js",
+    "moment": "./build/vendor/moment/moment.js"
   },
   "repository": {
     "type": "git",
@@ -55,6 +58,18 @@
       ]
     },
     "bootstrap-table-en-US": {
+      "exports": "",
+      "depends": [
+        "jquery:jQuery"
+      ]
+    },
+    "bootstrap-table-filter": {
+      "exports": "",
+      "depends": [
+        "jquery:jQuery"
+      ]
+    },
+    "bootstrap-table-flatJSON": {
       "exports": "",
       "depends": [
         "jquery:jQuery"

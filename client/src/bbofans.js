@@ -2,6 +2,7 @@ var Backbone = require('backbone');
 // Add jQuery to Backbone as it doesn't do it when using commonJS.
 Backbone.$ = require('jquery');
 var Marionette = require('backbone.marionette');
+var User = require('./common/models/user');
 
 require('bootstrap');
 require('bootstrap-table');
@@ -40,7 +41,12 @@ bbofansApp.on('start', function () {
 });
 
 bbofansApp.addRegions({
-  content: '#bbofans-container'
+  content: '#bbofans-container',
+  popup: '#bbofans-popup'
 });  
+
+if (window.bbofansUser && window.bbofansUser.username) {
+  bbofansApp.currentUser = new User(window.bbofansUser);
+}
 
 module.exports = bbofansApp;

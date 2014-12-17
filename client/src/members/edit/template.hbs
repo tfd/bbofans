@@ -1,0 +1,73 @@
+<div class="well">
+  <h1>Edit member {{bboName}}</h1>
+
+  <form class="form-horizontal" role="form">
+    <div class="form-group">
+      <label for="member-bboName" class="control-label col-md-2">BBO nickname</label>
+      <div class="col-md-8">
+        <input id="member-bboName" name="bboName" width="20" type="text" class="form-control" placeHolder="Enter BBO nickname" value="{{bboName}}"/>
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="member-name" class="control-label col-md-2">Name</label>
+      <div class="col-md-8">
+        <input id="member-name" name="name" width="20" type="text" class="form-control" placeHolder="Enter name" value="{{name}}"/>
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="member-email" class="control-label col-md-2">Email</label>
+      <div class="col-md-8">
+        <input id="member-email" name="email" width="20" type="email" class="form-control" placeHolder="Enter Email" value="{{email}}"/>
+      </div>
+    </div>
+    <div class="form-group">
+      <!-- Countries are loaded at runtime from /data/countries.json -->
+      <label for="member-nation" class="control-label col-md-2">Country</label>
+      <div class="col-md-5">
+        <select id="member-nation" name="nation" class="form-control" />
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="member-level" class="control-label col-md-2">Skill level</label>
+      <div class="col-md-2">
+        <select id="member-level" name="level" class="form-control">
+          <option>Beginner</option>
+          <option>Intermediate</option>
+          <option>Advanced</option>
+          <option>Expert</option>
+          <option>Champion</option>
+          <option>World Class</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="member-isStarPlayer" class="checkbox-inline col-md-offset-2">
+        <input type="checkbox" id="member-isStarPlayer" name="isStarPlayer" {{#if isStarPlayer}}checked{{/if}} /> Star Player
+      </label>
+      <label for="member-isRbdPlayer" class="checkbox-inline">
+        <input type="checkbox" id="member-isRbdPlayer" name="isRbdPlayer" {{#if isRbdPlayer}}checked{{/if}} /> RBD Player
+      </label>
+    </div>
+    <div class="form-group" class="col-md-offset-2">
+      <label for="member-isEnabled" class="checkbox-inline col-md-offset-2">
+        <input type="checkbox" id="member-isEnabled" name="isEnabled" {{#if isEnabled}}checked{{/if}} /> Enabled
+      </label>
+      <label for="member-isBlackListed" class="checkbox-inline">
+        <input type="checkbox" id="member-isBlackListed" name="isBlackListed" {{#if isBlackListed}}checked{{/if}} /> Blacklisted
+      </label>
+      <label for="member-isBanned" class="checkbox-inline">
+        <input type="checkbox" id="member-isBanned" name="isBanned" {{#if isBanned}}checked{{/if}} /> Banned
+      </label>
+    </div>
+
+    <div class="modal-footer">
+      <div class="form-group">
+        <button id="form-cancel" class="btn col-md-offset-1 col-md-2" data-dismiss="modal">Cancel</button>
+        {{#unless validatedAt}}
+        <button id="form-validate" class="btn col-md-offset-1 col-md-2">Validate</button>
+        {{/unless}}
+        <button id="form-save" class="btn btn-defaul btn-primary col-md-offset-1 col-md-2">Save</button>
+      </div>
+    </div>
+  </form>
+</div>

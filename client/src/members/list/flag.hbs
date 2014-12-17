@@ -1,0 +1,13 @@
+<div class="modal-header">
+  <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+  <h1 class="modal-title">Execute command {{command}}</h1>
+</div>
+<div class="modal-body">
+  <h4>Selected members:</h4>
+  <div class="well">{{#each rows}}{{bboName}}{{#unless @last}}, {{/unless}}{{/each}}</div>
+  <h4>Are you sure you want to {{command}} all these members?</h4>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+  <button type="button" class="btn btn-primary" id="command-execute" data-dismiss="modal">{{buttonTitle}}</button>
+</div>

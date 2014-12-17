@@ -13,8 +13,8 @@ var adminApp = bbofansApp.module('admin', {
     this.app = app;
 
     adminApp.Router = routerFactory(app, this, 'admin', {
-      "admin/home": "admin:home:show",
-      "admin/members/manage": "admin:members:manage:show"
+      "admin": "admin:home:show",
+      "admin/home": "admin:home:show"
     });
 
     app.addInitializer(function () {
@@ -36,6 +36,10 @@ var adminApp = bbofansApp.module('admin', {
         collection: require('./navbar/collection')
       });
       self.home = new HomeController({
+        app: app,
+        region: self.layout.content
+      });
+      self.members = new MembersController({
         app: app,
         region: self.layout.content
       });

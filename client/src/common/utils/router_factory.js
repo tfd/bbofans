@@ -7,15 +7,23 @@ module.exports = function (app, subApp, pagename, controller, routes) {
   };
 
   $.each(routes, function (route, functionName) {
-    app.on(pagename + ':' + route, function () {
+    app.vent.on(pagename + ':' + route, function () {
+      // Replace :xxx parameters in route for the navigation.
+      var args = Array.prototype.slice.call(arguments);
+      var navRoute = route.replace(/\/:[^\/]*/g, function (match) {
+        return args.shift();
+      });
+
       app.setApp(subApp);
-      app.navigate(route);
-      controller[functionName]();
+      app.navigate(navRoute);
+      controller[functionName].apply(controller, args);
     });
 
     router[functionName] = function () {
+      var args = Array.prototype.slice.call(arguments);
+
       app.setApp(subApp);
-      controller[functionName]();
+      controller[functionName].apply(controller, args);
     };
   });
 

@@ -1,0 +1,7 @@
+var Marionette = require('backbone.marionette');
+
+var InvalidCommandView = Marionette.ItemView.extend({
+  template: require('./invalidCommand.hbs')
+});
+
+module.exports = InvalidCommandView;

@@ -17,7 +17,7 @@ News Manager
   Rock
   Best Dancer
 -->
-
+<h1>{{username}}</h1>
 <div class="panel-group" id="admin-menu-accordion" role="tablist" aria-multiselectable="false">
   <div class="panel panel-default">
 {{#if isBlacklistManager}}
@@ -31,11 +31,11 @@ News Manager
     <div id="collapseMembers" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingMembers">
       <div class="list-group">
   {{#if isMemberManager}}
-        <a class="list-group-item" href="/admin/members/manage">Manage</a>
+        <a class="list-group-item" href="/admin/members">Manage</a>
   {{/if}}
-        <a class="list-group-item" href="/admin/members/blacklist">Blacklist</a>
+        <a class="list-group-item" href="/admin/blacklist">Blacklist</a>
   {{#if isMemberManager}}
-        <a class="list-group-item" href="/admin/members/newsletter">Newsletter</a>
+        <a class="list-group-item" href="/admin/newsletter">Newsletter</a>
   {{/if}}
       </div>
     </div>
@@ -52,7 +52,7 @@ News Manager
     </div>
     <div id="collapseTds" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTds">
       <div class="list-group">
-        <a class="list-group-item" href="/admin/tds/manage">Manage</a>
+        <a class="list-group-item" href="/admin/tds">Manage</a>
         <a class="list-group-item" href="/admin/tds/schedule">Schedule</a>
       </div>
     </div>

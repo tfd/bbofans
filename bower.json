@@ -5,12 +5,22 @@
   "dependencies": {
     "backbone.marionette": "~2.2.2",
     "backbone.syphon": "~0.4.1",
-    "bootstrap-table": "~1.4.0"
+    "bootstrap-table": "~1.4.0",
+    "bootstrap-table-flatJSON": "git@github.com:djhvscf/bootstrap-table-flatJSON.git#~1.0.0",
+    "bootstrap-table-filter": "git@github.com:lukaskral/bootstrap-table-filter.git#~1.0.0",
+    "moment": "~2.8.4"
   },
   "devDependencies": {},
   "exportsOverride": {
     "backbone.syphon": {
       "js": "lib/backbone.syphon.js"
+    },
+    "bootstrap-table-filter": {
+      "js": "src/bootstrap-table-filter.js",
+      "css": "src/bootstrap-table-filter.css"
+    },
+    "bootstrap-table-flatJSON": {
+      "js": "src/bootstrap-table-flatJSON.js"
     }
   }
 }

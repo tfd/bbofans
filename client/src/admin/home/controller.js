@@ -15,7 +15,6 @@ var HomeController = Marionette.Controller.extend({
 
   show: function () {
     var self = this;
-    var member = new Member();
     var view = new View({
       model: self.app.currentUser
     });

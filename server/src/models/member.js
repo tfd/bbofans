@@ -37,34 +37,40 @@ var MemberSchema = new Schema({
   isBlackListed       : {type : Boolean, default : false},
   isBanned            : {type : Boolean, default : false},
   rock: {
+    lastPlayedAt        : {type : Date},
     playedInTournaments : [{type : Schema.Types.ObjectId, ref : 'Tournament'}],
     totalScores         : {
       numTournaments      : {type : Number, default : 0},
       averageScore        : {type : Number, default : 0},
       averageMatchPoints  : {type : Number, default : 0},
-      awards              : {type : Number, default : 0}},
+      awards              : {type : Number, default : 0}
+    },
     monthlyScores       : [{
       month               : {type : Number},
       year                : {type : Number},
       numTournaments      : {type : Number, default : 0},
       averageScore        : {type : Number, default : 0},
       averageMatchPoints  : {type : Number, default : 0},
-      awards              : {type : Number, default : 0}}],
+      awards              : {type : Number, default : 0}
+    }],
   },
   rbd: {
+    lastPlayedAt        : {type : Date},
     playedInTournaments : [{type : Schema.Types.ObjectId, ref : 'Tournament'}],
     totalScores         : {
       numTournaments      : {type : Number, default : 0},
       averageScore        : {type : Number, default : 0},
       averageMatchPoints  : {type : Number, default : 0},
-      awards              : {type : Number, default : 0}},
+      awards              : {type : Number, default : 0}
+    },
     monthlyScores       : [{
       month               : {type : Number},
       year                : {type : Number},
       numTournaments      : {type : Number, default : 0},
       averageScore        : {type : Number, default : 0},
       averageMatchPoints  : {type : Number, default : 0},
-      awards              : {type : Number, default : 0}}],
+      awards              : {type : Number, default : 0}
+    }],
   },
   registeredAt        : {type : Date},
   validatedAt         : {type : Date},
