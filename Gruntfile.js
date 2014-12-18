@@ -102,7 +102,11 @@ module.exports = function(grunt) {
         files: {
           'build/<%= pkg.name %>.css': [
             // 'client/styles/reset.css',
-            'client/vendor/**/*.css',
+            'build/vendor/bootstrap/*.css',
+            'client/vendor/bootstrap/css/bootstrap-theme.css',
+            'build/vendor/bootstrap-table/*.css',
+            'build/vendor/bootstrap-table-filter/*.css',
+            'build/vendor/eonasdan-bootstrap-datetimepicker/*.css',
             'client/styles/less/main.less'
           ]
         }
@@ -124,10 +128,10 @@ module.exports = function(grunt) {
       },
       prod: {
         files: [{
-          src: 'build/<%= pkg.name %>.js',
+          src: 'dist/<%= pkg.name %>.js',
           dest: 'public/js/<%= pkg.name %>.js'
         }, {
-          src: 'build/<%= pkg.name %>.css',
+          src: 'dist/<%= pkg.name %>.css',
           dest: 'public/css/<%= pkg.name %>.css'
         }, {
           src: ['client/img/**/*'],

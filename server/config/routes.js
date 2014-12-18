@@ -23,6 +23,7 @@ var index = require('../src/controllers/index');
 var members = require('../src/controllers/members');
 var admin = require('../src/controllers/admin');
 var commands = require('../src/controllers/commands');
+var blacklists = require('../src/controllers/blacklists');
 var recaptcha = require('../src/controllers/recaptcha');
 var login = require('./middlewares/authentication');
 
@@ -50,6 +51,10 @@ module.exports = function (app, config, passport) {
   app.post('/admin/commands/unban', memberAuth, commands.unban);
   app.post('/admin/commands/validate', memberAuth, commands.validate);
   app.post('/admin/commands/email', memberAuth, commands.email);
+  app.get('/admin/blacklist', blacklistAuth, blacklists.getList);
+  app.post('/admin/blacklist', blacklistAuth, blacklists.add);
+  app.put('/admin/blacklist/:id', blacklistAuth, blacklists.update);
+  app.get('/admin/blacklist/:id', blacklistAuth, blacklists.getById);
   app.get('/admin/logout', admin.logout);
   app.get('/*', index.index);
 }

@@ -39,10 +39,6 @@ var adminApp = bbofansApp.module('admin', {
         app: app,
         region: self.layout.content
       });
-      self.members = new MembersController({
-        app: app,
-        region: self.layout.content
-      });
 
       this.layout.show();
       this.menu.show();

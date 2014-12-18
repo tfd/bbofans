@@ -8,7 +8,7 @@ var EditController = require('./edit/controller');
 var NavbarController = require('../common/navbar/controller');
 var routerFactory = require('../common/utils/router_command_factory');
 
-var membersApp = bbofansApp.module('admin', {
+var membersApp = bbofansApp.module('members', {
   define: function(membersApp, app, Backbone, Marionette, $, _) {
     var self = this;
     this.app = app;

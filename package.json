@@ -25,7 +25,8 @@
     "bootstrap-table-filter": "./build/vendor/bootstrap-table-filter/bootstrap-table-filter.js",
     "bootstrap-table-flatJSON": "./build/vendor/bootstrap-table-flatJSON/bootstrap-table-flatJSON.js",
     "ie10-viewport-bug-workaround": "./client/vendor/bootstrap/js/ie10-viewport-bug-workaround.js",
-    "moment": "./build/vendor/moment/moment.js"
+    "moment": "./build/vendor/moment/moment.js",
+    "bootstrap-datetimepicker": "./build/vendor/eonasdan-bootstrap-datetimepicker/bootstrap-datetimepicker.js"
   },
   "repository": {
     "type": "git",
@@ -100,7 +101,8 @@
     "passport": "~0.2.1",
     "passport-local": "~1.0.0",
     "serve-favicon": "~2.1.7",
-    "serve-static": "~1.7.1"
+    "serve-static": "~1.7.1",
+    "moment": "~2.8.4"
   },
   "devDependencies": {
     "bower": "~1.3.12",
