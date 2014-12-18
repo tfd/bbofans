@@ -1,0 +1,28 @@
+<div class="panel-body">
+  <div class="row form-inline">
+    <input type="hidden" name="entries[{{childIndex}}]_id" value="{{_id}}" />
+    <div class="form-group">
+      <label for="blacklist-fromDate-{{childIndex}}" class="control-label col-md-4">From</label>
+      <div class="input-group date col-md-8" id="blacklist-fromDate-{{childIndex}}">
+        <input name="entries[{{childIndex}}]fromDate" type="datepicker" class="form-control" placeHolder="Enter start date" data-date-format="DD/MM/YYYY" />
+        <span class="input-group-addon"><span class="glyphicon glyphicon-time"></span>
+        </span>
+      </div>
+    </div>
+    <div class=" form-group">
+      <label for="blacklist-toDate-{{childIndex}}" class="control-label col-md-4">To</label>
+      <div class="input-group date col-md-8" id="blacklist-toDate-{{childIndex}}">
+        <input name="entries[{{childIndex}}]toDate" type="datepicker" class="form-control" placeHolder="Enter end date" data-date-format="DD/MM/YYYY" />
+        <span class="input-group-addon"><span class="glyphicon glyphicon-time"></span>
+        </span>
+      </div>
+    </div>
+  </div>
+  &nbsp;<br/>
+  <div class="form-group">
+    <label for="blacklist-reason-{{childIndex}}" class="control-label col-md-1">Reason</label>
+    <div class="col-md-11">
+      <textarea id="blacklist-reason-{{childIndex}}" name="entries[{{childIndex}}]reason" class="form-control" placeHolder="Enter reason">{{reason}}</textarea>
+    </div>
+  </div>
+</div>
