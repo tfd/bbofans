@@ -1,5 +1,5 @@
 var Backbone = require('backbone');
-var EntryCollection = require('./entrycollection');
+var EntryCollection = require('./entryCollection');
 
 Blacklist = Backbone.Model.extend({
   urlRoot: "admin/blacklist",
@@ -8,13 +8,6 @@ Blacklist = Backbone.Model.extend({
   defaults: {
     bboName: "",
     entries: new EntryCollection()
-  },
-
-  validate: function(attrs, options) {
-    var errors = {};
-    if (! attrs.bboName) {
-      errors.bboName = "can't be blank";
-    }
   },
 
   set: function(attributes, options) {

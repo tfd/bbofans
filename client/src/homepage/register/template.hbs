@@ -1,56 +1,57 @@
 <h1>Free registration to BBO Fans</h1>
 
 <form class="form-horizontal" role="form">
-  <div class="form-group">
-    <label for="member-bboName" class="control-label col-md-2">BBO nickname</label>
-    <div class="col-md-8">
-      <input id="member-bboName" name="bboName" width="20" type="text" class="form-control" placeHolder="Enter BBO nickname" value="{{bboName}}"/>
-    </div>
+  <div class="form-group col-md-8">
+    <label for="member-bboName" class="control-label">BBO nickname</label>
+    <input id="member-bboName" name="bboName" type="text" class="form-control" placeHolder="Enter BBO nickname" value="{{bboName}}"/>
   </div>
-  <div class="form-group">
-    <label for="member-name" class="control-label col-md-2">Name</label>
-    <div class="col-md-8">
-      <input id="member-name" name="name" width="20" type="text" class="form-control" placeHolder="Enter name" value="{{name}}"/>
-    </div>
+  <div class="clearfix"></div>
+  <div class="form-group col-md-8">
+    <label for="member-name" class="control-label">Name</label>
+    <input id="member-name" name="name" type="text" class="form-control" placeHolder="Enter name" value="{{name}}"/>
   </div>
-  <div class="form-group">
-    <label for="member-email" class="control-label col-md-2">Email</label>
-    <div class="col-md-8">
-      <input id="member-email" name="email" width="20" type="email" class="form-control" placeHolder="Enter Email" value="{{email}}"/>
-    </div>
+  <div class="clearfix"></div>
+  <div class="form-group col-md-8">
+    <label for="member-email" class="control-label">Email</label>
+    <input id="member-email" name="email" type="email" class="form-control" placeHolder="Enter Email" value="{{email}}"/>
   </div>
-  <div class="form-group">
+  <div class="clearfix"></div>
+  <div class="form-group col-md-5">
     <!-- Countries are loaded at runtime from /data/countries.json -->
-    <label for="member-nation" class="control-label col-md-2">Country</label>
-    <div class="col-md-5">
-      <select id="member-nation" name="nation" class="form-control" />
-    </div>
+    <label for="member-nation" class="control-label">Country</label>
+    <select id="member-nation" name="nation" class="form-control" />
   </div>
-  <div class="form-group">
-    <label for="member-level" class="control-label col-md-2">Skill level</label>
-    <div class="col-md-2">
-      <select id="member-level" name="level" class="form-control">
-        <option>Beginner</option>
-        <option>Intermediate</option>
-        <option>Advanced</option>
-        <option>Expert</option>
-        <option>Champion</option>
-        <option>World Class</option>
-      </select>
-    </div>
+  <div class="clearfix"></div>
+  <div class="form-group col-md-3">
+    <label for="member-level" class="control-label">Skill level</label>
+    <select id="member-level" name="level" class="form-control">
+      <option>Beginner</option>
+      <option>Intermediate</option>
+      <option>Advanced</option>
+      <option>Expert</option>
+      <option>Champion</option>
+      <option>World Class</option>
+    </select>
   </div>
-  <div class="form-group">
-    <label for="member-isStarPlayer" class="control-label col-md-2">Star Player</label>
-    <div class="col-md-1">
-      <input type="checkbox" id="member-isStarPlayer" name="isStarPlayer" class="form-control" {{#if isStarPlayer}}checked{{/if}} />
-    </div>
+  <div class="clearfix"></div>
+  <div class="form-group col-md-4">
+    <label for="member-isStarPlayer" class="control-label">
+      <input type="checkbox" id="member-isStarPlayer" name="isStarPlayer" {{#if isStarPlayer}}checked{{/if}} />
+      Star Player
+    </label>
   </div>
-  <div class="form-group">
-    <label for="member-recaptcha" class="contol-label col-md-2">Are you human?</label>
-    <div id="member-recaptcha" class="col-md-8"></div>
+  <div class="clearfix"></div>
+  
+  <div class="form-group col-md-8">
+    <label for="member-recaptcha" class="contol-label">Are you human?</label>
+    <div id="member-recaptcha"></div>
   </div>
-  <div class="form-group">
-    <button id="form-register" class="btn col-md-offset-2 col-md-1">Register</button>
-    <button id="form-reset" class="btn col-md-offset-1 col-md-1">Reset</button>
+  <div class="clearfix"></div>
+
+  <div class="form-group col-md-12 text-right">
+    <button class="form-reset btn">Reset</button>
+    <button class="form-cancel btn">Cancel</button>
+    <button class="form-save btn btn-primary">Register</button>
   </div>
+  <div class="clearfix"></div>
 </form>

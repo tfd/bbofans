@@ -4,13 +4,15 @@ var $ = require('jquery');
 
 var View = require('./view');
 var Member = require('../../common/models/member');
-var NoSelectionView = require('./noSelectionView');
-var FlagView = require('./flagView');
-var EmailView = require('./emailView');
-var InvalidCommandView = require('./invalidCommandView');
+var NoSelectionView = require('../commands/noSelectionView');
+var FlagView = require('../commands/flagView');
+var FormView = require('../commands/formView');
+var BlacklistView = require('../commands/blacklistView');
+var InvalidCommandView = require('../commands/invalidCommandView');
 
-var FlagCommands = require('../../common/models/flagCommands');
-var EmailCommand = require('../../common/models/emailCommand');
+var FlagCommands = require('../models/flagCommands');
+var EmailCommand = require('../models/emailCommand');
+var BlacklistCommand = require('../models/blacklistCommand');
 
 var Impl = function (options) {
   var self = this;
@@ -25,7 +27,7 @@ var Impl = function (options) {
    * $('#popupId').modal('show');
    * </code>
    */
-  $.each(['validate', 'enable', 'disable', 'blacklist', 'whitelist', 'ban', 'unban'], function (i, cmd) {
+  $.each(['validate', 'enable', 'disable'], function (i, cmd) {
     viewFactory[cmd] = function (rows) {
       var title = cmd[0].toUpperCase() + cmd.substring(1);
       return new FlagView( {
@@ -38,11 +40,30 @@ var Impl = function (options) {
     };
   });
   viewFactory.email = function (rows) {
-    return new EmailView( {
+    return new FormView( {
+      template: require('../commands/email.hbs'),
       model: new Backbone.Model({
         command: 'email',
         rows: rows,
         buttonTitle: 'Send'
+      })
+    });
+  };
+  viewFactory.blacklist = function (rows) {
+    return new BlacklistView( {
+      model: new Backbone.Model({
+        command: 'blacklist',
+        rows: rows,
+        buttonTitle: 'Add to blacklist'
+      })
+    });
+  };
+  viewFactory.whitelist = function (rows) {
+    return new BlacklistView( {
+      model: new Backbone.Model({
+        command: 'whitelist',
+        rows: rows,
+        buttonTitle: 'Remove from blacklist'
       })
     });
   };
@@ -74,26 +95,42 @@ var Impl = function (options) {
   function executeCommand(command, rows) {
     var popupView = createView(command, rows);
     self.popup.show(popupView);
-    $('#popupModal').modal('show');
+    var $popup = $('#popupModal');
+    $popup.modal('show');
 
     popupView.on('command:execute', function (data) {
+      var xhr = null;
+      var model = null;
+
       if (data.command === 'email') {
-        var email = new EmailCommand();
-        email.save({rows: data.rows, subject: data.subject, message: data.message});
+        model = new EmailCommand();
+        xhr = model.save({rows: data.rows, subject: data.subject, message: data.message});
+      }
+      else if (data.command === 'blacklist' || data.command === 'whitelist') {
+        model = new BlacklistCommand();
+        xhr = model.save({rows: data.rows, from: data.from, for: data.for, reason: data.reason});
       }
       else {
-        var flag = new FlagCommands[data.command]();
-        var xhr = flag.save({rows: data.rows});
-        if (xhr === false) {
-          console.log("fail", xhr);
+        model = new FlagCommands[data.command]();
+        xhr = model.save({rows: data.rows});
+      }
+
+      if (xhr === false) {
+        console.log("fail", xhr);
+        if (data.command === 'email' || data.command === 'blacklist' || data.command === 'whitelist') {
+          popupView.triggerMethod("form:data:invalid", model.validationError);
         }
         else {
-          xhr.done(function (data) {
-            self.view.reloadTable();
-          }).fail(function (xhr) {
-            console.log("fail", xhr.responseJSON);
-          });
+          $popup.modal('hide');
         }
+      }
+      else {
+        xhr.done(function (data) {
+          self.view.reloadTable();
+        }).fail(function (xhr) {
+          console.log("fail", xhr.responseJSON);
+        });
+        $popup.modal('hide');
       }
     });
   }

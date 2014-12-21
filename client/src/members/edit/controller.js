@@ -1,7 +1,6 @@
 var Backbone = require('backbone');
 var Marionette = require('backbone.marionette');
-var $ = require('jquery');
-var Moment = require('moment');
+var moment = require('moment');
 
 var EditMemberView = require('./view');
 var Member = require('../../common/models/member');
@@ -31,7 +30,7 @@ var EditMemberController = Marionette.Controller.extend({
     });
 
     view.on('form:validate', function (data) {
-      data.validatedAt = Moment().toISOString();
+      data.validatedAt = moment.utc().toISOString();
       self.save(member, data);
     });
 

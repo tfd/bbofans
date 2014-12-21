@@ -1,14 +1,11 @@
 var mongoose = require('mongoose');
 var Member = mongoose.model('Member');
+var Blacklist = mongoose.model('Blacklist');
 var async = require('async');
 
 var flags = {
   enable: { isEnabled : true },
-  disable: { isEnabled : false },
-  blacklist: { isBlackListed : true },
-  whitelist: { isBlackListed : false },
-  ban: { isBanned : true },
-  unban: { isBanned : false }
+  disable: { isEnabled : false }
 };
 
 function sendMail(to, bcc, subject, message, cb) {
@@ -24,6 +21,7 @@ function commandFactory (func) {
   commands[func] = function (req, res) {
     var errors = [];
     var cmd = req.body;
+
     async.map(cmd.rows, function (row, cb) {
       Member.findByIdAndUpdate(row._id, { $set : setter }, { new : false }).exec(cb);
     }, function (err, results) {
@@ -44,7 +42,8 @@ for (var func in flags) {
 
 commands.validate = function (req, res) {
   var cmd = req.body;
-  var date = new Date();
+  var date = moment.utc().toDate();
+
   async.map(cmd.rows, function (row, cb) {
     Member.findByIdAndUpdate(row._id, { $set : { validatedAt : date } }, { new : false }).exec(cb);
   }, function (err, results) {
@@ -60,8 +59,8 @@ commands.validate = function (req, res) {
 
 commands.email = function (req, res) {
   var cmd = req.body;
-  var date = new Date();
-  var emails = 
+  var date = moment.utc().toDate();
+
   async.map(cmd.rows, function (row, cb) {
     cb(null, row.email);
   }, function (err, emails) {
@@ -74,6 +73,22 @@ commands.email = function (req, res) {
         res.json({ _id: 1, rows: results, subject: cmd.subject, message: cmd.message });
       }
     });
+  });
+};
+
+commands.blacklist = function (req, res) {
+  var cmd = req.body;
+
+  async.map(cmd.rows, function (row, cb) {
+    Blacklist.addEntry(row.bboName, cmd.from, cmd.for, cmd.reason, cb);
+  }, function (err, blacklisted) {
+    if (err) {
+      console.log('blacklist', err);
+      res.json({error: 'Error setting blacklist'});
+    }
+    else {
+      res.json({ _id: 1, rows: blacklisted, from: cmd.from, for: cmd.for, reason: cmd.reason });
+    }
   });
 };
 

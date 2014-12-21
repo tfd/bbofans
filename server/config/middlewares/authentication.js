@@ -22,11 +22,11 @@ module.exports = function(app, config, passport) {
             });
         });
       } else {
-        if (err)   { return res.redirect('/login'); }
-        if (!user) { return res.redirect('/login'); }
+        if (err)   { return res.redirect(403, '/login'); }
+        if (!user) { return res.redirect(403, '/login'); }
         req.login(user, {}, function(err) {
-          if (err) { return res.redirect('/login'); }
-          return res.redirect('/admin/home');
+          if (err) { return res.redirect(403, '/login'); }
+          return res.redirect(303, '/admin/home');
         });
       }
     })(req, res);

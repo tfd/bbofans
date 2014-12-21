@@ -1,5 +1,4 @@
 var Marionette = require('backbone.marionette');
-require('bootstrap-table-flatJSON');
 require('bootstrap-table-filter');
 require('../../common/utils/bootstrap-table-colgroups');
 require('../../common/utils/bootstrap-table-commands');

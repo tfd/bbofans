@@ -1,10 +1,12 @@
 var Backbone = require('backbone');
 var Marionette = require('backbone.marionette');
-var $ = require('jquery');
-var Moment = require('moment');
+var moment = require('moment');
 
-var EditBlacklistView = require('./view');
+var Layout = require('./layout');
+var View = require('./view');
+var Form = require('../add/view');
 var Blacklist = require('../models/blacklist');
+var DurationEntry = require('../models/durationEntry');
 
 var Impl = function (options) {
   var self = this;
@@ -16,42 +18,50 @@ var Impl = function (options) {
     self.app.vent.trigger('route:' + route);
   }
 
-  function save(blacklist, data) {
-    var xhr = blacklist.save(data);
+  function save(entry, data) {
+    var xhr = entry.save(data);
     if (xhr === false) {
-      registerView.triggerMethod("form:data:invalid", blacklist.validationError);
+      self.form.triggerMethod("form:data:invalid", entry.validationError);
     }
     else {
       xhr.done(function (data) {
         back();
-        self.app.vent.trigger('blacklist:changed', data);
+        self.app.vent.trigger('entry:changed', data);
       }).fail(function (xhr) {
         console.log("fail", xhr.responseJSON);
-        view.triggerMethod("form:data:invalid", xhr.responseJSON);
+        self.form.triggerMethod("form:data:invalid", xhr.responseJSON);
       });
     }
   }
 
   function show(model) {
-    model.entries.forEach(function (val, i) {
-      delete val.from;
-      delete val.to;
-    });
     var blacklist = new Blacklist(model);
-    var view = new EditBlacklistView({
+    var durationEntry = new DurationEntry({
+      bboName: blacklist.get('bboName'),
+      'from': moment.utc().toDate(),
+      'for': '1W'
+    });
+
+    self.layout = new Layout();
+    self.view = new View({
       model: blacklist,
       collection: blacklist.get('entries')
     });
-
-    view.on('form:submit', function (data) {
-      save(blacklist, data);
+    self.form = new Form({
+      model: durationEntry
     });
 
-    view.on('form:cancel', function () {
+    self.form.on('form:submit', function (data) {
+      save(durationEntry, data);
+    });
+
+    self.form.on('form:cancel', function () {
       back();
     });
 
-    self.region.show(view);
+    self.region.show(self.layout);
+    self.layout.view.show(self.view);
+    self.layout.form.show(self.form);
   }
 
   this.region = options.region;

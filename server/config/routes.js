@@ -46,9 +46,6 @@ module.exports = function (app, config, passport) {
   app.post('/admin/commands/enable', memberAuth, commands.enable);
   app.post('/admin/commands/disable', memberAuth, commands.disable);
   app.post('/admin/commands/blacklist', memberAuth, commands.blacklist);
-  app.post('/admin/commands/whitelist', memberAuth, commands.whitelist);
-  app.post('/admin/commands/ban', memberAuth, commands.ban);
-  app.post('/admin/commands/unban', memberAuth, commands.unban);
   app.post('/admin/commands/validate', memberAuth, commands.validate);
   app.post('/admin/commands/email', memberAuth, commands.email);
   app.get('/admin/blacklist', blacklistAuth, blacklists.getList);

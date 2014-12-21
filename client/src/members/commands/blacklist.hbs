@@ -1,0 +1,43 @@
+<div class="modal-header">
+  <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+  <h1 class="modal-title">Execute command {{command}}</h1>
+</div>
+<div class="modal-body">
+  <h4>Selected members:</h4>
+  <div class="well">{{#each rows}}{{bboName}}{{#unless @last}}, {{/unless}}{{/each}}</div>
+  <h4>Blacklist entry</h4>
+  <form role="form">
+    <div class="form-group form-inline col-md-12">
+      <label for="blacklist-from-input" class="control-label col-md-2">From</label>
+      <div class="input-group date col-md-4" id="blacklist-from">
+        <input type="datepicker" id="blacklist-from-input" name="from" class="form-control" data-date-format="L" />
+        <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span>
+        </span>
+      </div>
+
+      <label for="blacklist-for" class="control-label col-md-2">For</label>
+      <select id="blacklist-for" name="for" class="form-control col-md-3">
+        <option value="1d">1 day</option>
+        <option value="3d">3 days</option>
+        <option value="1w">1 week</option>
+        <option value="2w">2 weeks</option>
+        <option value="1M">1 month</option>
+        <option value="3M">3 months</option>
+        <option value="6M">6 months</option>
+        <option value="F">Forever</option>
+      </select>
+    </div>
+    <div class="clearfix"></div>
+
+    <div class="form-group col-md-12">
+      <label for="blacklist-reason" class="control-label">Reason</label>
+      <textarea id="blacklist-reason" name="reason" class="form-control" placeHolder="Give a reason for {{command}}ing the member">{{reason}}</textarea>
+    </div>
+    <div class="clearfix"></div>
+  </form>
+  <h4>Are you sure you want to {{command}} all these members?</h4>
+</div>
+<div class="modal-footer text-right">
+  <button type="button" class="btn" data-dismiss="modal">Close</button>
+  <button type="button" class="btn btn-primary" id="command-execute">{{buttonTitle}}</button>
+</div>

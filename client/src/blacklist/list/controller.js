@@ -1,6 +1,4 @@
-var Backbone = require('backbone');
 var Marionette = require('backbone.marionette');
-var $ = require('jquery');
 
 var View = require('./view');
 var Blacklist = require('../models/blacklist');

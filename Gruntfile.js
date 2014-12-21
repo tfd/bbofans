@@ -102,11 +102,13 @@ module.exports = function(grunt) {
         files: {
           'build/<%= pkg.name %>.css': [
             // 'client/styles/reset.css',
-            'build/vendor/bootstrap/*.css',
-            'client/vendor/bootstrap/css/bootstrap-theme.css',
+            'build/vendor/bootstrap/bootstrap.less',
+            'build/vendor/bootstrap/theme.less',
+            'build/vendor/bootstrap-dialog/bootstrap-dialog.less',
+            'client/vendor/bootstrap-datetimepicker/less/bootstrap-datetimepicker.less',
+            'client/vendor/typeahead/less/typeahead.less',
             'build/vendor/bootstrap-table/*.css',
             'build/vendor/bootstrap-table-filter/*.css',
-            'build/vendor/eonasdan-bootstrap-datetimepicker/*.css',
             'client/styles/less/main.less'
           ]
         }

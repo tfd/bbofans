@@ -1,22 +1,24 @@
-var Marionette = require('backbone.marionette');
 var Backbone = require('backbone');
+var Form = require('../../common/views/formWithErrorHandling');
 require('backbone.syphon');
 var $ = require('jquery');
 
 var Member = require('../../common/models/member');
 
-var RegisterView = Marionette.ItemView.extend({
+var RegisterView = Form.extend({
   template: require('./template.hbs'),
-  events: {
-    'click #form-register': 'submitClicked',
-    'click #form-reset': 'resetClicked'
-  },
+  tag: 'div',
+  className: 'well',
+  idPrefix: 'member',
 
-  submitClicked: function (e) {
-    e.preventDefault();
-    var data = Backbone.Syphon.serialize(this);
-    this.trigger("form:submit", data);
-  },
+  ui: Form.extendUi({
+    'reset': '.form-reset',
+    'nation': '#member-nation'
+  }),
+
+  events: Form.extendEvents({
+    'click @ui.reset': 'resetClicked'
+  }),
 
   resetClicked: function (e) {
     e.preventDefault();
@@ -24,18 +26,18 @@ var RegisterView = Marionette.ItemView.extend({
   },
 
   onRender: function () {
-    var selectEl = this.$el.find('#member-nation');
+    var self = this;
 
     $.getJSON('/data/countries.json', function (countries) {
       $.each(countries, function (i, country) {
         $('<option/>', {
           value: country,
           text: country
-        }).appendTo(selectEl);
+        }).appendTo(self.ui.nation);
       });
 
       if (this.model && this.model.nation) {
-        selectEl.val(this.model.nation);
+        self.ui.nation.val(this.model.nation);
       }
     });
 
@@ -46,28 +48,8 @@ var RegisterView = Marionette.ItemView.extend({
 
   onBeforeDestroy: function () {
     Recaptcha.destroy();
-  },
-
-  onFormDataInvalid: function (errors) {
-    var $view = this.$el;
-
-    var clearFormErrors = function(){
-      var $form = $view.find("form");
-      $form.find(".help-inline.error").each(function(){
-        $(this).remove();
-      });
-      $form.find(".control-group.error").each(function(){
-        $(this).removeClass("error");
-      });
-    };
-
-    clearFormErrors();
-    $.each(errors, function (key, value) {
-      var $controlGroup = $view.find("#member-" + key).parent().parent();
-      var $errorEl = $("<span>", { class: "help-inline error", text: value });
-      $controlGroup.append($errorEl).addClass("error");
-    });
   }
+
 });
 
 module.exports = RegisterView;

@@ -23,13 +23,13 @@ News Manager
 {{#if isBlacklistManager}}
     <div class="panel-heading" role="tab" id="headingMembers">
       <h4 class="panel-title">
-        <a data-toggle="collapse" data-parent="#accordion" href="#collapseMembers" aria-expanded="true" aria-controls="collapseMembers">
+        <a data-toggle="collapse" data-parent="#admin-menu-accordion" href="#collapseMembers" aria-expanded="true" aria-controls="collapseMembers">
           Members
         </a>
       </h4>
     </div>
     <div id="collapseMembers" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingMembers">
-      <div class="list-group">
+      <div class="list-group" style="margin-bottom: 0;">
   {{#if isMemberManager}}
         <a class="list-group-item" href="/admin/members">Manage</a>
   {{/if}}
@@ -45,13 +45,13 @@ News Manager
   <div class="panel panel-default">
     <div class="panel-heading" role="tab" id="headingTds">
       <h4 class="panel-title">
-        <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseTds" aria-expanded="false" aria-controls="collapseTds">
+        <a class="collapsed" data-toggle="collapse" data-parent="#admin-menu-accordion" href="#collapseTds" aria-expanded="false" aria-controls="collapseTds">
           TD's
         </a>
       </h4>
     </div>
     <div id="collapseTds" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTds">
-      <div class="list-group">
+      <div class="list-group" style="margin-bottom: 0;">
         <a class="list-group-item" href="/admin/tds">Manage</a>
         <a class="list-group-item" href="/admin/tds/schedule">Schedule</a>
       </div>
@@ -62,13 +62,13 @@ News Manager
   <div class="panel panel-default">
     <div class="panel-heading" role="tab" id="headingUpload">
       <h4 class="panel-title">
-        <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseUpload" aria-expanded="false" aria-controls="collapseUpload">
+        <a class="collapsed" data-toggle="collapse" data-parent="#admin-menu-accordion" href="#collapseUpload" aria-expanded="false" aria-controls="collapseUpload">
           Upload Results
         </a>
       </h4>
     </div>
     <div id="collapseUpload" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingUpload">
-      <div class="list-group">
+      <div class="list-group" style="margin-bottom: 0;">
         <a class="list-group-item" href="/admin/upload/rock">Rock</a>
         <a class="list-group-item" href="/admin/upload/rbd">R.B.D.</a>
       </div>

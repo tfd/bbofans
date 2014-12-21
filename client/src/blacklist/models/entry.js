@@ -5,9 +5,9 @@ Entry = Backbone.Model.extend({
   idAttribute: "_id",
   
   defaults: {
-    'from': moment(),
-    'to': moment().add(6, 'D'),
-    reason: ""
+    'from': moment().toDate(),
+    'to': moment().add(6, 'D').toDate(),
+    reason: ''
   }
 });
 

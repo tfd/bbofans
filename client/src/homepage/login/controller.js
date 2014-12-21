@@ -20,23 +20,29 @@ var LoginController = Marionette.Controller.extend({
     var member = new Member();
     var loginView = new LoginView({});
 
-    loginView.on('form:submit', function (data) {
-      $.ajax({
-        type: 'POST',
-        url: '/admin/session',
-        data: data
-      }).done(function (rsp) {
-        if (rsp.error) {
-          loginView.triggerMethod("form:data:invalid", { 'username': "Invalid username or password" });
-        }
-        else {
-          self.app.currentUser = new User(rsp.user);
-          self.app.vent.trigger('route:admin/home');
-        }
+    if (this.app.currentUser) {
+      // User already logged in, bring him to the menu.
+      self.app.vent.trigger('route:admin/home');
+    }
+    else {
+      loginView.on('form:submit', function (data) {
+        $.ajax({
+          type: 'POST',
+          url: '/admin/session',
+          data: data
+        }).done(function (rsp) {
+          if (rsp.error) {
+            loginView.triggerMethod("form:data:invalid", { 'username': "Invalid username or password" });
+          }
+          else {
+            self.app.currentUser = new User(rsp.user);
+            self.app.vent.trigger('route:admin/home');
+          }
+        });
       });
-    });
 
-    this.region.show(loginView);
+      this.region.show(loginView);
+    }
   }
 });
 

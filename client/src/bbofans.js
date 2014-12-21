@@ -1,6 +1,6 @@
 var Backbone = require('backbone');
 // Add jQuery to Backbone as it doesn't do it when using commonJS.
-Backbone.$ = require('jquery');
+Backbone.$ = $ = require('jquery');
 var Marionette = require('backbone.marionette');
 var User = require('./common/models/user');
 
@@ -32,7 +32,16 @@ bbofansApp.setApp = function (app) {
 };
 
 bbofansApp.on('start', function () {
-  bbofansApp.vent.trigger('app:log', 'bboFans: start');
+  $(document).on("ajaxError", function(e, xhr) {
+    if (xhr.status === 403) {
+      var route = xhr.getResponseHeader('Location');
+      if (route) { route = route.substring(1); }
+      else { route = 'login';}
+      bbofansApp.vent.trigger('route:' + route);
+    }
+  });
+
+ bbofansApp.vent.trigger('app:log', 'bboFans: start');
   if (Backbone.history) {
     Backbone.history.start({
       silent: false

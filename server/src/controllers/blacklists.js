@@ -56,9 +56,6 @@ function initCollection (cbInit) {
 
 initCollection( function (err, blacklists) {
   if (err) { console.log("initCollection", err); }
-  else {
-    console.log("initCollection", blacklists);
-  }
 });
 
 /**
@@ -220,32 +217,14 @@ module.exports = {
   },
   
   add: function(req, res) {
-    if (req.body._id) {
-      // Existing blacklist, update!
-      this.update(req, res);
-    }
-    else {
-      // New blacklist, save it.
-      var blacklist = new Blacklist(req.body);
-      blacklist.save(function (err, blacklist) {
-        if (err) {
-          console.log("add", err);
-          var error = err.err.toString();
-          if (error.indexOf('E11000 duplicate key error') === 0) {
-            var fieldName = error.match(/blacklist\.\$(.*)_\d/i)[1];
-            var fieldValue = error.match(/dup\skey:\s\{\s:\s\"(.*)\"\s\}/)[1];
-            var errors = {};
-            errors[fieldName] = 'Value "' + fieldValue + '" already present in database';
-            res.status(409).json(errors);
-          }
-          else {
-            res.status(422).json({bboName: error});
-          }
-        } else {
-          res.json(blacklist);
-        }
-      });
-    }
+    Blacklist.addEntry(req.body.bboName, req.body.from, req.body.for, req.body.reason, function (err, blacklist) {
+      if (err) {
+        res.status(409).json(err);
+      }
+      else {
+        res.json(blacklist);
+      }
+    });
   },
   
   update: function(req, res) {

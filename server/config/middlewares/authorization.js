@@ -6,14 +6,14 @@ module.exports = {
   requiresLogin: function (req, res, next) {
     if (req.isAuthenticated()) return next()
     if (req.method == 'GET') req.session.returnTo = req.originalUrl
-    res.redirect('/login')
+    res.redirect(403, '/login')
   },
 
   member: {
     hasAuthorization: function (req, res, next) {
       if (! req.user.isMemberManager) {
         req.flash('info', 'You are not authorized');
-        return res.redirect('/login');
+        return res.redirect(403, '/admin/home');
       }
       next();
     }
@@ -23,7 +23,7 @@ module.exports = {
     hasAuthorization: function (req, res, next) {
       if (! req.user.isTdManager) {
         req.flash('info', 'You are not authorized');
-        return res.redirect('/login');
+        return res.redirect(403, '/admin/home');
       }
       next();
     }
@@ -33,7 +33,7 @@ module.exports = {
     hasAuthorization: function (req, res, next) {
       if (! req.user.isBlacklistManager) {
         req.flash('info', 'You are not authorized');
-        return res.redirect('/login');
+        return res.redirect(403, '/admin/home');
       }
       next();
     }
@@ -43,7 +43,7 @@ module.exports = {
     hasAuthorization: function (req, res, next) {
       if (! req.user.isUserManager) {
         req.flash('info', 'You are not authorized');
-        return res.redirect('/login');
+        return res.redirect(403, '/admin/home');
       }
       next();
     }

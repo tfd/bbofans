@@ -1,20 +1,19 @@
 <h1>Login</h1>
 
 <form class="form-horizontal" role="form">
-  <div class="form-group">
-    <label for="admin-username" class="control-label col-md-2">User</label>
-    <div class="col-md-8">
-      <input id="admin-username" name="username" width="20" type="text" class="form-control" placeHolder="Enter user name" value="{{username}}"/>
-    </div>
+  <div class="form-group col-md-8">
+    <label for="login-username" class="control-label">User</label>
+    <input id="login-username" name="username" type="text" class="form-control" placeHolder="Enter user name" value="{{username}}"/>
   </div>
-  <div class="form-group">
-    <label for="admin-password" class="control-label col-md-2">Password</label>
-    <div class="col-md-8">
-      <input id="admin-password" name="password" width="20" type="password" class="form-control" placeHolder="Enter password" value="{{password}}"/>
-    </div>
+  <div class="clearfix"></div>
+  <div class="form-group col-md-8">
+    <label for="login-password" class="control-label">Password</label>
+    <input id="login-password" name="password"type="password" class="form-control" placeHolder="Enter password" value="{{password}}"/>
   </div>
-  <div class="form-group">
-    <button id="form-login" class="btn col-md-offset-2 col-md-1">Login</button>
-    <button id="form-cancel" class="btn col-md-offset-1 col-md-1">Cancel</button>
+  <div class="clearfix"></div>
+  <div class="form-group col-md-12 text-right">
+    <button class="form-cancel btn">Cancel</button>
+    <button class="form-save btn btn-primary">Login</button>
   </div>
+  <div class="clearfix"></div>
 </form>

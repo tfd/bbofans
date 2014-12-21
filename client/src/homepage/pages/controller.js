@@ -6,7 +6,7 @@ var rulesTemplate = require('./rules.hbs');
 var awardsTemplate = require('./awards.hbs');
 var mathpointsTemplate = require('./matchpoints.hbs');
 var bboLinksTemplate = require('./bbolinks.hbs');
-var StaticView = require('../../common/views/static_content');
+var StaticView = require('../../common/views/staticContent');
 
 var PageController = Marionette.Controller.extend({
   initialize: function (options) {
