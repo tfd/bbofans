@@ -209,13 +209,33 @@ module.exports = {
   getById: function (req, res) {
     Blacklist.findOne({ _id: req.params.id }).exec(function (err, blacklist) {
       if (err) {
-        res.json({error: 'Blacklist not found.'});
-      } else {
+        console.log('getById', err);
+        res.status(500).json({error: err});
+      }
+      else if (blacklist === null) {
+        res.status(404).json({error: 'Blacklist not found.'});
+      }
+      else {
         res.json(blacklist);
       }
     });
   },
-  
+
+  getByBboName: function (req, res) {
+    Blacklist.findOne({ bboName: req.query.bboName }).exec(function (err, blacklist) {
+      if (err) {
+        console.log('getByBboName', err);
+        res.status(500).json({error: err});
+      }
+      else if (blacklist === null) {
+        res.status(404).json({error: 'Blacklist not found.'});
+      }
+      else {
+        res.json(blacklist);
+      }
+    });
+  },
+
   add: function(req, res) {
     Blacklist.addEntry(req.body.bboName, req.body.from, req.body.for, req.body.reason, function (err, blacklist) {
       if (err) {

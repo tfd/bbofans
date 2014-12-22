@@ -36,6 +36,7 @@ var MemberSchema = new Schema({
   isEnabled           : {type : Boolean, default : false},
   isBlackListed       : {type : Boolean, default : false},
   isBanned            : {type : Boolean, default : false},
+  notes               : {type : String, default : '', trim : true},
   rock: {
     lastPlayedAt        : {type : Date},
     playedInTournaments : [{type : Schema.Types.ObjectId, ref : 'Tournament'}],

@@ -3,7 +3,7 @@ var Marionette = require('backbone.marionette');
 var moment = require('moment');
 
 var Layout = require('./layout');
-var View = require('./view');
+var View = require('../details/view');
 var Form = require('../add/view');
 var Blacklist = require('../models/blacklist');
 var DurationEntry = require('../models/durationEntry');
@@ -44,8 +44,7 @@ var Impl = function (options) {
 
     self.layout = new Layout();
     self.view = new View({
-      model: blacklist,
-      collection: blacklist.get('entries')
+      model: blacklist
     });
     self.form = new Form({
       model: durationEntry

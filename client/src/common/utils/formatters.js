@@ -16,12 +16,14 @@ window.bsTable.formatters = window.bsTable.formatters || {
   }
 }; 
 
-Handlebars.registerHelper("formatDate", function(val) {
+Handlebars.registerHelper('formatDate', function(val) {
   return window.bsTable.formatters.date(val);
 });
 
-Handlebars.registerHelper("formatBoolean", function(val) {
+Handlebars.registerHelper('formatBoolean', function(val) {
   return window.bsTable.formatters.boolean(val);
 });
+
+Handlebars.registerPartial('displayBboName', require('./displayBboName.hbs'));
 
 module.exports = window.bsTable;

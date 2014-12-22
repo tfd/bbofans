@@ -173,7 +173,9 @@ function getRule(field, criteria, value) {
 
         values = [];
         for (i = 0; i < value.length; ++i) {
-          values.push(sanitize(field, value[i]));
+          if (value[i]) {
+            values.push(sanitize(field, value[i]));
+          }
         } 
         return { $in : values };
       }
@@ -449,8 +451,12 @@ module.exports = {
   getById: function (req, res) {
     Member.findOne({ _id: req.params.id }, function (err, player) {
       if (err) {
-        res.json({error: 'Member not found.'});
-      } else {
+        res.status(500).json({error: err});
+      }
+      else if (player === null) {
+        res.status(404).json({error: 'Member not found.'});
+      }
+      else {
         res.json(player);
       }
     });

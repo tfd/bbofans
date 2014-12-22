@@ -1,9 +1,15 @@
 var Marionette = require('backbone.marionette');
+var EntryView = require('./entryView');
 
-var EntryView = Marionette.ItemView.extend({
+var BlacklistView = Marionette.CompositeView.extend({
   template: require('./template.hbs'),
-  tagName: 'div',
-  className: 'panel panel-default'
+
+  childView: EntryView,
+  childViewContainer: 'div.reason-list',
+
+  onBeforeRender: function () {
+    this.collection = this.model.get('entries');
+  }
 });
 
-module.exports = EntryView;
+module.exports = BlacklistView;

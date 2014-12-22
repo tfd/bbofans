@@ -131,7 +131,7 @@ var MembersView = Marionette.ItemView.extend({
           field: 'nation',
           label: 'Country',
           type: 'ajaxSelect',
-          source: '/data/countries.json'
+          source: '/countries'
         },
         {
           field: 'rockNumTournaments',

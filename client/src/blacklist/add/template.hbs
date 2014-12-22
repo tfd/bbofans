@@ -1,17 +1,20 @@
-<h2>Create blacklist entry</h2>
+<h2>Create blacklist entry for {{> displayBboName}}</h2>
 
 <form role="form">
 
-  <div class="form-group form-inline col-md-12">
-    <label for="blacklist-from-input" class="control-label col-md-2">From</label>
-    <div class="input-group date col-md-4" id="blacklist-from">
+  <div class="form-group col-md-3">
+    <label for="blacklist-from-input" class="control-label">From</label>
+    <div class="input-group date" id="blacklist-from">
       <input type="datepicker" id="blacklist-from-input" name="from" class="form-control" data-date-format="L" />
       <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span>
       </span>
     </div>
+  </div>
+  <div class="clearfix"></div>
 
-    <label for="blacklist-for" class="control-label col-md-2">For</label>
-    <select id="blacklist-for" name="for" class="form-control col-md-3">
+  <div class="form-group col-md-3">
+    <label for="blacklist-for" class="control-label">For</label>
+    <select id="blacklist-for" name="for" class="form-control">
       <option value="1d">1 day</option>
       <option value="3d">3 days</option>
       <option value="1w">1 week</option>

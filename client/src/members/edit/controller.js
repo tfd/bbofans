@@ -1,70 +1,88 @@
 var Backbone = require('backbone');
 var Marionette = require('backbone.marionette');
 var moment = require('moment');
+var $ = require('jquery');
 
+var Layout = require('./layout');
 var EditMemberView = require('./view');
+var BlacklistView = require('../../blacklist/details/view');
 var Member = require('../../common/models/member');
 
-var EditMemberController = Marionette.Controller.extend({
-  initialize: function (options) {
-    var self = this;
-    
-    this.region = options.region;
-    this.app = options.app;
+var Impl = function(options) {
+  var self = this;
 
-    this.app.commands.setHandler('admin:members:edit:show', function (id) {
-      var member = new Member({ _id : id });
-      member.fetch().done(self.show.bind(self));
-    });
-  },
-
-  show: function (model) {
-    var self = this;
-    var member = new Member(model);
-    var view = new EditMemberView({
-      model: member
-    });
-
-    view.on('form:submit', function (data) {
-      self.save(member, data);
-    });
-
-    view.on('form:validate', function (data) {
-      data.validatedAt = moment.utc().toISOString();
-      self.save(member, data);
-    });
-
-    view.on('form:cancel', function () {
-      self.back();
-    });
-
-    self.region.show(view);
-  },
-
-  save: function (member, data) {
-    var self = this;
+  function save(member, data) {
     var xhr = member.save(data);
     if (xhr === false) {
       registerView.triggerMethod("form:data:invalid", member.validationError);
     }
     else {
       xhr.done(function (data) {
-        self.back();
+        back();
         self.app.vent.trigger('members:changed', data);
       }).fail(function (xhr) {
         console.log("fail", xhr.responseJSON);
         view.triggerMethod("form:data:invalid", xhr.responseJSON);
       });
     }
-  },
+  }
 
-  back: function () {
+  function back() {
     var fragment = Backbone.history.fragment;
     var parts = fragment.split('/');
     var route = parts.slice(0, parts.length - 1).join('/');
-    this.app.vent.trigger('route:' + route);
+    self.app.vent.trigger('route:' + route);
   }
 
+  function show(model) {
+    var member = new Member(model);
+
+    self.layout = new Layout();
+    var memberView = new EditMemberView({
+      model: member
+    });
+
+    memberView.on('form:submit', function (data) {
+      save(member, data);
+    });
+
+    memberView.on('form:validate', function (data) {
+      data.validatedAt = moment.utc().toISOString();
+      save(member, data);
+    });
+
+    memberView.on('form:cancel', function () {
+      back();
+    });
+
+    self.region.show(self.layout);
+    self.layout.member.show(memberView);
+
+    var blacklist = new Blacklist({ bboName : member.get('bboName') });
+    blacklist.fetchByBboName().done(function (blacklist) {
+      if (blacklist) {
+        var blacklistView = new BlacklistView({
+          model: new Blacklist(blacklist),
+          className: 'well'
+        });
+        self.layout.blacklist.show(blacklistView);
+      }
+    });
+  }
+  
+  this.region = options.region;
+  this.app = options.app;
+
+  this.app.commands.setHandler('admin:members:edit:show', function (id) {
+    var member = new Member({ _id : id });
+    member.fetch().done(show);
+  });
+};
+
+var EditMemberController = Marionette.Controller.extend({
+  initialize: function (options) {
+    this.impl = new Impl(options);
+  }
 });
 
 module.exports = EditMemberController;

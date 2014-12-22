@@ -15,6 +15,10 @@ Blacklist = Backbone.Model.extend({
         attributes.entries = new EntryCollection(attributes.entries);
     }
     return Backbone.Model.prototype.set.call(this, attributes, options);
+  },
+
+  fetchByBboName: function () { 
+    return this.fetch({ url: 'admin/blacklist/bboName', data : $.param( { bboName : this.get('bboName') }) });
   }
 });
 
