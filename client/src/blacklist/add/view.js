@@ -1,17 +1,15 @@
 var Backbone = require('backbone');
-var Form = require('../../common/views/formWithErrorHandling');
-require('backbone.syphon');
-var $ = require('jquery');
+var FormWithErrorHandling = require('../../common/views/formWithErrorHandling');
 var moment = require('moment');
-require('bootstrap-datetimepicker');
+require('bootstrap-dateTimePicker');
 
 var Blacklist = require('../models/blacklist');
 
-var FormView = Form.extend({
+var BlacklistView = FormWithErrorHandling.extend({
   template: require('./template.hbs'),
   idPrefix: 'blacklist',
   
-  ui: Form.extendUi({
+  ui: FormWithErrorHandling.extendUi({
     'from': '#blacklist-from',
     'for': '#blacklist-for'
   }),
@@ -27,4 +25,4 @@ var FormView = Form.extend({
 
 });
 
-module.exports = FormView;
+module.exports = BlacklistView;

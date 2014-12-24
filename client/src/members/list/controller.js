@@ -6,7 +6,7 @@ var View = require('./view');
 var Member = require('../../common/models/member');
 var NoSelectionView = require('../commands/noSelectionView');
 var FlagView = require('../commands/flagView');
-var FormView = require('../commands/formView');
+var EmailView = require('../commands/emailView');
 var BlacklistView = require('../commands/blacklistView');
 var InvalidCommandView = require('../commands/invalidCommandView');
 
@@ -40,7 +40,7 @@ var Impl = function (options) {
     };
   });
   viewFactory.email = function (rows) {
-    return new FormView( {
+    return new EmailView( {
       template: require('../commands/email.hbs'),
       model: new Backbone.Model({
         command: 'email',

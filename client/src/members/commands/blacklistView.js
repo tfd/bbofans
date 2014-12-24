@@ -1,12 +1,13 @@
-var FormView = require('./formView');
-require('backbone.syphon');
+var FormWithErrorHandling = require('../../common/views/formWithErrorHandling.js');
 var moment = require('moment');
+require('bootstrap-dateTimePicker');
 
-var BacklistView = FormView.extend({
+var BlacklistView = FormWithErrorHandling.extend({
   template: require('./blacklist.hbs'),
   idPrefix: 'blacklist',
+  submitEvent: 'command:execute',
 
-  ui: FormView.extendUi({
+  ui: FormWithErrorHandling.extendUi({
     'from': '#blacklist-from',
     'for': '#blacklist-for'
   }),
@@ -27,4 +28,4 @@ var BacklistView = FormView.extend({
 
 });
 
-module.exports = BacklistView;
+module.exports = BlacklistView;

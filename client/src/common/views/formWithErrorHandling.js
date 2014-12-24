@@ -36,16 +36,8 @@ var Marionette = require('backbone.marionette');
 var Backbone = require('backbone');
 require('backbone.syphon');
 var $ = require('jquery');
-
-function clearFormErrors($view){
-  var $form = $view.find("form");
-  $form.find(".help-inline.error").each(function () {
-    $(this).remove();
-  });
-  $form.find(".control-group.error").each(function () {
-    $(this).removeClass("has-error");
-  });
-}
+var _ = require('underscore');
+var handleFormErrors = require('../../common/utils/handleFormErrors.js');
 
 /**
  * Returns an Marionette#ItemView that handles a form with a Cancel and a Save button
@@ -93,12 +85,12 @@ var FormWithErrorHandlingView = Marionette.ItemView.extend({
   className: 'well',
   
   ui: {
-    save : '.form-save',
+    submit : '.form-submit',
     cancel : '.form-cancel'
   },
 
   events: {
-    'click @ui.save': 'saveClicked'
+    'click @ui.submit': 'submitClicked'
   },
 
   triggers: {
@@ -114,6 +106,11 @@ var FormWithErrorHandlingView = Marionette.ItemView.extend({
   idPrefix: 'form',
 
   /**
+   * Event to trigger when submitting the form. Defaults to form:submit.
+   */
+  submitEvent: 'form:submit',
+
+  /**
    * Save button has been clicked.
    *
    * Will serialize the form data using Backbone.Syphon and then fire the form:submit event.
@@ -125,14 +122,15 @@ var FormWithErrorHandlingView = Marionette.ItemView.extend({
    * @fires form:serialize
    * @fires form:submit
    */
-  saveClicked: function (e) {
+  submitClicked: function (e) {
     e.preventDefault();
 
     this.triggerMethod('before:form:serialize');
-    var data = Backbone.Syphon.serialize(this);
+    var model = this.model ? this.model.toJSON() : {};
+    var data = _.extend({}, model, Backbone.Syphon.serialize(this));
     this.triggerMethod('form:serialize', data);
 
-    this.trigger("form:submit", data);
+    this.trigger(this.getOption('submitEvent'), data);
   },
 
   /**
@@ -147,15 +145,7 @@ var FormWithErrorHandlingView = Marionette.ItemView.extend({
    * @param {object} errors - hash map of error for each field.
    */
   onFormDataInvalid: function (errors) {
-    var self = this;
-    var $view = this.$el;
-
-    clearFormErrors($view);
-    $.each(errors, function (key, value) {
-      var $controlGroup = $view.find('#' + self.getOption('idPrefix') + '-' + key).parent();
-      var $errorEl = $("<span>", { class: "help-inline error", text: value });
-      $controlGroup.addClass("has-error").append($errorEl);
-    });
+    handleFormErrors(this, this.getOption('idPrefix'), errors);
   }
 
 });

@@ -39,7 +39,7 @@ var Impl = function (options) {
     var durationEntry = new DurationEntry({
       bboName: blacklist.get('bboName'),
       'from': moment.utc().toDate(),
-      'for': '1W'
+      'for': '1w'
     });
 
     self.layout = new Layout();

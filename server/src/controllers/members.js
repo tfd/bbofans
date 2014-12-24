@@ -448,6 +448,16 @@ module.exports = {
     });
   },
 
+  getBboNames: function (req, res) {
+    var q = req.query.q || '';
+    Member.find({ bboName : { $regex : new RegExp(q, 'i') } })
+          .select('bboName')
+          .exec(
+      function (err, data) {
+        res.json(data);
+      });
+  },
+
   getById: function (req, res) {
     Member.findOne({ _id: req.params.id }, function (err, player) {
       if (err) {

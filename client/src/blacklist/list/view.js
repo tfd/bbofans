@@ -8,8 +8,13 @@ var BlacklistView = Marionette.ItemView.extend({
   template: require('./template.hbs'),
 
   ui: {
-    table: "table",
-    filter: "#filter-bar"
+    table: 'table',
+    filter: '#filter-bar',
+    new: '.form-new'
+  },
+
+  triggers: {
+    'click @ui.new': 'blacklist:new'
   },
 
   reloadTable: function () {

@@ -236,7 +236,7 @@ module.exports = {
     });
   },
 
-  add: function(req, res) {
+  addEntry: function(req, res) {
     Blacklist.addEntry(req.body.bboName, req.body.from, req.body.for, req.body.reason, function (err, blacklist) {
       if (err) {
         res.status(409).json(err);

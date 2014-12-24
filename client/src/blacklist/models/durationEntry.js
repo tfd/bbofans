@@ -2,13 +2,13 @@ var Backbone = require('backbone');
 var moment = require('moment');
 
 AddBlacklist = Backbone.Model.extend({
-  urlRoot: "admin/blacklist",
+  urlRoot: "admin/blacklist/entry",
   idAttribute: "_id",
   
   defaults: {
     bboName: "",
     'from': moment().toDate(),
-    'for': '6D',
+    'for': '6d',
     reason: ''
   },
 

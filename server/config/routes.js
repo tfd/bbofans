@@ -41,6 +41,7 @@ module.exports = function (app, config, passport) {
   app.get('/countries', countries.get);
   app.post('/admin/session', login(app, config, passport));
   app.get('/admin/members', memberAuth, members.getAll);
+  app.get('/admin/members/bboName', memberAuth, members.getBboNames);
   app.post('/admin/members', memberAuth, members.add);
   app.put('/admin/members/:id', memberAuth, members.update);
   app.get('/admin/members/:id', memberAuth, members.getById);
@@ -51,7 +52,7 @@ module.exports = function (app, config, passport) {
   app.post('/admin/commands/validate', memberAuth, commands.validate);
   app.post('/admin/commands/email', memberAuth, commands.email);
   app.get('/admin/blacklist', blacklistAuth, blacklists.getList);
-  app.post('/admin/blacklist', blacklistAuth, blacklists.add);
+  app.post('/admin/blacklist/entry', blacklistAuth, blacklists.addEntry);
   app.get('/admin/blacklist/bboName', blacklistAuth, blacklists.getByBboName);
   app.put('/admin/blacklist/:id', blacklistAuth, blacklists.update);
   app.get('/admin/blacklist/:id', blacklistAuth, blacklists.getById);

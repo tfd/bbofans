@@ -3,11 +3,15 @@ var Marionette = require('backbone.marionette');
 var FlagView = Marionette.ItemView.extend({
   template: require('./flag.hbs'),
 
-  events: {
-    'click #command-execute' : 'executeClicked'
+  ui: {
+    submit: '.form-submit'
   },
 
-  executeClicked: function () {
+  events: {
+    'click @ui.submit' : 'submitClicked'
+  },
+
+  submitClicked: function () {
     this.trigger('command:execute', this.model.toJSON());
   }
 

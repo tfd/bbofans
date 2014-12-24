@@ -1,19 +1,52 @@
 var Marionette = require('backbone.marionette');
-
 var View = require('./view');
-var Blacklist = require('../models/blacklist');
+var DurationEntry = require('../models/durationEntry');
+var NewBlacklistView = require('../new/view.js');
+var $ = require('jquery');
+var moment = require('moment');
 
 var Impl = function (options) {
   var self = this;
   var viewFactory = {};
 
   /*
-   * User wants to add a member.
+   * User wants to add a new member.
    *
-   * This is done by navigating to a route.
-  */
-  function newBlacklist(id) {
-    self.app.vent.trigger('route:admin/blacklist/new', id);
+   * This is done with a popup window.
+   */
+  function newBlacklist () {
+    var durationEntry = new DurationEntry({
+      bboName: '',
+      from: moment.utc(),
+      for: '1w',
+      reason: ''
+    });
+    var popupView = new NewBlacklistView({model: durationEntry});
+    self.popup.show(popupView);
+    var $popup = $('#popupModal');
+    $popup.modal('show');
+
+    popupView.on('form:submit', function (data) {
+      var xhr = null;
+      xhr = durationEntry.save(data);
+
+      if (xhr === false) {
+        console.log("fail", xhr);
+        popupView.triggerMethod("form:data:invalid", durationEntry.validationError);
+      }
+      else {
+        xhr.done(function (data) {
+          self.view.reloadTable();
+        }).fail(function (xhr) {
+          console.log("fail", xhr.responseJSON);
+        });
+        $popup.modal('hide');
+      }
+    });
+
+    popupView.on('form:cancel', function () {
+      $popup.modal('hide');
+    });
   }
 
   /*
@@ -22,8 +55,8 @@ var Impl = function (options) {
    * This is done by navigating to a route.
    *
    * @param id {String} unique id of the member to edit.
-    */
-  function editBlacklist(id) {
+   */
+  function editBlacklist (id) {
     self.app.vent.trigger('route:admin/blacklist/:id', id);
   }
 
@@ -36,18 +69,18 @@ var Impl = function (options) {
    */
   this.show = function () {
     var member = new Member();
-    
+
     this.view = new View({
       model: member
     });
 
     this.view.on('blacklist:edit', editBlacklist);
-    this.view.on('blacklist:add', newBlacklist);
+    this.view.on('blacklist:new', newBlacklist);
 
-    this.app.vent.on('blacklist:changed', function  () {
+    this.app.vent.on('blacklist:changed', function () {
       self.view.reloadTable();
     });
-    
+
     this.region.show(this.view);
   };
 
