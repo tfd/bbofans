@@ -1,7 +1,8 @@
 var Marionette = require('backbone.marionette');
 
-var AwardsView = Marionette.ItemView.extend({
+var RbdAwardsView = Marionette.ItemView.extend({
   template: require('./template.hbs'),
+  className: 'well',
 
   ui: {
     table: "table"
@@ -12,4 +13,4 @@ var AwardsView = Marionette.ItemView.extend({
   }
 });
 
-module.exports = AwardsView;
+module.exports = RbdAwardsView;

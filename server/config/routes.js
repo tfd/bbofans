@@ -10,10 +10,11 @@ var login = require('./middlewares/authentication');
  * Route middlewares
  */
 
-var memberAuth = [auth.requiresLogin, auth.member.hasAuthorization];
+var memberAuth = [auth.requiresLogin];
+var memberManagerAuth = [auth.requiresLogin, auth.member.hasAuthorization];
 var tdAuth = [auth.requiresLogin, auth.td.hasAuthorization];
-var blacklistAuth = [auth.requiresLogin, auth.blacklist.hasAuthorization];
-var userAuth = [auth.requiresLogin, auth.user.hasAuthorization];
+var tdManagerAuth = [auth.requiresLogin, auth.tdManager.hasAuthorization];
+var blacklistManagerAuth = [auth.requiresLogin, auth.blacklist.hasAuthorization];
 
 /**
  * Controllers
@@ -40,22 +41,22 @@ module.exports = function (app, config, passport) {
   app.post('/register', members.register);
   app.get('/countries', countries.get);
   app.post('/admin/session', login(app, config, passport));
-  app.get('/admin/members', memberAuth, members.getAll);
-  app.get('/admin/members/bboName', memberAuth, members.getBboNames);
-  app.post('/admin/members', memberAuth, members.add);
-  app.put('/admin/members/:id', memberAuth, members.update);
-  app.get('/admin/members/:id', memberAuth, members.getById);
-  app.delete('/admin/members/:id', memberAuth, members.delete);
-  app.post('/admin/commands/enable', memberAuth, commands.enable);
-  app.post('/admin/commands/disable', memberAuth, commands.disable);
-  app.post('/admin/commands/blacklist', memberAuth, commands.blacklist);
-  app.post('/admin/commands/validate', memberAuth, commands.validate);
-  app.post('/admin/commands/email', memberAuth, commands.email);
-  app.get('/admin/blacklist', blacklistAuth, blacklists.getList);
-  app.post('/admin/blacklist/entry', blacklistAuth, blacklists.addEntry);
-  app.get('/admin/blacklist/bboName', blacklistAuth, blacklists.getByBboName);
-  app.put('/admin/blacklist/:id', blacklistAuth, blacklists.update);
-  app.get('/admin/blacklist/:id', blacklistAuth, blacklists.getById);
+  app.get('/admin/members', memberManagerAuth, members.getAll);
+  app.get('/admin/members/bboName', memberManagerAuth, members.getBboNames);
+  app.post('/admin/members', memberManagerAuth, members.add);
+  app.put('/admin/members/:id', memberManagerAuth, members.update);
+  app.get('/admin/members/:id', memberManagerAuth, members.getById);
+  app.delete('/admin/members/:id', memberManagerAuth, members.delete);
+  app.post('/admin/commands/enable', memberManagerAuth, commands.enable);
+  app.post('/admin/commands/disable', memberManagerAuth, commands.disable);
+  app.post('/admin/commands/blacklist', memberManagerAuth, commands.blacklist);
+  app.post('/admin/commands/validate', memberManagerAuth, commands.validate);
+  app.post('/admin/commands/email', memberManagerAuth, commands.email);
+  app.get('/admin/blacklist', blacklistManagerAuth, blacklists.getList);
+  app.post('/admin/blacklist/entry', blacklistManagerAuth, blacklists.addEntry);
+  app.get('/admin/blacklist/bboName', blacklistManagerAuth, blacklists.getByBboName);
+  app.put('/admin/blacklist/:id', blacklistManagerAuth, blacklists.update);
+  app.get('/admin/blacklist/:id', blacklistManagerAuth, blacklists.getById);
   app.get('/admin/logout', admin.logout);
   app.get('/*', index.index);
 }

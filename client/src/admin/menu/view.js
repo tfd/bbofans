@@ -2,8 +2,12 @@ var Backbone = require('backbone');
 var Marionette = require('backbone.marionette');
 var $ = require('jquery');
 
-var MenuView = Backbone.Marionette.ItemView.extend({
+var AdminMenuView = Backbone.Marionette.ItemView.extend({
   template: require('./template.hbs'),
+
+  ui: {
+    'menuItem': 'a.list-group-item'
+  },
 
   events: {
     'click a.list-group-item': 'navigate'
@@ -18,4 +22,4 @@ var MenuView = Backbone.Marionette.ItemView.extend({
   }
 });
 
-module.exports = MenuView;
+module.exports = AdminMenuView;

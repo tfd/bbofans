@@ -1,7 +1,8 @@
 var Marionette = require('backbone.marionette');
 
-var MatchpointsView = Marionette.ItemView.extend({
+var RbdMatchpointsView = Marionette.ItemView.extend({
   template: require('./template.hbs'),
+  className: 'well',
 
   ui: {
     table: "table"
@@ -12,4 +13,4 @@ var MatchpointsView = Marionette.ItemView.extend({
   }
 });
 
-module.exports = MatchpointsView;
+module.exports = RbdMatchpointsView;

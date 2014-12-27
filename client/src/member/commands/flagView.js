@@ -1,6 +1,6 @@
 var Marionette = require('backbone.marionette');
 
-var FlagView = Marionette.ItemView.extend({
+var MemberCommandsFlagView = Marionette.ItemView.extend({
   template: require('./flag.hbs'),
 
   ui: {
@@ -17,4 +17,4 @@ var FlagView = Marionette.ItemView.extend({
 
 });
 
-module.exports = FlagView;
+module.exports = MemberCommandsFlagView;

@@ -1,10 +1,10 @@
-
 /*
  * Module dependencies.
  */
 
 var mongoose = require('mongoose');
 var validate = require('mongoose-validator');
+var crypto = require('crypto');
 var Schema = mongoose.Schema;
 var mongooseTypes = require("nifty-mongoose-types");
 mongooseTypes.loadTypes(mongoose);
@@ -15,74 +15,77 @@ var Email = mongoose.SchemaTypes.Email;
  */
 
 var emailValidator = [validate({
-    validator: 'isEmail',
-    message: 'Email isn\'t a valid address'
-  }),
-  validate({
-    validator: 'isLength',
-    arguments: 1,
-    message: 'Email cannot be blank' 
-  })
+  validator: 'isEmail',
+  message  : 'Email isn\'t a valid address'
+}),
+                      validate({
+                        validator: 'isLength',
+                        arguments: 1,
+                        message  : 'Email cannot be blank'
+                      })
 ];
 
 var MemberSchema = new Schema({
-  bboName             : {type : String, required : 'BBO name cannot be blank', unique: true, trim : true},
-  name                : {type : String, required : 'Name cannot be blank', trim : true},
-  nation              : {type : String, required : 'Nation cannot be blank', trim : true},
-  email               : {type : Email, required : 'Email cannot be blank', unique: true, trim : true, validate: emailValidator},
-  level               : {type : String, default : 'Beginner', trim : true},
-  isStarPlayer        : {type : Boolean, default : false},
-  isRbdPlayer         : {type : Boolean, default : false},
-  isEnabled           : {type : Boolean, default : false},
-  isBlackListed       : {type : Boolean, default : false},
-  isBanned            : {type : Boolean, default : false},
-  notes               : {type : String, default : '', trim : true},
-  rock: {
-    lastPlayedAt        : {type : Date},
-    playedInTournaments : [{type : Schema.Types.ObjectId, ref : 'Tournament'}],
-    totalScores         : {
-      numTournaments      : {type : Number, default : 0},
-      averageScore        : {type : Number, default : 0},
-      averageMatchPoints  : {type : Number, default : 0},
-      awards              : {type : Number, default : 0}
+  bboName        : {type: String, required: 'BBO name cannot be blank', unique: true, trim: true},
+  name           : {type: String, required: 'Name cannot be blank', trim: true},
+  nation         : {type: String, required: 'Nation cannot be blank', trim: true},
+  email          : {type: Email, required: 'Email cannot be blank', unique: true, trim: true, validate: emailValidator},
+  level          : {type: String, default: 'Beginner', trim: true},
+  hashed_password: {type: String, required: 'Password cannot be blank', trim: true},
+  salt           : {type: String},
+  role           : {type: String, default: 'member', required: 'Role cannot be blank', trim: true},
+  isStarPlayer   : {type: Boolean, default: false},
+  isRbdPlayer    : {type: Boolean, default: false},
+  isEnabled      : {type: Boolean, default: false},
+  isBlackListed  : {type: Boolean, default: false},
+  isBanned       : {type: Boolean, default: false},
+  notes          : {type: String, default: '', trim: true},
+  rock           : {
+    lastPlayedAt       : {type: Date},
+    playedInTournaments: [{type: Schema.Types.ObjectId, ref: 'Tournament'}],
+    totalScores        : {
+      numTournaments    : {type: Number, default: 0},
+      averageScore      : {type: Number, default: 0},
+      averageMatchPoints: {type: Number, default: 0},
+      awards            : {type: Number, default: 0}
     },
-    monthlyScores       : [{
-      month               : {type : Number},
-      year                : {type : Number},
-      numTournaments      : {type : Number, default : 0},
-      averageScore        : {type : Number, default : 0},
-      averageMatchPoints  : {type : Number, default : 0},
-      awards              : {type : Number, default : 0}
-    }],
+    monthlyScores      : [{
+                            month             : {type: Number},
+                            year              : {type: Number},
+                            numTournaments    : {type: Number, default: 0},
+                            averageScore      : {type: Number, default: 0},
+                            averageMatchPoints: {type: Number, default: 0},
+                            awards            : {type: Number, default: 0}
+                          }],
   },
-  rbd: {
-    lastPlayedAt        : {type : Date},
-    playedInTournaments : [{type : Schema.Types.ObjectId, ref : 'Tournament'}],
-    totalScores         : {
-      numTournaments      : {type : Number, default : 0},
-      averageScore        : {type : Number, default : 0},
-      averageMatchPoints  : {type : Number, default : 0},
-      awards              : {type : Number, default : 0}
+  rbd            : {
+    lastPlayedAt       : {type: Date},
+    playedInTournaments: [{type: Schema.Types.ObjectId, ref: 'Tournament'}],
+    totalScores        : {
+      numTournaments    : {type: Number, default: 0},
+      averageScore      : {type: Number, default: 0},
+      averageMatchPoints: {type: Number, default: 0},
+      awards            : {type: Number, default: 0}
     },
-    monthlyScores       : [{
-      month               : {type : Number},
-      year                : {type : Number},
-      numTournaments      : {type : Number, default : 0},
-      averageScore        : {type : Number, default : 0},
-      averageMatchPoints  : {type : Number, default : 0},
-      awards              : {type : Number, default : 0}
-    }],
+    monthlyScores      : [{
+                            month             : {type: Number},
+                            year              : {type: Number},
+                            numTournaments    : {type: Number, default: 0},
+                            averageScore      : {type: Number, default: 0},
+                            averageMatchPoints: {type: Number, default: 0},
+                            awards            : {type: Number, default: 0}
+                          }],
   },
-  registeredAt        : {type : Date},
-  validatedAt         : {type : Date},
-  createdAt           : {type : Date, default: Date.now}
+  registeredAt   : {type: Date},
+  validatedAt    : {type: Date},
+  createdAt      : {type: Date, default: Date.now}
 });
 
 /*
  * Helper functions.
  */
 
-function updateScores(scores, result) {
+function updateScores (scores, result) {
   var numTournaments = scores.numTournaments || 0;
   var sumOfScores = (scores.averageScore || 0) * numTournaments + (result.score || 0);
   var sumOfMatchPoints = (scores.averageMatchPoints || 0) * numTournaments + (result.matchPoints || 0);
@@ -94,17 +97,97 @@ function updateScores(scores, result) {
   scores.awards += result.awards || 0;
 }
 
-function handleError(msg, cb) {
+function handleError (msg, cb) {
   if (typeof cb === 'function') {
     cb(new Error(msg), null);
   }
 }
+
+/**
+ * Make salt
+ *
+ * @return {String}
+ * @api public
+ */
+function makeSalt () {
+  return Math.round((new Date().valueOf() * Math.random())) + '';
+}
+
+/**
+ * Encrypt password
+ *
+ * @param {String} password
+ * @return {String}
+ * @api public
+ */
+function encryptPassword (password, salt) {
+  if (!password) {
+    return '';
+  }
+
+  try {
+    return crypto.createHmac('sha1', salt)
+        .update(password)
+        .digest('hex');
+  }
+  catch (err) {
+    return '';
+  }
+}
+
+/*
+ * Virtual properties
+ */
+
+MemberSchema.virtual('password')
+    .set(function (password) {
+      this._password = password;
+      this.salt = makeSalt();
+      this.hashed_password = encryptPassword(password, this.salt);
+    })
+    .get(function () { return this._password; });
 
 /*
  * Methods
  */
 
 MemberSchema.methods = {
+
+  /**
+   * Authenticate - check if the passwords are the same
+   *
+   * @param {String} plainText password to check
+   * @return {Boolean}
+   * @api public
+   */
+  authenticate: function (plainText) {
+    return encryptPassword(plainText, this.salt) === this.hashed_password;
+  },
+
+  /**
+   * Get authorization role for this user.
+   *
+   * Will create a JSON with username and authorization fields and return it to the callback.
+   *
+   * @param cb {Function} Callback that gets called as cb(err, user)
+   */
+  getRole: function (cb) {
+    var member = this;
+    var Role = mongoose.model('Role');
+    Role.findOne({name: member.role}, function (err, role) {
+      if (err) { return cb(err, null); }
+      if (role === null) { return cb({error: 'Invalid role'}); }
+      var user = {
+        _id               : member._id,
+        username          : member.bboName,
+        isMemberManager   : role.isMemberManager,
+        isBlacklistManager: role.isBlacklistManager,
+        isTdManager       : role.isTdManager,
+        isTd              : role.isTd
+      };
+      cb(null, user);
+    });
+  },
 
   /**
    * Did player play in specified tournament?
@@ -122,22 +205,22 @@ MemberSchema.methods = {
    * Add tournament result. This will update the total and monthly scores.
    * The resulting scores are NOT saved to the database!
    *
-   * @param {Object} tournament 
+   * @param {Object} tournament
    */
   addTournament: function (tournament) {
     var score = null;
     var newMonth = true;
     var newMonthlyScore = {
-      month: tournament.date.getMonth(),
-      year: tournament.date.getFullYear(),
-      numTournaments: 0,
-      averageScore: 0,
+      month             : tournament.date.getMonth(),
+      year              : tournament.date.getFullYear(),
+      numTournaments    : 0,
+      averageScore      : 0,
       averageMatchPoints: 0,
-      awards: 0
+      awards            : 0
     };
     var league = tournament.isRbd ? this.rbd : this.rock;
 
-    if (tournament.isRbd && ! this.isRbdPlayer) { 
+    if (tournament.isRbd && !this.isRbdPlayer) {
       throw new Error('Member ' + this.bboName + ' is not enabled to play in RBD Tournaments');
     }
 
@@ -148,7 +231,7 @@ MemberSchema.methods = {
 
     // Check if the player actually played in the tournament.
     score = tournament.findPlayerScores(this.bboName);
-    if (score ===  null) {
+    if (score === null) {
       throw new Error('Member ' + this.bboName + ' did\'t play in tournament ' + tournament.name);
     }
 

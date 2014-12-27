@@ -1,16 +1,22 @@
 var Marionette = require('backbone.marionette');
 var NavbarView = require('./view');
+var MenuItems = require('./model');
 
 var NavbarController = Marionette.Controller.extend({
   initialize: function (options) {
     var self = this;
-    this.view = new NavbarView({ collection: options.collection });
-    this.region = options.region;
     this.app = options.app;
+    this.region = options.region;
+    this.collection = new MenuItems();
+    this.view = new NavbarView({ collection: this.collection });
 
-    this.view.on('navigate', (function (route) {
+    this.view.on('navigate', function (route) {
       self.app.vent.trigger('route:' + route);
-    }).bind(this));
+    });
+
+    this.app.commands.setHandler('changeMenu', function (menu) {
+      self.collection.reset(menu);
+    });
   },
 
   show: function () {

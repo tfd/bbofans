@@ -1,7 +1,8 @@
 var Marionette = require('backbone.marionette');
 
-var MembersView = Marionette.ItemView.extend({
+var RbdMembersView = Marionette.ItemView.extend({
   template: require('./template.hbs'),
+  className: 'well',
 
   ui: {
     table: "table"
@@ -12,4 +13,4 @@ var MembersView = Marionette.ItemView.extend({
   }
 });
 
-module.exports = MembersView;
+module.exports = RbdMembersView;

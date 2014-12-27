@@ -1,57 +1,42 @@
-var Backbone = require('backbone');
-var Marionette = require('backbone.marionette');
-var bbofansApp = require('../bbofans');
-var LayoutController = require('./layout/controller');
-var MembersController = require('./members/controller');
-var AwardsController = require('./awards/controller');
-var MatchpointsController = require('./matchpoints/controller');
-var NavbarController = require('../common/navbar/controller');
-var routerFactory = require('../common/utils/router_command_factory');
+var BaseModule = require('../common/modules/baseModule');
+var RockLayoutController = require('./layout/controller');
+var RockMembersController = require('./members/controller');
+var RockAwardsController = require('./awards/controller');
+var RockMatchpointsController = require('./matchpoints/controller');
 
-var rockApp = bbofansApp.module('rock', {
-  define: function(rockApp, app, Backbone, Marionette, $, _) {
-    var self = this;
-    this.app = app;
-
-    rockApp.Router = routerFactory(app, this, 'rock', {
-      "rock": "rock:members:show",
-      "rock/members": "rock:members:show",
-      "rock/awards": "rock:awards:show",
+module.exports = function (app) {
+  var rockModule = app.module('rock', {
+    moduleClass: BaseModule,
+    routes     : {
+      "rock"            : "rock:member:show",
+      "rock/members"    : "rock:member:show",
+      "rock/awards"     : "rock:awards:show",
       "rock/matchpoints": "rock:matchpoints:show"
+    }
+  });
+
+  rockModule.on('start', function () {
+    var layout = new RockLayoutController({
+      app   : app,
+      region: app.mainLayout.content
+    });
+    var members = new RockMembersController({
+      app   : app,
+      region: layout.content
+    });
+    var awards = new RockAwardsController({
+      app   : app,
+      region: layout.content
+    });
+    var matchpoints = new RockMatchpointsController({
+      app   : app,
+      region: layout.content
     });
 
-    app.addInitializer(function () {
-      new rockApp.Router();
-    });
+    layout.show();
+    members.show();
+    app.commands.execute('changeMenu', require('./navbar/collection'));
+  });
 
-    this.activate = function () {
-      self.layout = new LayoutController({
-        app: app,
-        region: bbofansApp.content
-      });
-      self.navbar = new NavbarController({
-        app: app,
-        region: self.layout.navbar,
-        collection: require('./navbar/collection')
-      });
-      self.members = new MembersController({
-        app: app,
-        region: self.layout.content
-      });
-      self.awards = new AwardsController({
-        app: app,
-        region: self.layout.content
-      });
-      self.matchpoints = new MatchpointsController({
-        app: app,
-        region: self.layout.content
-      });
-
-      this.layout.show();
-      this.navbar.show();
-      this.members.show();
-    };
-  }
-});
-
-module.exports = rockApp;
+  return rockModule;
+};

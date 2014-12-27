@@ -3,12 +3,12 @@ var Marionette = require('backbone.marionette');
 var moment = require('moment');
 var $ = require('jquery');
 
-var Layout = require('./layout');
-var EditMemberView = require('./view');
-var BlacklistView = require('../../blacklist/details/view');
+var MemberEditLayout = require('./layout');
+var MemberEditView = require('./view');
+var MemberEditBlacklistView = require('../../blacklist/details/view');
 var Member = require('../../common/models/member');
 
-var Impl = function(options) {
+var MemberEditImpl = function(options) {
   var self = this;
 
   function save(member, data) {
@@ -37,8 +37,8 @@ var Impl = function(options) {
   function show(model) {
     var member = new Member(model);
 
-    self.layout = new Layout();
-    var memberView = new EditMemberView({
+    self.layout = new MemberEditLayout();
+    var memberView = new MemberEditView({
       model: member
     });
 
@@ -61,7 +61,7 @@ var Impl = function(options) {
     var blacklist = new Blacklist({ bboName : member.get('bboName') });
     blacklist.fetchByBboName().done(function (blacklist) {
       if (blacklist) {
-        var blacklistView = new BlacklistView({
+        var blacklistView = new MemberEditBlacklistView({
           model: new Blacklist(blacklist),
           className: 'well'
         });
@@ -73,16 +73,16 @@ var Impl = function(options) {
   this.region = options.region;
   this.app = options.app;
 
-  this.app.commands.setHandler('admin:members:edit:show', function (id) {
+  this.app.commands.setHandler('admin:member:edit:show', function (id) {
     var member = new Member({ _id : id });
     member.fetch().done(show);
   });
 };
 
-var EditMemberController = Marionette.Controller.extend({
+var MemberEditController = Marionette.Controller.extend({
   initialize: function (options) {
-    this.impl = new Impl(options);
+    this.impl = new MemberEditImpl(options);
   }
 });
 
-module.exports = EditMemberController;
+module.exports = MemberEditController;

@@ -2,7 +2,7 @@
 var proxyquire = require('proxyquire'),
     memberStub = sinon.spy( function () { return; } ),
     mongooseStub = { model: function () { return memberStub; } },
-    members = proxyquire('../../src/controllers/members', {
+    members = proxyquire('../../src/controllers/member', {
         'mongoose' : mongooseStub
     });
 
@@ -309,7 +309,7 @@ describe('Members Controller', function () {
 
     it('should return error on failed add', function () {
       memberStub.prototype.save = function (callback) {
-        callback({err: 'E11000 duplicate key error members.$bboName_1 dup key: { : "name" }'}, req.body);
+        callback({err: 'E11000 duplicate key error member.$bboName_1 dup key: { : "name" }'}, req.body);
       };
 
       members.add(req, res);

@@ -1,6 +1,6 @@
 var Marionette = require('backbone.marionette');
 
-var LayoutView = Marionette.LayoutView.extend({
+var MemberEditLayoutView = Marionette.LayoutView.extend({
   template: require('./layout.hbs'),
 
   regions: {
@@ -9,4 +9,4 @@ var LayoutView = Marionette.LayoutView.extend({
   }
 });
 
-module.exports = LayoutView;
+module.exports = MemberEditLayoutView;

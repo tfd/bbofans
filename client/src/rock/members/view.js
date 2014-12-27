@@ -1,6 +1,6 @@
 var Marionette = require('backbone.marionette');
 
-var MembersView = Marionette.ItemView.extend({
+var RockMembersView = Marionette.ItemView.extend({
   template: require('./template.hbs'),
 
   ui: {
@@ -12,4 +12,4 @@ var MembersView = Marionette.ItemView.extend({
   }
 });
 
-module.exports = MembersView;
+module.exports = RockMembersView;

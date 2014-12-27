@@ -5,7 +5,7 @@ var $ = require('jquery');
 
 var Member = require('../../common/models/member');
 
-var EditMemberView = Form.extend({
+var MemberEditView = Form.extend({
   template: require('./template.hbs'),
   idPrefix: 'member',
 
@@ -16,7 +16,7 @@ var EditMemberView = Form.extend({
   }),
 
   events: Form.extendEvents({
-    'click @ui.validate': 'validateClicked',
+    'click @ui.validate': 'validateClicked'
   }),
 
   validateClicked: function (e) {
@@ -46,4 +46,4 @@ var EditMemberView = Form.extend({
 
 });
 
-module.exports = EditMemberView;
+module.exports = MemberEditView;

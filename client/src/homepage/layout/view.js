@@ -1,14 +1,14 @@
 var Marionette = require('backbone.marionette');
 
-var LayoutView = Marionette.LayoutView.extend({
+var HomepageLayoutView = Marionette.LayoutView.extend({
   template: require('./template.hbs'),
+  className: 'row',
 
   regions: {
-    'navbar': '#homepage-navbar',
     'content': '#homepage-content',
     'td': '#homepage-td-box',
     'winners': '#homepage-winners-box'
   }
 });
 
-module.exports = LayoutView;
+module.exports = HomepageLayoutView;

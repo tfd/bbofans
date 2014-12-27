@@ -1,9 +1,9 @@
 var Marionette = require('backbone.marionette');
 
-var EntryView = Marionette.ItemView.extend({
+var BlacklistDetailsEntryView = Marionette.ItemView.extend({
   template: require('./entry.hbs'),
   tagName: 'div',
   className: 'panel panel-default'
 });
 
-module.exports = EntryView;
+module.exports = BlacklistDetailsEntryView;

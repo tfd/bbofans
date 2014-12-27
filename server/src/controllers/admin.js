@@ -1,36 +1,125 @@
 var mongoose = require('mongoose');
-var User = mongoose.model('User');
+var Role = mongoose.model('Role');
+var Member = mongoose.model('Member');
 var Generator = require('../utils/generatePassword');
+var async = require('async');
 
-User.find({ username : 'admin' }).count(function (err, count) {
+Role.find().count(function (err, count) {
+  if (err) {
+    console.log(err);
+    return;
+  }
   if (count === 0) {
-    // At least admin should be there.
-    var password = new Generator().exactly(3).uppercase
-                                  .exactly(2).numbers
-                                  .length(8).lowercase
-                                  .shuffle.get();
-    new User({
-      username: 'admin',
-      password: password,
-      isUserManager: true,
-      isMemberManager: true,
-      isBlacklistManager: true,
-      isTdManager: true
-    }).save(function (err, admin) {
-      if (err) {
-        console.log(err);
-      }
-      else {
-        console.log('Admin password=' + password);
-      }
-    });
+    async.parallel([
+          function (cb) {
+            new Role({
+              name              : 'admin',
+              isTd              : true,
+              isTdManager       : true,
+              isBlacklistManager: true,
+              isMemberManager   : true
+            }).save(cb);
+          },
+          function (cb) {
+            new Role({
+              name              : 'member manager',
+              isTd              : false,
+              isTdManager       : false,
+              isBlacklistManager: false,
+              isMemberManager   : false
+            }).save(cb);
+          },
+          function (cb) {
+            new Role({
+              name              : 'blacklist manager',
+              isTd              : true,
+              isTdManager       : false,
+              isBlacklistManager: true,
+              isMemberManager   : false
+            }).save(cb);
+          },
+          function (cb) {
+            new Role({
+              name              : 'td manager',
+              isTd              : true,
+              isTdManager       : false,
+              isBlacklistManager: false,
+              isMemberManager   : false
+            }).save(cb);
+          },
+          function (cb) {
+            new Role({
+              name              : 'td',
+              isTd              : true,
+              isTdManager       : false,
+              isBlacklistManager: false,
+              isMemberManager   : false
+            }).save(cb);
+          },
+          function (cb) {
+            new Role({
+              name              : 'member',
+              isTd              : false,
+              isTdManager       : false,
+              isBlacklistManager: false,
+              isMemberManager   : false
+            }).save(cb);
+          }
+        ],
+        function () {
+          console.log('Roles created');
+        });
   }
 });
 
+Member.findOne({bboName: 'pensando'}).exec(function (err, admin) {
+  if (err) {
+    console.log('Find pensando', err);
+    return;
+  }
+  if (admin && admin.hashed_password) { return; }
+
+  var password = new Generator().exactly(3).uppercase
+      .exactly(2).numbers
+      .length(8).lowercase
+      .shuffle.get();
+
+  if (admin === null) {
+    // At least admin should be there.
+    admin = new Member({
+      bboName      : 'pensando',
+      role         : 'admin',
+      password     : password,
+      email        : 'rita@bbofans.com',
+      name         : 'Rita de Beus',
+      nation       : 'Netherlands',
+      level        : 'Expert',
+      isStarPlayer : false,
+      isBlackListed: false,
+      isEnabled    : true,
+      isRbdPlayer  : true,
+      isBanned     : false
+    });
+  }
+  else if (!admin.hashed_password) {
+    admin.password = password;
+  }
+
+  console.log('Create admin', admin);
+  admin.save(function (err) {
+    if (err) {
+      console.log(err);
+    }
+    else {
+      console.log('Admin password ' + password);
+    }
+  });
+});
+
 module.exports = {
-  
+
   session: function (req, res) {
-    var redirectTo = req.session.returnTo ? req.session.returnTo : '/admin/home';
+    var redirectTo = req.session.returnTo || '/admin/home';
     delete req.session.returnTo;
     res.redirect(redirectTo);
   },

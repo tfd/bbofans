@@ -1,8 +1,8 @@
-var MenuCollection = require('../../common/navbar/model');
+var NavbarMenuCollection = require('../../navbar/model');
 
-var collection = new MenuCollection();
-collection.add([{
-  href: '/rbd/members',
+var rbdNavbarMenuCollection = new NavbarMenuCollection();
+rbdNavbarMenuCollection.add([{
+  href: '/rbd/member',
   title: 'Members'
 }, {
   href: '/rbd/awards',
@@ -12,4 +12,4 @@ collection.add([{
   title: 'Matchpoints'
 }]);
 
-module.exports = collection;
+module.exports = rbdNavbarMenuCollection;

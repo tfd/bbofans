@@ -1,13 +1,12 @@
 var Marionette = require('backbone.marionette');
 
-var LayoutView = require('./view');
+var RockLayoutView = require('./view');
 
-var LayoutController = Marionette.Controller.extend({
+var RockLayoutController = Marionette.Controller.extend({
   initialize: function (options) {
     this.region = options.region;
-    this.view = new LayoutView();
+    this.view = new RockLayoutView();
 
-    this.navbar = this.view.navbar;
     this.content = this.view.content;
     this.winners = this.view.winners;
   },
@@ -17,4 +16,4 @@ var LayoutController = Marionette.Controller.extend({
   }
 });
 
-module.exports = LayoutController;
+module.exports = RockLayoutController;

@@ -1,8 +1,8 @@
 var Marionette = require('backbone.marionette');
 
-var TdCarouselView = Marionette.ItemView.extend({
-  model: require('./collection'),
+var HomepageTdCarouselView = Marionette.ItemView.extend({
+  model: require('./model'),
   template: require('./template.hbs')
 });
 
-module.exports = TdCarouselView;
+module.exports = HomepageTdCarouselView;

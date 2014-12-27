@@ -1,14 +1,14 @@
 var Marionette = require('backbone.marionette');
 var bbofansApp = require('../../bbofans');
 
-var homeTemplate = require('./home.hbs');
-var rulesTemplate = require('./rules.hbs');
-var awardsTemplate = require('./awards.hbs');
-var mathpointsTemplate = require('./matchpoints.hbs');
-var bboLinksTemplate = require('./bbolinks.hbs');
-var StaticView = require('../../common/views/staticContent');
+var homepageHomeTemplate = require('./home.hbs');
+var homepageRulesTemplate = require('./rules.hbs');
+var homepageAwardsTemplate = require('./awards.hbs');
+var homepageMathpointsTemplate = require('./matchpoints.hbs');
+var homepageBboLinksTemplate = require('./bbolinks.hbs');
+var HomepageStaticView = require('../../common/views/staticContent');
 
-var PageController = Marionette.Controller.extend({
+var HomepagePageController = Marionette.Controller.extend({
   initialize: function (options) {
     var self = this;
     
@@ -33,24 +33,24 @@ var PageController = Marionette.Controller.extend({
   },
 
   showHome: function () {
-    this.region.show(StaticView(homeTemplate));
+    this.region.show(HomepageStaticView(homepageHomeTemplate));
   },
 
   showRules: function () {
-    this.region.show(StaticView(rulesTemplate));
+    this.region.show(HomepageStaticView(homepageRulesTemplate));
   },
 
   showAwards: function () {
-    this.region.show(StaticView(awardsTemplate));
+    this.region.show(HomepageStaticView(homepageAwardsTemplate));
   },
 
   showMatchpoints: function () {
-    this.region.show(StaticView(mathpointsTemplate));
+    this.region.show(HomepageStaticView(homepageMathpointsTemplate));
   },
 
   showBboLinks: function () {
-    this.region.show(StaticView(bboLinksTemplate));
+    this.region.show(HomepageStaticView(homepageBboLinksTemplate));
   }
 });
 
-module.exports = PageController;
+module.exports = HomepagePageController;

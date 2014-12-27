@@ -1,8 +1,8 @@
-var MenuCollection = require('../../common/navbar/model');
+var NavbarMenuCollection = require('../../navbar/model');
 
-var collection = new MenuCollection();
-collection.add([{
-  href: '/rock/members',
+var rockNavbarMenuCollection = new NavbarMenuCollection();
+rockNavbarMenuCollection.add([{
+  href: '/rock/member',
   title: 'Members'
 }, {
   href: '/rock/awards',
@@ -12,4 +12,4 @@ collection.add([{
   title: 'Matchpoints'
 }]);
 
-module.exports = collection;
+module.exports = rockNavbarMenuCollection;

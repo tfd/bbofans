@@ -8,7 +8,7 @@ var Form = require('../add/view');
 var Blacklist = require('../models/blacklist');
 var DurationEntry = require('../models/durationEntry');
 
-var Impl = function (options) {
+var BlacklistEditImpl = function (options) {
   var self = this;
 
   function back() {
@@ -72,10 +72,10 @@ var Impl = function (options) {
   });
 };
 
-var EditBlacklistController = Marionette.Controller.extend({
+var BlacklistEditController = Marionette.Controller.extend({
   initialize: function (options) {
-    this.impl = new Impl(options);
+    this.impl = new BlacklistEditImpl(options);
   }
 });
 
-module.exports = EditBlacklistController;
+module.exports = BlacklistEditController;

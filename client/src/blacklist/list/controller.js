@@ -1,13 +1,13 @@
 var Marionette = require('backbone.marionette');
-var View = require('./view');
-var DurationEntry = require('../models/durationEntry');
+var BlacklistListView = require('./view');
 var NewBlacklistView = require('../new/view.js');
+var DurationEntry = require('../models/durationEntry');
+var Member = require('../../common/models/member');
 var $ = require('jquery');
 var moment = require('moment');
 
-var Impl = function (options) {
+var BlacklistListImpl = function (options) {
   var self = this;
-  var viewFactory = {};
 
   /*
    * User wants to add a new member.
@@ -70,7 +70,7 @@ var Impl = function (options) {
   this.show = function () {
     var member = new Member();
 
-    this.view = new View({
+    this.view = new BlacklistListView({
       model: member
     });
 
@@ -99,7 +99,7 @@ var Impl = function (options) {
 
 var MembersController = Marionette.Controller.extend({
   initialize: function (options) {
-    this.impl = new Impl(options);
+    this.impl = new BlacklistListImpl(options);
   },
 
   show: function () {

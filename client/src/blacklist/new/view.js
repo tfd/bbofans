@@ -6,7 +6,7 @@ require('bootstrap-dateTimePicker');
 
 var Blacklist = require('../models/blacklist');
 
-var NewView = FormWithErrorHandling.extend({
+var BlacklistNewView = FormWithErrorHandling.extend({
   template   : require('./template.hbs'),
   idPrefix   : 'blacklist',
 
@@ -30,7 +30,7 @@ var NewView = FormWithErrorHandling.extend({
     engine.initialize();
 
     this.ui.typeAhead.typeahead(null, {
-      name      : 'members-bboName',
+      name      : 'member-bboName',
       displayKey: 'bboName',
       source    : engine.ttAdapter()
     });
@@ -44,4 +44,4 @@ var NewView = FormWithErrorHandling.extend({
 
 });
 
-module.exports = NewView;
+module.exports = BlacklistNewView;

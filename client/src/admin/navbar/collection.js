@@ -1,9 +1,9 @@
-var MenuCollection = require('../../common/navbar/model');
+var NavbarMenuCollection = require('../../navbar/model');
 
-var collection = new MenuCollection();
-collection.add([{
+var adminNavbarMenuCollection = new NavbarMenuCollection();
+adminNavbarMenuCollection.add([{
   href: '/admin/logout',
   title: 'Logout'
 }]);
 
-module.exports = collection;
+module.exports = adminNavbarMenuCollection;

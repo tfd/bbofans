@@ -1,10 +1,10 @@
 var Marionette = require('backbone.marionette');
 var $ = require('jquery');
 
-var View = require('./view');
+var RbdMatchpointsView = require('./view');
 var Member = require('../../common/models/member');
 
-var MatchpointsController = Marionette.Controller.extend({
+var RbdMatchpointsController = Marionette.Controller.extend({
   initialize: function (options) {
     var self = this;
     
@@ -19,7 +19,7 @@ var MatchpointsController = Marionette.Controller.extend({
   show: function () {
     var self = this;
     var member = new Member();
-    var view = new View({
+    var view = new RbdMatchpointsView({
       model: member
     });
 
@@ -27,4 +27,4 @@ var MatchpointsController = Marionette.Controller.extend({
   }
 });
 
-module.exports = MatchpointsController;
+module.exports = RbdMatchpointsController;

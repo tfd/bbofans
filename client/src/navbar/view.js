@@ -3,18 +3,30 @@ var Marionette = require('backbone.marionette');
 var $ = require('jquery');
 
 var NavbarItemView = Backbone.Marionette.ItemView.extend({
-  tagName: 'li',
-  template: require('./item.hbs')
+  tagName : 'li',
+  template: require('./menuItem.hbs')
 });
 
 var NavbarView = Backbone.Marionette.CompositeView.extend({
   template: require('./template.hbs'),
 
   childViewContainer: 'ul.dropdown-menu',
-  childView: NavbarItemView,
+  childView         : NavbarItemView,
 
   events: {
     'click a.menu-item': 'navigate'
+  },
+
+  collectionEvents: {
+    'reset' : 'onCollectionChanged',
+    'add'   : 'onCollectionChanged',
+    'remove': 'onCollectionChanged',
+    'change': 'onCollectionChanged',
+    'sort': 'onCollectionChanged'
+  },
+
+  onCollectionChanged : function () {
+    this.render();
   },
 
   navigate: function (e) {

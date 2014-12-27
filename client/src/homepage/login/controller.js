@@ -1,9 +1,9 @@
 var Marionette = require('backbone.marionette');
 var $ = require('jquery');
-var LoginView = require('./view');
+var HomepageLoginView = require('./view');
 var User = require('../../common/models/user');
 
-var LoginController = Marionette.Controller.extend({
+var HomepageLoginController = Marionette.Controller.extend({
   initialize: function (options) {
     var self = this;
     
@@ -17,8 +17,7 @@ var LoginController = Marionette.Controller.extend({
 
   show: function () {
     var self = this;
-    var member = new Member();
-    var loginView = new LoginView({});
+    var loginView = new HomepageLoginView({});
 
     if (this.app.currentUser) {
       // User already logged in, bring him to the menu.
@@ -46,4 +45,4 @@ var LoginController = Marionette.Controller.extend({
   }
 });
 
-module.exports = LoginController;
+module.exports = HomepageLoginController;

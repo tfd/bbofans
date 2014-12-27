@@ -28,7 +28,7 @@ function getFieldName(name) {
 }
 
 /**
- * @returns whether the given name is a valid field of the members collection.
+ * @returns whether the given name is a valid field of the member collection.
  */
 function isValidFieldName(name) {
   var names = [
@@ -47,7 +47,7 @@ function isValidFieldName(name) {
 }
 
 /**
- * @returns whether the given name is a boolean field of the members collection.
+ * @returns whether the given name is a boolean field of the member collection.
  */
 function isBooleanField(name) {
   var booleans = [
@@ -57,7 +57,7 @@ function isBooleanField(name) {
 }
 
 /**
- * @returns whether the given name is a numeric field of the members collection.
+ * @returns whether the given name is a numeric field of the member collection.
  */
 function isNumericField(name) {
   var names = [

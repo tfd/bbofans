@@ -1,17 +1,17 @@
 var Marionette = require('backbone.marionette');
 var $ = require('jquery');
 
-var View = require('./view');
+var RockMembersView = require('./view');
 var Member = require('../../common/models/member');
 
-var MembersController = Marionette.Controller.extend({
+var RockMembersController = Marionette.Controller.extend({
   initialize: function (options) {
     var self = this;
     
     this.region = options.region;
     this.app = options.app;
 
-    this.app.commands.setHandler('rock:members:show', function () {
+    this.app.commands.setHandler('rock:member:show', function () {
       self.show();
     });
   },
@@ -19,7 +19,7 @@ var MembersController = Marionette.Controller.extend({
   show: function () {
     var self = this;
     var member = new Member();
-    var view = new View({
+    var view = new RockMembersView({
       model: member
     });
 
@@ -27,4 +27,4 @@ var MembersController = Marionette.Controller.extend({
   }
 });
 
-module.exports = MembersController;
+module.exports = RockMembersController;

@@ -14,13 +14,7 @@
   </head>
 
   <body>
-    <div class="modal fade" id="popupModal" tabindex="-1" role="dialog" aria-labelledby="popupModalLabel" aria-hidden="true" data-backdrop="static">
-      <div class="modal-dialog">
-        <div class="modal-content" id="bbofans-popup">
-        </div>
-      </div>
-    </div>
-    <div id="bbofans-container">{{{body}}}</div>
+    <div id="bbofans-app-container"></div>
 {{#if user}}
     <script type="text/javascript">
         var bbofansUser = {
@@ -28,7 +22,7 @@
           isMemberManager: {{user.isMemberManager}},
           isBlacklistManager: {{user.isBlacklistManager}},
           isTdManager: {{user.isTdManager}},
-          isUserManager: {{user.isUserManager}}
+          isTd: {{user.isTd}}
         };
     </script>
 {{/if}}

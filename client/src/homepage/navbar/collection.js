@@ -1,7 +1,7 @@
-var MenuCollection = require('../../common/navbar/model');
+var NavbarMenuCollection = require('../../navbar/model');
 
-var collection = new MenuCollection();
-collection.add([{
+var homepageNavbarMenuCollection = new NavbarMenuCollection();
+homepageNavbarMenuCollection.add([{
   href: '/rules',
   title: 'Rules'
 }, {
@@ -15,4 +15,4 @@ collection.add([{
   title: 'Links to BBO'
 }]);
 
-module.exports = collection;
+module.exports = homepageNavbarMenuCollection;

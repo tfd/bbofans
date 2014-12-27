@@ -22,7 +22,7 @@ module.exports = function (app, subApp, pagename, routes) {
         return n < args.length ? '/' + args[n++] : '/';
       });
 
-      app.setApp(subApp);
+      app.setModule(subApp);
       app.navigate(navRoute);
       execute(commandName, args);
     });
@@ -30,7 +30,7 @@ module.exports = function (app, subApp, pagename, routes) {
     router.routes[route] = functionName;
     router[functionName] = function () {
       var args = Array.prototype.slice.call(arguments);
-      app.setApp(subApp);
+      app.setModule(subApp);
       execute(commandName, args);
     };
   });

@@ -2,19 +2,19 @@ var Backbone = require('backbone');
 var Marionette = require('backbone.marionette');
 var $ = require('jquery');
 
-var View = require('./view');
+var MemberListView = require('./view');
 var Member = require('../../common/models/member');
-var NoSelectionView = require('../commands/noSelectionView');
-var FlagView = require('../commands/flagView');
-var EmailView = require('../commands/emailView');
-var BlacklistView = require('../commands/blacklistView');
-var InvalidCommandView = require('../commands/invalidCommandView');
+var MemberCommandsNoSelectionView = require('../commands/noSelectionView');
+var MemberCommandsFlagView = require('../commands/flagView');
+var MemberCommandsEmailView = require('../commands/emailView');
+var MemberCommandsBlacklistView = require('../commands/blacklistView');
+var MemberCommandsInvalidCommandView = require('../commands/invalidCommandView');
 
 var FlagCommands = require('../models/flagCommands');
 var EmailCommand = require('../models/emailCommand');
 var BlacklistCommand = require('../models/blacklistCommand');
 
-var Impl = function (options) {
+var MemberListControllerImpl = function (options) {
   var self = this;
   var viewFactory = {};
 
@@ -30,7 +30,7 @@ var Impl = function (options) {
   $.each(['validate', 'enable', 'disable'], function (i, cmd) {
     viewFactory[cmd] = function (rows) {
       var title = cmd[0].toUpperCase() + cmd.substring(1);
-      return new FlagView( {
+      return new MemberCommandsFlagView( {
         model: new Backbone.Model({
           command: cmd,
           rows: rows,
@@ -40,7 +40,7 @@ var Impl = function (options) {
     };
   });
   viewFactory.email = function (rows) {
-    return new EmailView( {
+    return new MemberCommandsEmailView( {
       template: require('../commands/email.hbs'),
       model: new Backbone.Model({
         command: 'email',
@@ -50,7 +50,7 @@ var Impl = function (options) {
     });
   };
   viewFactory.blacklist = function (rows) {
-    return new BlacklistView( {
+    return new MemberCommandsBlacklistView( {
       model: new Backbone.Model({
         command: 'blacklist',
         rows: rows,
@@ -59,7 +59,7 @@ var Impl = function (options) {
     });
   };
   viewFactory.whitelist = function (rows) {
-    return new BlacklistView( {
+    return new MemberCommandsBlacklistView( {
       model: new Backbone.Model({
         command: 'whitelist',
         rows: rows,
@@ -73,18 +73,18 @@ var Impl = function (options) {
    */
   function createView(command, rows) {
     if (rows.length === 0) {
-      return new NoSelectionView( {
+      return new MemberCommandsNoSelectionView( {
         model: new Backbone.Model({ command: command })
       });
     }
-    else if (viewFactory[command]) {
+
+    if (viewFactory[command]) {
       return viewFactory[command](rows);
     }
-    else {
-      return new InvalidCommandView( {
-        model: new Backbone.Model({ command: command })
-      });
-    }
+
+    return new MemberCommandsInvalidCommandView( {
+      model: new Backbone.Model({ command: command })
+    });
   }
 
   /*
@@ -143,7 +143,7 @@ var Impl = function (options) {
    * @param id {String} unique id of the member to edit.
     */
   function editMember(id) {
-    self.app.vent.trigger('route:admin/members/:id', id);
+    self.app.vent.trigger('route:admin/member/:id', id);
   }
 
   /*
@@ -156,7 +156,7 @@ var Impl = function (options) {
   this.show = function () {
     var member = new Member();
     
-    this.view = new View({
+    this.view = new MemberListView({
       model: member
     });
 
@@ -179,14 +179,14 @@ var Impl = function (options) {
   this.popup = options.popup;
   this.app = options.app;
 
-  this.app.commands.setHandler('admin:members:show', function () {
+  this.app.commands.setHandler('admin:member:show', function () {
     self.show();
   });
 };
 
-var MembersController = Marionette.Controller.extend({
+var MemberListController = Marionette.Controller.extend({
   initialize: function (options) {
-    this.impl = new Impl(options);
+    this.impl = new MemberListControllerImpl(options);
   },
 
   show: function () {
@@ -194,4 +194,4 @@ var MembersController = Marionette.Controller.extend({
   }
 });
 
-module.exports = MembersController;
+module.exports = MemberListController;

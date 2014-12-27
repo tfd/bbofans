@@ -1,50 +1,36 @@
-var Backbone = require('backbone');
-var Marionette = require('backbone.marionette');
-var bbofansApp = require('../bbofans');
-var LayoutController = require('./layout/controller');
-var MenuController = require('./menu/controller');
-var HomeController = require('./home/controller');
-var NavbarController = require('../common/navbar/controller');
-var routerFactory = require('../common/utils/router_command_factory');
+var BaseModule = require('../common/modules/baseModule');
+var AdminLayoutController = require('./layout/controller');
+var AdminMenuController = require('./menu/controller');
+var AdminHomeController = require('./home/controller');
 
-var adminApp = bbofansApp.module('admin', {
-  define: function(adminApp, app, Backbone, Marionette, $, _) {
-    var self = this;
-    this.app = app;
-
-    adminApp.Router = routerFactory(app, this, 'admin', {
-      "admin": "admin:home:show",
+module.exports = function (app) {
+  var adminModule = app.module('admin', {
+    moduleClass: BaseModule,
+    routes     : {
+      "admin"     : "admin:home:show",
       "admin/home": "admin:home:show"
+    }
+  });
+
+  adminModule.on('start', function () {
+    var layout = new AdminLayoutController({
+      app   : app,
+      region: app.mainLayout.content
+    });
+    var menu = new AdminMenuController({
+      app   : app,
+      region: layout.menu
     });
 
-    app.addInitializer(function () {
-      new adminApp.Router();
+    var home = new AdminHomeController({
+      app   : app,
+      region: layout.content
     });
 
-    this.activate = function () {
-      self.layout = new LayoutController({
-        app: app,
-        region: app.content
-      });
-      self.menu = new MenuController({
-        app: app,
-        region: self.layout.menu
-      });
-      self.navbar = new NavbarController({
-        app: app,
-        region: self.layout.navbar,
-        collection: require('./navbar/collection')
-      });
-      self.home = new HomeController({
-        app: app,
-        region: self.layout.content
-      });
+    layout.show();
+    menu.show();
+    app.commands.execute('changeMenu', require('./navbar/collection'));
+  });
 
-      this.layout.show();
-      this.menu.show();
-      this.navbar.show();
-    };
-  }
-});
-
-module.exports = adminApp;
+  return adminModule;
+};

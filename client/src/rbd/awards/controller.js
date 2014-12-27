@@ -1,10 +1,10 @@
 var Marionette = require('backbone.marionette');
 var $ = require('jquery');
 
-var View = require('./view');
+var RbdAwardsView = require('./view');
 var Member = require('../../common/models/member');
 
-var AwardsController = Marionette.Controller.extend({
+var RbdAwardsController = Marionette.Controller.extend({
   initialize: function (options) {
     var self = this;
     
@@ -19,7 +19,7 @@ var AwardsController = Marionette.Controller.extend({
   show: function () {
     var self = this;
     var member = new Member();
-    var view = new View({
+    var view = new RbdAwardsView({
       model: member
     });
 
@@ -27,4 +27,4 @@ var AwardsController = Marionette.Controller.extend({
   }
 });
 
-module.exports = AwardsController;
+module.exports = RbdAwardsController;

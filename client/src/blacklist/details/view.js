@@ -1,7 +1,7 @@
 var Marionette = require('backbone.marionette');
 var EntryView = require('./entryView');
 
-var BlacklistView = Marionette.CompositeView.extend({
+var BlacklistDetailsView = Marionette.CompositeView.extend({
   template: require('./template.hbs'),
 
   childView: EntryView,
@@ -12,4 +12,4 @@ var BlacklistView = Marionette.CompositeView.extend({
   }
 });
 
-module.exports = BlacklistView;
+module.exports = BlacklistDetailsView;

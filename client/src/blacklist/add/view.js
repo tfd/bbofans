@@ -5,7 +5,7 @@ require('bootstrap-dateTimePicker');
 
 var Blacklist = require('../models/blacklist');
 
-var BlacklistView = FormWithErrorHandling.extend({
+var BlacklistAddView = FormWithErrorHandling.extend({
   template: require('./template.hbs'),
   idPrefix: 'blacklist',
   
@@ -25,4 +25,4 @@ var BlacklistView = FormWithErrorHandling.extend({
 
 });
 
-module.exports = BlacklistView;
+module.exports = BlacklistAddView;

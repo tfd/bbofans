@@ -1,7 +1,8 @@
 var Marionette = require('backbone.marionette');
-var View = require('./view');
+var AdminHomeView = require('./view');
+var $ = require('jquery');
 
-var HomeController = Marionette.Controller.extend({
+var AdminHomeController = Marionette.Controller.extend({
   initialize: function (options) {
     var self = this;
     
@@ -11,11 +12,17 @@ var HomeController = Marionette.Controller.extend({
     this.app.commands.setHandler('admin:home:show', function () {
       self.show();
     });
+
+    this.app.commands.setHandler('admin:logout', function () {
+      $.ajax({url: '/admin/logout'}).complete(function () {
+        self.app.vent.trigger('route:admin/login');
+      });
+    });
   },
 
   show: function () {
     var self = this;
-    var view = new View({
+    var view = new AdminHomeView({
       model: self.app.currentUser
     });
 
@@ -23,4 +30,4 @@ var HomeController = Marionette.Controller.extend({
   }
 });
 
-module.exports = HomeController;
+module.exports = AdminHomeController;

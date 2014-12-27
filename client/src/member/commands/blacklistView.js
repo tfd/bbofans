@@ -2,7 +2,7 @@ var FormWithErrorHandling = require('../../common/views/formWithErrorHandling.js
 var moment = require('moment');
 require('bootstrap-dateTimePicker');
 
-var BlacklistView = FormWithErrorHandling.extend({
+var MemberCommandsBlacklistView = FormWithErrorHandling.extend({
   template: require('./blacklist.hbs'),
   idPrefix: 'blacklist',
   submitEvent: 'command:execute',
@@ -28,4 +28,4 @@ var BlacklistView = FormWithErrorHandling.extend({
 
 });
 
-module.exports = BlacklistView;
+module.exports = MemberCommandsBlacklistView;

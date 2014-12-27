@@ -1,17 +1,19 @@
 var Marionette = require('backbone.marionette');
-var MenuView = require('./view');
+var AdminMenuView = require('./view');
 
-var MenuController = Marionette.Controller.extend({
+var AdminMenuController = Marionette.Controller.extend({
   initialize: function (options) {
-    this.view = new MenuView({
+    var self = this;
+
+    this.view = new AdminMenuView({
       model: options.app.currentUser
     });
     this.region = options.region;
     this.app = options.app;
 
-    this.view.on('navigate', (function (route) {
-      options.app.vent.trigger('route:' + route);
-    }).bind(this));
+    this.view.on('navigate', function (route) {
+      self.app.vent.trigger('route:' + route);
+    });
   },
 
   show: function () {
@@ -19,4 +21,4 @@ var MenuController = Marionette.Controller.extend({
   }
 });
 
-module.exports = MenuController;
+module.exports = AdminMenuController;

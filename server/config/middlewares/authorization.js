@@ -4,9 +4,13 @@
 
 module.exports = {
   requiresLogin: function (req, res, next) {
-    if (req.isAuthenticated()) return next()
-    if (req.method == 'GET') req.session.returnTo = req.originalUrl
-    res.redirect(403, '/login')
+    if (req.isAuthenticated()) {
+      return next();
+    }
+    if (req.method === 'GET') {
+      req.session.returnTo = req.originalUrl;
+    }
+    res.redirect(403, '/login');
   },
 
   member: {
@@ -20,6 +24,16 @@ module.exports = {
   },
 
   td: {
+    hasAuthorization: function (req, res, next) {
+      if (! req.user.isTd) {
+        req.flash('info', 'You are not authorized');
+        return res.redirect(403, '/admin/home');
+      }
+      next();
+    }
+  },
+
+  tdManager: {
     hasAuthorization: function (req, res, next) {
       if (! req.user.isTdManager) {
         req.flash('info', 'You are not authorized');
@@ -37,16 +51,6 @@ module.exports = {
       }
       next();
     }
-  },
-
-  user: {
-    hasAuthorization: function (req, res, next) {
-      if (! req.user.isUserManager) {
-        req.flash('info', 'You are not authorized');
-        return res.redirect(403, '/admin/home');
-      }
-      next();
-    }
   }
-  
+
 };
