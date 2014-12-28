@@ -1,23 +1,23 @@
 var Marionette = require('backbone.marionette');
 var AdminMenuView = require('./view');
+var messageBus = require('../../common/utils/messageBus');
+var authentication = require('../../authentication/controller');
 
 var AdminMenuController = Marionette.Controller.extend({
   initialize: function (options) {
-    var self = this;
+    this.app = options.app;
+    this.module = options.module;
 
     this.view = new AdminMenuView({
-      model: options.app.currentUser
+      model: authentication.getUser()
     });
-    this.region = options.region;
-    this.app = options.app;
-
     this.view.on('navigate', function (route) {
-      self.app.vent.trigger('route:' + route);
+      messageBus.command('route:' + route);
     });
   },
 
-  show: function () {
-    this.region.show(this.view);
+  show: function (region) {
+    region.show(this.view);
   }
 });
 

@@ -1,22 +1,17 @@
 var Marionette = require('backbone.marionette');
 var $ = require('jquery');
+var messageBus = require('../../common/utils/messageBus');
 
 var HomepageRegisterView = require('./view');
 var Member = require('../../common/models/member');
 
 var HomepageRegisterController = Marionette.Controller.extend({
   initialize: function (options) {
-    var self = this;
-    
-    this.region = options.region;
     this.app = options.app;
-
-    this.app.commands.setHandler('register:show', function () {
-      self.show();
-    });
+    this.module = options.module;
   },
 
-  show: function () {
+  show: function (region) {
     var self = this;
     var member = new Member();
     var registerView = new HomepageRegisterView({
@@ -34,17 +29,17 @@ var HomepageRegisterController = Marionette.Controller.extend({
         }
         else {
           xhr.done(function (data) {
-            console.log("done", data);
-            self.app.trigger("member:show", member.get("id"));
+            messageBus.command('log', "done", data);
+            messageBus.command("route:member:show", member.get("id"));
           }).fail(function (xhr) {
-            console.log("fail", xhr.responseJSON);
+            messageBus.command('log', "fail", xhr.responseJSON);
             registerView.triggerMethod("form:data:invalid", xhr.responseJSON);
           });
         }
       }
     });
 
-    this.region.show(registerView);
+    region.show(registerView);
   }
 });
 

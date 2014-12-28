@@ -5,17 +5,24 @@ var HomepageLayoutView = require('./view');
 var HomepageLayoutController = Marionette.Controller.extend({
   initialize: function (options) {
     this.app = options.app;
-    this.region = options.region;
+    this.module = options.module;
     this.view = new HomepageLayoutView();
 
-    this.content = this.view.content;
-    this.td = this.view.td;
-    this.winners = this.view.winners;
+    this.regions = {
+        content: this.view.content,
+        td: this.view.td,
+        winners: this.view.winners
+    };
   },
 
-  show: function () {
-    this.region.show(this.view);
+  show: function (region) {
+    region.show(this.view);
+  },
+
+  onDestroy: function () {
+    this.view.destroy();
   }
+
 });
 
 module.exports = HomepageLayoutController;

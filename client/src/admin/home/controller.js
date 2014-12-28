@@ -1,32 +1,32 @@
 var Marionette = require('backbone.marionette');
 var AdminHomeView = require('./view');
 var $ = require('jquery');
+var messageBus = require('../../common/utils/messageBus');
+var authentication = require('../../authentication/controller');
 
 var AdminHomeController = Marionette.Controller.extend({
   initialize: function (options) {
     var self = this;
-    
-    this.region = options.region;
     this.app = options.app;
+    this.module = options.module;
 
-    this.app.commands.setHandler('admin:home:show', function () {
-      self.show();
+    this.view = new AdminHomeView({
+      model: authentication.getUser()
     });
 
-    this.app.commands.setHandler('admin:logout', function () {
-      $.ajax({url: '/admin/logout'}).complete(function () {
-        self.app.vent.trigger('route:admin/login');
-      });
+    messageBus.comply('admin:logout', function () {
+      self.logout();
     });
   },
 
-  show: function () {
-    var self = this;
-    var view = new AdminHomeView({
-      model: self.app.currentUser
+  logout: function () {
+    authentication.logout(function () {
+      messageBus.command('route:admin/login');
     });
+  },
 
-    this.region.show(view);
+  show: function (region) {
+    region.show(this.view);
   }
 });
 

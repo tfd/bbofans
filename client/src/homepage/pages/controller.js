@@ -1,55 +1,39 @@
 var Marionette = require('backbone.marionette');
-var bbofansApp = require('../../bbofans');
+var messageBus = require('../../common/utils/messageBus');
 
 var homepageHomeTemplate = require('./home.hbs');
 var homepageRulesTemplate = require('./rules.hbs');
 var homepageAwardsTemplate = require('./awards.hbs');
-var homepageMathpointsTemplate = require('./matchpoints.hbs');
+var homepageMathPointsTemplate = require('./matchpoints.hbs');
 var homepageBboLinksTemplate = require('./bbolinks.hbs');
-var HomepageStaticView = require('../../common/views/staticContent');
+var createStaticView = require('../../common/views/staticContent');
 
 var HomepagePageController = Marionette.Controller.extend({
   initialize: function (options) {
     var self = this;
     
-    this.region = options.region;
     this.app = options.app;
-
-    this.app.commands.setHandler('home:show', function () {
-      self.showHome();
-    });
-    this.app.commands.setHandler('rules:show', function () {
-      self.showRules();
-    });
-    this.app.commands.setHandler('awards:show', function () {
-      self.showAwards();
-    });
-    this.app.commands.setHandler('matchpoints:show', function () {
-      self.showMatchpoints();
-    });
-    this.app.commands.setHandler('bbolinks:show', function () {
-      self.showBboLinks();
-    });
+    this.module = options.module;
   },
 
-  showHome: function () {
-    this.region.show(HomepageStaticView(homepageHomeTemplate));
+  showHome: function (region) {
+    region.show(createStaticView(homepageHomeTemplate));
   },
 
-  showRules: function () {
-    this.region.show(HomepageStaticView(homepageRulesTemplate));
+  showRules: function (region) {
+    region.show(createStaticView(homepageRulesTemplate));
   },
 
-  showAwards: function () {
-    this.region.show(HomepageStaticView(homepageAwardsTemplate));
+  showAwards: function (region) {
+    region.show(createStaticView(homepageAwardsTemplate));
   },
 
-  showMatchpoints: function () {
-    this.region.show(HomepageStaticView(homepageMathpointsTemplate));
+  showMatchPoints: function (region) {
+    region.show(createStaticView(homepageMathPointsTemplate));
   },
 
-  showBboLinks: function () {
-    this.region.show(HomepageStaticView(homepageBboLinksTemplate));
+  showBboLinks: function (region) {
+    region.show(createStaticView(homepageBboLinksTemplate));
   }
 });
 

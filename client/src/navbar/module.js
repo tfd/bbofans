@@ -2,15 +2,17 @@ var NavbarController = require('./controller');
 
 
 module.exports = function (app) {
-  var navbarModule = app.module('navbar');
+  var navbarModule = app.module('navbar', {
+    startWithParent: false,
 
-  navbarModule.on('start', function () {
-    this.navbar = new NavbarController({
-      app   : app,
-      region: app.mainLayout.navbar
-    });
+    onStart: function () {
+      this.navbar = new NavbarController({
+        app   : app,
+        region: app.mainLayout.navbar
+      });
 
-    this.navbar.show();
+      this.navbar.show();
+    }
   });
 
   return navbarModule;

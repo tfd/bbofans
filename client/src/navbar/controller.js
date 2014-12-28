@@ -1,6 +1,7 @@
 var Marionette = require('backbone.marionette');
 var NavbarView = require('./view');
 var MenuItems = require('./model');
+var messageBus = require('../common/utils/messageBus');
 
 var NavbarController = Marionette.Controller.extend({
   initialize: function (options) {
@@ -11,10 +12,10 @@ var NavbarController = Marionette.Controller.extend({
     this.view = new NavbarView({ collection: this.collection });
 
     this.view.on('navigate', function (route) {
-      self.app.vent.trigger('route:' + route);
+      messageBus.command('route:' + route);
     });
 
-    this.app.commands.setHandler('changeMenu', function (menu) {
+    messageBus.comply('navbar:changeMenu', function (menu) {
       self.collection.reset(menu);
     });
   },

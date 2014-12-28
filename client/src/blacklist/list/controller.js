@@ -1,53 +1,47 @@
 var Marionette = require('backbone.marionette');
 var BlacklistListView = require('./view');
-var NewBlacklistView = require('../new/view.js');
-var DurationEntry = require('../models/durationEntry');
+var NewBlacklistController = require('../new/controller');
 var Member = require('../../common/models/member');
-var $ = require('jquery');
-var moment = require('moment');
+var messageBus = require('../../common/utils/messageBus');
+var _ = require('underscore');
 
-var BlacklistListImpl = function (options) {
-  var self = this;
+var MembersController = Marionette.Controller.extend({
+  initialize: function (options) {
+    this.app = options.app;
+    this.module = options.module;
+  },
+
+  show         : function (region) {
+    var self = this;
+
+    var member = new Member();
+    this.view = new BlacklistListView({
+      model: member
+    });
+
+    this.view.on('blacklist:edit', _.bind(this.editBlacklist, this));
+    this.view.on('blacklist:new', _.bind(this.newBlacklist, this));
+
+    messageBus.on('blacklist:changed', function () {
+      self.view.reloadTable();
+    });
+
+    region.show(this.view);
+  },
 
   /*
    * User wants to add a new member.
    *
    * This is done with a popup window.
    */
-  function newBlacklist () {
-    var durationEntry = new DurationEntry({
-      bboName: '',
-      from: moment.utc(),
-      for: '1w',
-      reason: ''
-    });
-    var popupView = new NewBlacklistView({model: durationEntry});
-    self.popup.show(popupView);
-    var $popup = $('#popupModal');
-    $popup.modal('show');
-
-    popupView.on('form:submit', function (data) {
-      var xhr = null;
-      xhr = durationEntry.save(data);
-
-      if (xhr === false) {
-        console.log("fail", xhr);
-        popupView.triggerMethod("form:data:invalid", durationEntry.validationError);
-      }
-      else {
-        xhr.done(function (data) {
-          self.view.reloadTable();
-        }).fail(function (xhr) {
-          console.log("fail", xhr.responseJSON);
-        });
-        $popup.modal('hide');
-      }
+  newBlacklist : function () {
+    var newBlacklistController = new NewBlacklistController({
+      app   : this.app,
+      module: this.module
     });
 
-    popupView.on('form:cancel', function () {
-      $popup.modal('hide');
-    });
-  }
+    newBlacklistController.show(this.app.getPopupRegion());
+  },
 
   /*
    * User wants to edit a member.
@@ -56,54 +50,8 @@ var BlacklistListImpl = function (options) {
    *
    * @param id {String} unique id of the member to edit.
    */
-  function editBlacklist (id) {
-    self.app.vent.trigger('route:admin/blacklist/:id', id);
-  }
-
-  /*
-   * Public methods.
-   */
-
-  /**
-   * Create and show the view.
-   */
-  this.show = function () {
-    var member = new Member();
-
-    this.view = new BlacklistListView({
-      model: member
-    });
-
-    this.view.on('blacklist:edit', editBlacklist);
-    this.view.on('blacklist:new', newBlacklist);
-
-    this.app.vent.on('blacklist:changed', function () {
-      self.view.reloadTable();
-    });
-
-    this.region.show(this.view);
-  };
-
-  /*
-   * Everything is in place, startup the controller.
-   */
-
-  this.region = options.region;
-  this.popup = options.popup;
-  this.app = options.app;
-
-  this.app.commands.setHandler('admin:blacklist:show', function () {
-    self.show();
-  });
-};
-
-var MembersController = Marionette.Controller.extend({
-  initialize: function (options) {
-    this.impl = new BlacklistListImpl(options);
-  },
-
-  show: function () {
-    this.impl.show();
+  editBlacklist: function (id) {
+    messageBus.command('route:admin/blacklist/:id', id);
   }
 });
 

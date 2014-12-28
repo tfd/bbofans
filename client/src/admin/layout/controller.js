@@ -4,15 +4,18 @@ var AdminLayoutView = require('./view');
 
 var AdminLayoutController = Marionette.Controller.extend({
   initialize: function (options) {
-    this.region = options.region;
-    this.view = new AdminLayoutView();
+    this.app = options.app;
+    this.module = options.module;
 
-    this.content = this.view.content;
-    this.menu = this.view.menu;
+    this.view = new AdminLayoutView();
+    this.regions = {
+        content: this.view.content,
+        menu: this.view.menu
+    };
   },
 
-  show: function () {
-    this.region.show(this.view);
+  show: function (region) {
+    region.show(this.view);
   }
 });
 

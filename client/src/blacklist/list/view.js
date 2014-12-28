@@ -1,7 +1,7 @@
 var Marionette = require('backbone.marionette');
 require('bootstrap-table-filter');
-require('../../common/utils/bootstrap-table-colgroups');
-require('../../common/utils/bootstrap-table-commands');
+require('../../common/table/bootstrap-table-colgroups');
+require('../../common/table/bootstrap-table-commands');
 require('../../common/utils/formatters');
 
 var BlacklistView = Marionette.ItemView.extend({

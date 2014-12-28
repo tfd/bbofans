@@ -3,8 +3,14 @@ var Backbone = require('backbone');
 var $ = require('jquery');
 Backbone.$ = $;
 var Marionette = require('backbone.marionette');
+var messageBus = require('./common/utils/messageBus');
+// Add radio shim to Marionette, as version 2.1 still uses wreqr instead of radio
+require('./common/utils/radioShim');
 var User = require('./common/models/user');
 var MainLayoutController = require('./mainLayout/controller');
+var moment = require('moment');
+var _ = require('underscore');
+require('./common/utils/callMethod');
 
 require('bootstrap');
 require('bootstrap-table');
@@ -13,27 +19,32 @@ require('ie10-viewport-bug-workaround');
 
 var BboFansApp = Marionette.Application.extend({
   initialize: function (options) {
-    if (window.bbofansUser && window.bbofansUser.username) {
-      this.currentUser = new User(window.bbofansUser);
-    }
+    this.authentication = require('./authentication/controller');
 
     this.mainLayout = new MainLayoutController({
       el: options.container || '#bbofans-app-container'
     });
     this.navbarModule = require('./navbar/module')(this);
     this.homepageModule = require('./homepage/module.js')(this);
-    this.rockModule = require('./rock/module.js')(this);
-    this.rbdModule = require('./rbd/module.js')(this);
     this.adminModule = require('./admin/module.js')(this);
-    this.membersModule = require('./member/module.js')(this);
-    this.blacklistModule = require('./blacklist/module.js')(this);
+    this.membersModule = require('./members/module.js')(this, 'admin');
+    this.blacklistModule = require('./blacklist/module.js')(this, 'admin');
+  },
 
-    this.mainLayout.show();
-    this.setModule(this.homepageModule);
+  getPopupRegion: function () {
+    return this.mainLayout.popup;
+  },
+
+  showPopup: function () {
+    this.mainLayout.showPopup();
+  },
+
+  hidePopup: function () {
+    this.mainLayout.hidePopup();
   },
 
   navigate: function (route, options) {
-    console.log('bbofansApp:navigate ' + route);
+    messageBus.command('log', 'navigate', route);
     Backbone.history.navigate(route, options || {});
   },
 
@@ -41,7 +52,8 @@ var BboFansApp = Marionette.Application.extend({
     return Backbone.history.fragment;
   },
 
-  setModule: function (module) {
+  setModule: function (moduleName) {
+    var module = this.module(moduleName);
     if (this.currentModule !== module) {
       if (this.currentModule) { this.currentModule.stop(); }
       this.currentModule = module;
@@ -49,18 +61,37 @@ var BboFansApp = Marionette.Application.extend({
     }
   },
 
+  render: function (path) {
+    var args = _(arguments).toArray().rest();
+    var module = this.app.module(path.getModuleName());
+    _.callMethod(module.render, module, [path, this.mainLayout.regions.content, args]);
+  },
+
   onStart: function () {
+    var self = this;
+
     $(document).on("ajaxError", function (e, xhr) {
       if (xhr.status === 403) {
         var route = xhr.getResponseHeader('Location');
         if (route) { route = route.substring(1); }
         else { route = 'login';}
-        delete bbofansApp.currentUser;
-        bbofansApp.unauthorizedRoute = route;
+        self.authentication.logout();
       }
     });
 
+    messageBus.comply('navigate', this.navigate, this);
+    messageBus.comply('log', function () {
+      var args = _.flatten([
+        moment().format(),
+        Array.prototype.slice.call(arguments)
+      ]);
+      console.log.apply(console, args);
+    });
+
+    this.mainLayout.show();
     this.navbarModule.start();
+    this.navbarModule.show(this.mainLayout.regions.navbar);
+    this.setModule(this.homepageModule);
 
     if (Backbone.history) {
       Backbone.history.start({

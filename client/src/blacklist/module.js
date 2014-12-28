@@ -1,41 +1,40 @@
 var BaseModule = require('../common/modules/baseModule');
-var BlacklistLayoutController = require('../admin/layout/controller');
-var BlacklistMenuController = require('../admin/menu/controller');
-var BlacklistListController = require('./list/controller');
-var BlacklistEditController = require('./edit/controller');
+var messageBus = require('../common/utils/messageBus');
+var _ = require('underscore');
+var controllerFactories = {
+  list: require('./list/controller'),
+  edit: require('./edit/controller')
+};
 
-module.exports = function (app) {
-  var blacklistModule = app.module('blacklist', {
+module.exports = function (app, parentModuleName) {
+  var moduleName = _.compact([parentModuleName, 'blacklist']).join('.');
+
+  var blacklistModule = app.module(moduleName, {
+    moduleName : moduleName,
     moduleClass: BaseModule,
-    routes     : {
-      "admin/blacklist"    : "admin:blacklist:show",
-      "admin/blacklist/:id": "admin:blacklist:edit:show"
+
+    routes: {
+      "admin/blacklist"    : '[' + moduleName + ']list:show',
+      "admin/blacklist/:id": '[' + moduleName + ']edit:show'
+    },
+
+    renderLayout: function (region) {
+      this.region = region;
+    },
+
+    getSubModuleRegion: function () {
+      return this.region;
     }
   });
 
   blacklistModule.on('start', function () {
-    var layout = new BlacklistLayoutController({
-      app   : app,
-      region: app.mainLayout.content
+    var self = this;
+    _.each(controllerFactories, function (Value, key) {
+      this.controllers[key] = new Value({
+        app   : app,
+        module: self
+      });
     });
-    var menu = new BlacklistMenuController({
-      app   : app,
-      region: layout.menu
-    });
-    var list = new BlacklistListController({
-      app   : app,
-      region: layout.content,
-      popup : app.mainLayout.popup
-    });
-    var edit = new BlacklistEditController({
-      app   : app,
-      region: layout.content
-    });
-
-    layout.show();
-    menu.show();
-    list.show();
-    app.commands.execute('changeMenu', require('../admin/navbar/collection'));
   });
 
   return blacklistModule;

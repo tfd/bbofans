@@ -2,47 +2,39 @@ var Marionette = require('backbone.marionette');
 var $ = require('jquery');
 var HomepageLoginView = require('./view');
 var User = require('../../common/models/user');
+var authentication = require('../../authentication/controller');
 
 var HomepageLoginController = Marionette.Controller.extend({
   initialize: function (options) {
-    var self = this;
-    
-    this.region = options.region;
     this.app = options.app;
+    this.module = options.module;
 
-    this.app.commands.setHandler('login:show', function () {
-      self.show();
-    });
   },
 
-  show: function () {
-    var self = this;
-    var loginView = new HomepageLoginView({});
+  show: function (region) {
+    var view = new HomepageLoginView({});
 
-    if (this.app.currentUser) {
-      // User already logged in, bring him to the menu.
-      self.app.vent.trigger('route:admin/home');
-    }
-    else {
+    authentication.isAuthenticated(function (auth) {
+      if (auth) {
+        // User already logged in, bring him to the menu.
+        messageBus.command('route:admin/home');
+        return;
+      }
+
       loginView.on('form:submit', function (data) {
-        $.ajax({
-          type: 'POST',
-          url: '/admin/session',
-          data: data
-        }).done(function (rsp) {
-          if (rsp.error) {
-            loginView.triggerMethod("form:data:invalid", { 'username': "Invalid username or password" });
+        authentication.login(data.username, data.password, function (err, user) {
+          if (err) {
+            loginView.triggerMethod("form:data:invalid", err);
           }
           else {
-            self.app.currentUser = new User(rsp.user);
-            self.app.vent.trigger('route:admin/home');
+            messageBus.command('route:admin/home');
           }
         });
       });
-
-      this.region.show(loginView);
-    }
+      region.show(view);
+    });
   }
+
 });
 
 module.exports = HomepageLoginController;

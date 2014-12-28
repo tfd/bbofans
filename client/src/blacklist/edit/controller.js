@@ -1,6 +1,7 @@
 var Backbone = require('backbone');
 var Marionette = require('backbone.marionette');
 var moment = require('moment');
+var messageBus = require('../../common/utils/messageBus');
 
 var Layout = require('./layout');
 var View = require('../details/view');
@@ -15,7 +16,7 @@ var BlacklistEditImpl = function (options) {
     var fragment = Backbone.history.fragment;
     var parts = fragment.split('/');
     var route = parts.slice(0, parts.length - 1).join('/');
-    self.app.vent.trigger('route:' + route);
+    messageBus.command('route:' + route);
   }
 
   function save(entry, data) {
@@ -26,7 +27,7 @@ var BlacklistEditImpl = function (options) {
     else {
       xhr.done(function (data) {
         back();
-        self.app.vent.trigger('entry:changed', data);
+        messageBus.trigger('blacklist:entry:changed', data);
       }).fail(function (xhr) {
         console.log("fail", xhr.responseJSON);
         self.form.triggerMethod("form:data:invalid", xhr.responseJSON);
@@ -34,7 +35,7 @@ var BlacklistEditImpl = function (options) {
     }
   }
 
-  function show(model) {
+  function show(region, model) {
     var blacklist = new Blacklist(model);
     var durationEntry = new DurationEntry({
       bboName: blacklist.get('bboName'),
@@ -58,23 +59,27 @@ var BlacklistEditImpl = function (options) {
       back();
     });
 
-    self.region.show(self.layout);
+    region.show(self.layout);
     self.layout.view.show(self.view);
     self.layout.form.show(self.form);
   }
 
-  this.region = options.region;
-  this.app = options.app;
-
-  this.app.commands.setHandler('admin:blacklist:edit:show', function (id) {
+  this.show = function (region, id) {
     var blacklist = new Blacklist({ _id : id });
     blacklist.fetch().done(show);
-  });
+  };
+
+  this.app = options.app;
+  this.model = options.model;
 };
 
 var BlacklistEditController = Marionette.Controller.extend({
   initialize: function (options) {
     this.impl = new BlacklistEditImpl(options);
+  },
+
+  show: function (region, id) {
+    this.impl.show(region, id);
   }
 });
 

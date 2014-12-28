@@ -127,6 +127,15 @@ module.exports = {
   logout: function (req, res) {
     req.logout();
     res.redirect('/admin/login');
+  },
+
+  getUser: function (req, res) {
+    if (req.isAuthenticated()) {
+      res.json(req.user);
+    }
+    else {
+      res.json({error: 'not authenticated'});
+    }
   }
 
 };

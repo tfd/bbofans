@@ -40,6 +40,7 @@ module.exports = function (app, config, passport) {
   app.get('/members/rbd', members.getRbd);
   app.post('/register', members.register);
   app.get('/countries', countries.get);
+  app.get('/admin/session', admin.getUser);
   app.post('/admin/session', login(app, config, passport));
   app.get('/admin/members', memberManagerAuth, members.getAll);
   app.get('/admin/members/bboName', memberManagerAuth, members.getBboNames);

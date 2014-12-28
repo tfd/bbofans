@@ -6,13 +6,13 @@ var HomepageCarouselView = require('./view');
 var HomepageTdCarouselController = Marionette.Controller.extend({
   initialize: function (options) {
     this.app = options.app;
-    this.region = options.region;
+    this.module = options.module;
   },
 
-  show: function () {
+  show: function (region) {
     this.view = new HomepageCarouselView();
     this.view.model.set('items', this.getDefaultCollection());
-    this.region.show(this.view);
+    region.show(this.view);
   },
 
   getDefaultCollection: function () {

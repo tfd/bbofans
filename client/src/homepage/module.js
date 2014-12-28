@@ -1,50 +1,56 @@
 var BaseModule = require('../common/modules/baseModule');
-var HomepageLayoutController = require('./layout/controller');
-var HomepagePageController = require('./pages/controller');
-var HomepageRegisterController = require('./register/controller');
-var HomepageTdCarouselController = require('./td_carousel/controller');
-var HomepageLoginController = require('./login/controller');
+var controllerFactories = {
+  layout  : require('./layout/controller'),
+  pages   : require('./pages/controller'),
+  register: require('./register/controller'),
+  carousel: require('./td_carousel/controller'),
+  rbd     : require('./rbd/controller'),
+  rock    : require('./rock/controller'),
+  login   : require('./login/controller')
+};
+var messageBus = require('../common/utils/messageBus');
+var _ = require('underscore');
 
-module.exports = function (app) {
-  var homepageModule = app.module('homepage', {
+module.exports = function (app, parentModuleName) {
+  var moduleName = _.compact([parentModuleName, 'homepage']).join('.');
+
+  var homepageModule = app.module(moduleName, {
+    moduleName : moduleName,
     moduleClass: BaseModule,
-    routes     : {
-      "home"       : "home:show",
-      "register"   : "register:show",
-      "rules"      : "rules:show",
-      "awards"     : "awards:show",
-      "matchpoints": "matchpoints:show",
-      "bbolinks"   : "bbolinks:show",
-      "login"      : "login:show"
+
+    routes: {
+      "home"       : '[' + moduleName + ']home:show',
+      "register"   : '[' + moduleName + ']register:show',
+      "rules"      : '[' + moduleName + ']pages:showRules',
+      "awards"     : '[' + moduleName + ']pages:showAwards',
+      "matchpoints": '[' + moduleName + ']pages:showMatchPoints',
+      "bbolinks"   : '[' + moduleName + ']pages:showBboLinks',
+      "rbd"        : '[' + moduleName + ']rbd:show',
+      "rock"       : '[' + moduleName + ']rock:show',
+      "login"      : '[' + moduleName + ']login:show'
+    },
+
+    onRenderLayout: function (region) {
+      this.region = region;
+      this.controllers.layout.show(region);
+      this.controllers.carousel.show(this.layout.regions.td);
+
+      messageBus.command('navbar:changeMenu', require('./navbar/collection'));
+    },
+
+    getSubModuleRegion: function () {
+      return this.controllers.layout.region.content;
     }
   });
 
   homepageModule.on('start', function () {
-    var layout = new HomepageLayoutController({
-      app   : app,
-      region: app.mainLayout.content
+    var self = this;
+    _.each(controllerFactories, function (Value, key) {
+      this.controllers[key] = new Value({
+        app   : app,
+        module: self
+      });
     });
-    var page = new HomepagePageController({
-      app   : app,
-      region: layout.content
-    });
-    var register = new HomepageRegisterController({
-      app   : app,
-      region: layout.content
-    });
-    var login = new HomepageLoginController({
-      app   : app,
-      region: layout.content
-    });
-    var carousel = new HomepageTdCarouselController({
-      app   : app,
-      region: layout.td
-    });
-
-    layout.show();
-    page.showHome();
-    carousel.show();
-    app.commands.execute('changeMenu', require('./navbar/collection'));
   });
 
   return homepageModule;

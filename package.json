@@ -19,6 +19,7 @@
     "backbone.wreqr": "./build/vendor/backbone.wreqr/backbone.wreqr.js",
     "backbone.marionette": "./build/vendor/backbone.marionette/backbone.marionette.js",
     "backbone.syphon": "./build/vendor/backbone.syphon/backbone.syphon.js",
+    "backbone.radio": "./build/vendor/backbone.radio/backbone.radio.js",
     "bootstrap": "./build/vendor/bootstrap/bootstrap.js",
     "bootstrap-dateTimePicker": "./build/vendor/eonasdan-bootstrap-datetimepicker/bootstrap-datetimepicker.js",
     "bootstrap-dialog": "./build/vendor/bootstrap-dialog/bootstrap-dialog.min.js",
