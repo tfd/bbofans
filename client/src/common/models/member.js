@@ -1,7 +1,7 @@
 var Backbone = require('backbone');
 
 Member = Backbone.Model.extend({
-  urlRoot: "admin/member",
+  urlRoot: "admin/members",
   idAttribute: "_id",
   
   defaults: {

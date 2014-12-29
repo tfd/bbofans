@@ -1,19 +1,21 @@
 var Marionette = require('backbone.marionette');
 
 var MainLayoutView = Marionette.LayoutView.extend({
-  el: '#bbofans-app-container',
+  el      : '#bbofans-app-container',
   template: require('./template.hbs'),
 
   ui: {
-    'navbar': '#main-navbar',
+    'navbar' : '#main-navbar',
     'content': '#main-content',
-    'popup': '#main-popup'
+    'popup'  : '#main-popup',
+    'modal'  : '#popupModal'
   },
 
   regions: {
-    'navbar': '@ui.navbar',
+    'navbar' : '@ui.navbar',
     'content': '@ui.content',
-    'popup': '@ui.popup'
+    'popup'  : '@ui.popup',
+    'modal'  : '@ui.modal'
   }
 });
 

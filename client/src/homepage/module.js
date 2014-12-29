@@ -19,7 +19,7 @@ module.exports = function (app, parentModuleName) {
     moduleClass: BaseModule,
 
     routes: {
-      "home"       : '[' + moduleName + ']home:show',
+      "home"       : '[' + moduleName + ']pages:showHome',
       "register"   : '[' + moduleName + ']register:show',
       "rules"      : '[' + moduleName + ']pages:showRules',
       "awards"     : '[' + moduleName + ']pages:showAwards',
@@ -30,27 +30,29 @@ module.exports = function (app, parentModuleName) {
       "login"      : '[' + moduleName + ']login:show'
     },
 
-    onRenderLayout: function (region) {
-      this.region = region;
-      this.controllers.layout.show(region);
-      this.controllers.carousel.show(this.layout.regions.td);
+    define: function (homepageModule, app) {
+      homepageModule.renderLayout = function (region) {
+        this.region = region;
+        this.controllers.layout.show(region);
+        this.controllers.carousel.show(this.controllers.layout.regions.td);
 
-      messageBus.command('navbar:changeMenu', require('./navbar/collection'));
-    },
+        messageBus.command('navbar:changeMenu', require('./navbar/collection'));
+      };
 
-    getSubModuleRegion: function () {
-      return this.controllers.layout.region.content;
-    }
-  });
+      homepageModule.getSubModuleRegion = function () {
+        return this.controllers.layout.regions.content;
+      };
 
-  homepageModule.on('start', function () {
-    var self = this;
-    _.each(controllerFactories, function (Value, key) {
-      this.controllers[key] = new Value({
-        app   : app,
-        module: self
+      homepageModule.on('start', function () {
+        var self = this;
+        _.each(controllerFactories, function (Value, key) {
+          self.controllers[key] = new Value({
+            app   : app,
+            module: self
+          });
+        });
       });
-    });
+    }
   });
 
   return homepageModule;

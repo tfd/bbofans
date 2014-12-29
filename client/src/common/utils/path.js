@@ -8,7 +8,7 @@ var _ = require('underscore');
  * @class
  */
 module.exports = function (path) {
-  var match = /^\[([\w\.]*)\](\w*):(\w*)$/.exec('[admin:members]edit.show');
+  var match = /^\[([\w\.]*)\](\w*):(\w*)$/.exec(path);
   var moduleName = match[1];
   var controller = match[2];
   var method = match[3];
@@ -38,7 +38,7 @@ module.exports = function (path) {
      * @returns {String} the fully qualified module name.
      */
     getModuleName: function () {
-      getNthModuleName(currentModule);
+      return getNthModuleName(currentModule);
     },
 
     /**
@@ -50,7 +50,7 @@ module.exports = function (path) {
      */
     getNextModuleName: function () {
       if (currentModule < modules.length - 1) { currentModule += 1; }
-      return this.getMethodName();
+      return this.getModuleName();
     },
 
     /**

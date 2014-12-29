@@ -7,7 +7,6 @@ var NavbarController = Marionette.Controller.extend({
   initialize: function (options) {
     var self = this;
     this.app = options.app;
-    this.region = options.region;
     this.collection = new MenuItems();
     this.view = new NavbarView({ collection: this.collection });
 
@@ -20,8 +19,8 @@ var NavbarController = Marionette.Controller.extend({
     });
   },
 
-  show: function () {
-    this.region.show(this.view);
+  show: function (region) {
+    region.show(this.view);
   }
 });
 

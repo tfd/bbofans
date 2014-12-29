@@ -5,13 +5,16 @@ module.exports = function (app) {
   var navbarModule = app.module('navbar', {
     startWithParent: false,
 
-    onStart: function () {
-      this.navbar = new NavbarController({
-        app   : app,
-        region: app.mainLayout.navbar
-      });
+    define: function (navbarModule, app) {
+      this.onStart = function () {
+        this.navbar = new NavbarController({
+          app: app
+        });
+      };
 
-      this.navbar.show();
+      navbarModule.show = function (region) {
+        this.navbar.show(region);
+      };
     }
   });
 

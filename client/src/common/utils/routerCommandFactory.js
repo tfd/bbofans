@@ -10,14 +10,16 @@ module.exports = function (app, routes) {
 
   _.each(routes, function (path, route) {
     // Camelize the path by removing the / and capitalizing the next letter. All '/:<param>' parts are removed.
-    var functionName = route.split('/:')[0].substring(0, -1).replace(/\/(\w)/, function (match, name) {
+    var functionName = route.replace(/\/:?(\w)/g, function (match, name) {
       return name.toUpperCase();
     });
+    console.log(path, route, functionName);
     var pathObj = new Path(path);
     var moduleName = pathObj.getFullModuleName();
 
     // Route internally
     messageBus.comply('route:' + route, function () {
+      messageBus.command('log', 'route', route, path);
       // Replace :xxx parameters in route for the navigation.
       var n = 0;
       var args = _.toArray(arguments);
@@ -35,6 +37,7 @@ module.exports = function (app, routes) {
     // Route via history.
     router.routes[route] = functionName;
     router[functionName] = function () {
+      messageBus.command('log', 'history', route, path);
       var args = _.toArray(arguments);
       app.setModule(moduleName);
       _.callMethod(app.render, app, [new Path(path), args]);

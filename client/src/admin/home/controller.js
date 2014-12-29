@@ -10,7 +10,7 @@ var AdminHomeController = Marionette.Controller.extend({
     this.app = options.app;
     this.module = options.module;
 
-    this.view = new AdminHomeView({
+    self.view = new AdminHomeView({
       model: authentication.getUser()
     });
 

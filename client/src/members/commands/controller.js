@@ -1,7 +1,7 @@
 var Backbone = require('backbone');
 var Marionette = require('backbone.marionette');
 var messageBus = require('../../common/utils/messageBus');
-var $ = require(jquery);
+var $ = require('jquery');
 
 var MemberCommandsNoSelectionView = require('../commands/noSelectionView');
 var MemberCommandsFlagView = require('../commands/flagView');
@@ -92,7 +92,7 @@ var CommandsController = Marionette.Controller.extend({
   show: function (region, command, members) {
     var self = this;
     var popupView = createView(command, members);
-    this.app.getPopupRegion().show(popupView);
+    region.show(popupView);
     this.app.showPopup();
 
     popupView.on('command:execute', function (data) {

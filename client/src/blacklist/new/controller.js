@@ -1,6 +1,9 @@
 var Marionette = require('backbone.marionette');
 var NewBlacklistView = require('./view');
-var $ = require(jquery);
+var DurationEntry = require('../models/durationEntry');
+var messageBus = require('../../common/utils/messageBus');
+var moment = require('moment');
+var $ = require('jquery');
 
 var NewEntryController = Marionette.Controller.extend({
   initialize: function (options) {
@@ -9,6 +12,7 @@ var NewEntryController = Marionette.Controller.extend({
   },
 
   show: function (region) {
+    var self = this;
     var durationEntry = new DurationEntry({
       bboName: '',
       from: moment.utc(),
@@ -34,12 +38,12 @@ var NewEntryController = Marionette.Controller.extend({
         }).fail(function (xhr) {
           messageBus.command('log', "fail", xhr.responseJSON);
         });
-        this.app.hidePopup();
+        self.app.hidePopup();
       }
     });
 
     popupView.on('form:cancel', function () {
-      this.app.hidePopup();
+      self.app.hidePopup();
     });
   }
 });

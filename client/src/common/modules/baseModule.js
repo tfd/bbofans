@@ -1,5 +1,6 @@
 var Marionette = require('backbone.marionette');
 var routerFactory = require('../utils/routerCommandFactory');
+var messageBus = require('../utils/messageBus');
 var _ = require('underscore');
 
 /**
@@ -92,10 +93,10 @@ var _ = require('underscore');
  *   });
  */
 var BaseModule = Marionette.Module.extend({
-  moduleName: 'BaseModule',
+  moduleName     : 'BaseModule',
   startWithParent: false,
 
-  initialize: function(moduleName, app, options) {
+  initialize: function (moduleName, app, options) {
     var self = this;
     this.moduleName = moduleName;
     this.app = app;
@@ -116,10 +117,12 @@ var BaseModule = Marionette.Module.extend({
   },
 
   render: function (path, region) {
-    var args = _(arguments).toArray().rest(2);
+    messageBus.command('log', 'render', path.getFullModuleName(), region)
+    var args = _.toArray(arguments);
+    args = _.rest(args, 2);
 
     if (this.firstTime) {
-      _.callMethod(this.renderLayout, this, args);
+      _.callMethod(this.renderLayout, this, [region, args]);
       this.firstTime = false;
     }
     if (path.isLastModule()) {
@@ -140,7 +143,7 @@ var BaseModule = Marionette.Module.extend({
 
     if (!this.controllers[controllerName][methodName]) {
       // oops no such method.
-      messageBus.command('log', 'No method "' + controllerName + ':' + methodName +  '" in module ' + this.moduleName);
+      messageBus.command('log', 'No method "' + controllerName + ':' + methodName + '" in module ' + this.moduleName);
       return false;
     }
 
@@ -148,9 +151,11 @@ var BaseModule = Marionette.Module.extend({
   },
 
   renderController: function (controllerName, methodName) {
+    messageBus.command('log', 'renderController', controllerName, methodName)
     if (this.existsControllerMethod(controllerName, methodName)) {
       var controller = this.controllers[controllerName];
-      var args = _(arguments).toArray().rest(2);
+      var args = _.toArray(arguments);
+      args = _.rest(args, 2);
       _.callMethod(controller[methodName], controller, [this.getSubModuleRegion(), args]);
     }
   }

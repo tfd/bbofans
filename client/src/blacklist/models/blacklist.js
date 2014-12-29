@@ -1,5 +1,6 @@
 var Backbone = require('backbone');
 var EntryCollection = require('./entryCollection');
+var $ = require('jquery');
 
 Blacklist = Backbone.Model.extend({
   urlRoot: "admin/blacklist",

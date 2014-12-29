@@ -66,7 +66,9 @@ var BlacklistEditImpl = function (options) {
 
   this.show = function (region, id) {
     var blacklist = new Blacklist({ _id : id });
-    blacklist.fetch().done(show);
+    blacklist.fetch().done(function (model) {
+      show(region, model);
+    });
   };
 
   this.app = options.app;

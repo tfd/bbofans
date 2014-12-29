@@ -32,7 +32,7 @@ var BboFansApp = Marionette.Application.extend({
   },
 
   getPopupRegion: function () {
-    return this.mainLayout.popup;
+    return this.mainLayout.regions.popup;
   },
 
   showPopup: function () {
@@ -52,18 +52,56 @@ var BboFansApp = Marionette.Application.extend({
     return Backbone.history.fragment;
   },
 
+  startModule: function (modules, n) {
+    var i;
+    var name;
+    n = n || 1;
+
+    for (i = modules.length; i >= n; i -= 1) {
+      name = _.first(modules, i).join('.');
+      this.module(name).start();
+    }
+  },
+
+  stopModule: function (modules, n) {
+    var name = _(modules).first(n).join('.');
+    this.module(name).stop();
+  },
+
   setModule: function (moduleName) {
-    var module = this.module(moduleName);
-    if (this.currentModule !== module) {
-      if (this.currentModule) { this.currentModule.stop(); }
-      this.currentModule = module;
-      this.currentModule.start();
+    var newModules = moduleName.split('.');
+
+    if (!this.currentModuleName) {
+      this.currentModuleName = moduleName;
+      this.startModule(newModules);
+    }
+    else  {
+      var currentModules = this.currentModuleName.split('.');
+      var commonModules = _.intersection(currentModules, newModules);
+      if (commonModules.length === 0) {
+        this.stopModule(currentModules, 1);
+
+        this.currentModuleName = moduleName;
+        this.startModule(newModules);
+      }
+      else {
+        // We assume that common modules are always at the start.
+        if (currentModules.length > commonModules.length) {
+          this.stopModule(currentModules, commonModules.length + 1);
+        }
+        this.currentModuleName = moduleName;
+        if (newModules.length > commonModules.length) {
+          this.startModule(newModules, commonModules.length + 1);
+        }
+      }
+
     }
   },
 
   render: function (path) {
-    var args = _(arguments).toArray().rest();
-    var module = this.app.module(path.getModuleName());
+    var args = _.toArray(arguments);
+    args = _.rest(args);
+    var module = this.module(path.getModuleName());
     _.callMethod(module.render, module, [path, this.mainLayout.regions.content, args]);
   },
 
@@ -91,13 +129,19 @@ var BboFansApp = Marionette.Application.extend({
     this.mainLayout.show();
     this.navbarModule.start();
     this.navbarModule.show(this.mainLayout.regions.navbar);
-    this.setModule(this.homepageModule);
+    this.setModule('homepage');
 
-    if (Backbone.history) {
-      Backbone.history.start({
-        silent: false
-      });
-    }
+    this.authentication.isAuthenticated(function () {
+      if (Backbone.history) {
+        Backbone.history.start({
+          silent: false
+        });
+
+        if (self.getCurrentRoute() === '') {
+          messageBus.command('route:home');
+        }
+      }
+    });
   }
 
 });

@@ -7,16 +7,16 @@ var HomepageLayoutController = Marionette.Controller.extend({
     this.app = options.app;
     this.module = options.module;
     this.view = new HomepageLayoutView();
-
-    this.regions = {
-        content: this.view.content,
-        td: this.view.td,
-        winners: this.view.winners
-    };
   },
 
   show: function (region) {
     region.show(this.view);
+
+    this.regions = {
+      content: this.view.content,
+      td: this.view.td,
+      winners: this.view.winners
+    };
   },
 
   onDestroy: function () {

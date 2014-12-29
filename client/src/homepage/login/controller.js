@@ -2,6 +2,7 @@ var Marionette = require('backbone.marionette');
 var $ = require('jquery');
 var HomepageLoginView = require('./view');
 var User = require('../../common/models/user');
+var messageBus = require('../../common/utils/messageBus');
 var authentication = require('../../authentication/controller');
 
 var HomepageLoginController = Marionette.Controller.extend({
@@ -12,7 +13,7 @@ var HomepageLoginController = Marionette.Controller.extend({
   },
 
   show: function (region) {
-    var view = new HomepageLoginView({});
+    var loginView = new HomepageLoginView({});
 
     authentication.isAuthenticated(function (auth) {
       if (auth) {
@@ -31,7 +32,7 @@ var HomepageLoginController = Marionette.Controller.extend({
           }
         });
       });
-      region.show(view);
+      region.show(loginView);
     });
   }
 

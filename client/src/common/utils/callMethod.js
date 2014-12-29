@@ -9,7 +9,10 @@ _.mixin({
    * @param {Object} context - context in which to execute fn
    */
   callMethod: function (fn, context) {
-    var args = _.toArray(arguments).rest(2).flatten();
+    var args = _.toArray(arguments);
+    args = _.flatten(args);
+    args = _.rest(args, 2);
+
     switch (args.length) {
       case 0: fn.call(context); break;
       case 1: fn.call(context, args[0]); break;

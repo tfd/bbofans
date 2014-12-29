@@ -18,23 +18,25 @@ module.exports = function (app, parentModuleName) {
       "admin/blacklist/:id": '[' + moduleName + ']edit:show'
     },
 
-    renderLayout: function (region) {
-      this.region = region;
-    },
+    define: function (blacklistModule, app) {
+      blacklistModule.renderLayout = function (region) {
+        this.region = region;
+      };
 
-    getSubModuleRegion: function () {
-      return this.region;
-    }
-  });
+      blacklistModule.getSubModuleRegion = function () {
+        return this.region;
+      };
 
-  blacklistModule.on('start', function () {
-    var self = this;
-    _.each(controllerFactories, function (Value, key) {
-      this.controllers[key] = new Value({
-        app   : app,
-        module: self
+      blacklistModule.on('start', function () {
+        var self = this;
+        _.each(controllerFactories, function (Value, key) {
+          self.controllers[key] = new Value({
+            app   : app,
+            module: self
+          });
+        });
       });
-    });
+    }
   });
 
   return blacklistModule;

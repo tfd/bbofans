@@ -4,9 +4,14 @@ var LayoutView = Marionette.LayoutView.extend({
   template: require('./template.hbs'),
   className: 'row',
 
-  regions: {
+  ui: {
     'content': '#admin-content',
     'menu': '#admin-menu-box'
+  },
+
+  regions: {
+    'content': '@ui.content',
+    'menu': '@ui.menu'
   }
 });
 
