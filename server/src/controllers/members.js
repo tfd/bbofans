@@ -34,7 +34,7 @@ function getFieldName (name) {
  */
 function isValidFieldName (name) {
   var names = [
-    'bboName', 'name', 'nation', 'email', 'level',
+    'bboName', 'name', 'nation', 'email', 'level', 'role',
     'isStarPlayer', 'isRbdPlayer', 'isEnabled', 'isBlackListed', 'isBanned',
     'rockLastPlayedAt', 'rockNumTournaments', 'rockAverageScore', 'rockAwards',
     'rbdLastPlayedAt', 'rbdNumTournaments', 'rbdAverageScore', 'rbdAwards'
@@ -387,6 +387,7 @@ function writeCsv (members, res) {
     members.forEach(function (member) {
       sep = '';
       _.each(member, function (val, field) {
+        console.log(field, val);
         res.write(sep);
         if (isBooleanField(field)) {
           res.write((val ? 'Y' : 'N'));
@@ -398,11 +399,12 @@ function writeCsv (members, res) {
           res.write(moment(val).utc().format());
         }
         else {
-          res.write('"' + csvEscape(val) + '",');
+          res.write('"' + csvEscape(val) + '"');
         }
 
         sep = ',';
       });
+      res.write('\r\n');
     });
   }
   res.end();
@@ -433,7 +435,7 @@ module.exports = {
   getRock: function (req, res) {
     var limit = getLimit(req);
     var skip = getSkip(req);
-    var sort = getSort(req, ['bboName', 'nation', 'level', 'awards', 'averageMatchPoints', 'numTournaments']);
+    var sort = getSort(req, ['bboName', 'nation', 'level', 'awards', 'averageScore', 'numTournaments']);
     var filter = getFindCriterias(req, {
       criteria        : {
         isEnabled    : true,
@@ -450,12 +452,12 @@ module.exports = {
         {$match: filter},
         {
           $project: {
-            bboName           : 1,
-            nation            : 1,
-            level             : 1,
-            awards            : '$' + getFieldName('rockAwards'),
-            averageMatchPoints: '$' + getFieldName('rockAverageScore'),
-            numTournaments    : '$' + getFieldName('rockNumTournaments')
+            bboName       : 1,
+            nation        : 1,
+            level         : 1,
+            awards        : '$' + getFieldName('rockAwards'),
+            averageScore  : '$' + getFieldName('rockAverageScore'),
+            numTournaments: '$' + getFieldName('rockNumTournaments')
           }
         }
       ])
@@ -525,6 +527,7 @@ module.exports = {
                              'name',
                              'nation',
                              'level',
+                             'role',
                              'email',
                              'isStarPlayer',
                              'isRbdPlayer',
@@ -533,7 +536,7 @@ module.exports = {
                              'isBanned',
                              'rockLastPlayedAt',
                              'rockNumTournaments',
-                             'rockAverageMatchPoints',
+                             'rockAverageScore',
                              'rockAwards',
                              'rbdLastPlayedAt',
                              'rbdNumTournaments',
@@ -548,26 +551,27 @@ module.exports = {
                 {$match: filter},
                 {
                   $project: {
-                    bboName               : 1,
-                    name                  : 1,
-                    nation                : 1,
-                    level                 : 1,
-                    email                 : 1,
-                    isStarPlayer          : 1,
-                    isRbdPlayer           : 1,
-                    isEnabled             : 1,
-                    isBlackListed         : 1,
-                    isBanned              : 1,
-                    rockLastPlayedAt      : '$' + getFieldName('rockLastPlayedAt'),
-                    rockAwards            : '$' + getFieldName('rockAwards'),
-                    rockAverageMatchPoints: '$' + getFieldName('rockAverageScore'),
-                    rockNumTournaments    : '$' + getFieldName('rockNumTournaments'),
-                    rbdLastPlayedAt       : '$' + getFieldName('rbdLastPlayedAt'),
-                    rbdAwards             : '$' + getFieldName('rbdAwards'),
-                    rbdAverageScore       : '$' + getFieldName('rbdAverageScore'),
-                    rbdNumTournaments     : '$' + getFieldName('rbdNumTournaments'),
-                    registeredAt          : 1,
-                    validatedAt           : 1
+                    bboName           : 1,
+                    name              : 1,
+                    nation            : 1,
+                    level             : 1,
+                    role              : 1,
+                    email             : 1,
+                    isStarPlayer      : 1,
+                    isRbdPlayer       : 1,
+                    isEnabled         : 1,
+                    isBlackListed     : 1,
+                    isBanned          : 1,
+                    rockLastPlayedAt  : '$' + getFieldName('rockLastPlayedAt'),
+                    rockAwards        : '$' + getFieldName('rockAwards'),
+                    rockAverageScore  : '$' + getFieldName('rockAverageScore'),
+                    rockNumTournaments: '$' + getFieldName('rockNumTournaments'),
+                    rbdLastPlayedAt   : '$' + getFieldName('rbdLastPlayedAt'),
+                    rbdAwards         : '$' + getFieldName('rbdAwards'),
+                    rbdAverageScore   : '$' + getFieldName('rbdAverageScore'),
+                    rbdNumTournaments : '$' + getFieldName('rbdNumTournaments'),
+                    registeredAt      : 1,
+                    validatedAt       : 1
                   }
                 },
                 {$sort: sort},
@@ -713,6 +717,7 @@ module.exports = {
                              'nation',
                              'level',
                              'email',
+                             'role',
                              'isStarPlayer',
                              'isRbdPlayer',
                              'isEnabled',
@@ -720,7 +725,7 @@ module.exports = {
                              'isBanned',
                              'rockLastPlayedAt',
                              'rockNumTournaments',
-                             'rockAverageMatchPoints',
+                             'rockAverageScore',
                              'rockAwards',
                              'rbdLastPlayedAt',
                              'rbdNumTournaments',
@@ -735,28 +740,29 @@ module.exports = {
                 {$match: filter},
                 {
                   $project: {
-                    _id                   : 0,
-                    bboName               : 1,
-                    name                  : 1,
-                    nation                : 1,
-                    level                 : 1,
-                    email                 : 1,
-                    isStarPlayer          : 1,
-                    isRbdPlayer           : 1,
-                    isEnabled             : 1,
-                    isBlackListed         : 1,
-                    isBanned              : 1,
-                    rockLastPlayedAt      : '$' + getFieldName('rockLastPlayedAt'),
-                    rockAwards            : '$' + getFieldName('rockAwards'),
-                    rockAverageMatchPoints: '$' + getFieldName('rockAverageScore'),
-                    rockNumTournaments    : '$' + getFieldName('rockNumTournaments'),
-                    rbdLastPlayedAt       : '$' + getFieldName('rbdLastPlayedAt'),
-                    rbdAwards             : '$' + getFieldName('rbdAwards'),
-                    rbdAverageScore       : '$' + getFieldName('rbdAverageScore'),
-                    rbdNumTournaments     : '$' + getFieldName('rbdNumTournaments'),
-                    notes                 : 1,
-                    registeredAt          : 1,
-                    validatedAt           : 1
+                    _id               : 0,
+                    bboName           : 1,
+                    name              : 1,
+                    nation            : 1,
+                    level             : 1,
+                    role              : 1,
+                    email             : 1,
+                    isStarPlayer      : 1,
+                    isRbdPlayer       : 1,
+                    isEnabled         : 1,
+                    isBlackListed     : 1,
+                    isBanned          : 1,
+                    rockLastPlayedAt  : '$' + getFieldName('rockLastPlayedAt'),
+                    rockAwards        : '$' + getFieldName('rockAwards'),
+                    rockAverageScore  : '$' + getFieldName('rockAverageScore'),
+                    rockNumTournaments: '$' + getFieldName('rockNumTournaments'),
+                    rbdLastPlayedAt   : '$' + getFieldName('rbdLastPlayedAt'),
+                    rbdAwards         : '$' + getFieldName('rbdAwards'),
+                    rbdAverageScore   : '$' + getFieldName('rbdAverageScore'),
+                    rbdNumTournaments : '$' + getFieldName('rbdNumTournaments'),
+                    notes             : 1,
+                    registeredAt      : 1,
+                    validatedAt       : 1
                   }
                 },
                 {$sort: sort}
