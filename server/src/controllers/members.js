@@ -1,7 +1,9 @@
 var mongoose = require('mongoose');
 var recaptcha = require('../controllers/recaptcha');
 var Member = mongoose.model('Member');
-
+var moment = require('moment');
+var o2x = require('object-to-xml');
+var _ = require('underscore');
 /**
  * Hashmap of field names to flat names.
  *
@@ -10,16 +12,14 @@ var Member = mongoose.model('Member');
  * nested name from the projected name.
  */
 var field2FlatNames = {
-  'rockLastPlayedAt'      : 'rock.totalScores.lastPlayedAt',
-  'rockNumTournaments'    : 'rock.totalScores.numTournaments',
-  'rockAverageScore'      : 'rock.totalScores.averageScore',
-  'rockAverageMatchPoints': 'rock.totalScores.averageMatchPoints',
-  'rockAwards'            : 'rock.totalScores.awards',
-  'rbdLastPlayedAt'       : 'rbd.totalScores.lastPlayedAt',
-  'rbdNumTournaments'     : 'rbd.totalScores.numTournaments',
-  'rbdAverageScore'       : 'rbd.totalScores.averageScore',
-  'rbdAverageMatchPoints' : 'rbd.totalScores.averageMatchPoints',
-  'rbdAwards'             : 'rbd.totalScores.awards'
+  'rockLastPlayedAt'  : 'rock.totalScores.lastPlayedAt',
+  'rockNumTournaments': 'rock.totalScores.numTournaments',
+  'rockAverageScore'  : 'rock.totalScores.averageScore',
+  'rockAwards'        : 'rock.totalScores.awards',
+  'rbdLastPlayedAt'   : 'rbd.totalScores.lastPlayedAt',
+  'rbdNumTournaments' : 'rbd.totalScores.numTournaments',
+  'rbdAverageScore'   : 'rbd.totalScores.averageScore',
+  'rbdAwards'         : 'rbd.totalScores.awards'
 };
 
 /**
@@ -36,8 +36,8 @@ function isValidFieldName (name) {
   var names = [
     'bboName', 'name', 'nation', 'email', 'level',
     'isStarPlayer', 'isRbdPlayer', 'isEnabled', 'isBlackListed', 'isBanned',
-    'rockLastPlayedAt', 'rockNumTournaments', 'rockAverageScore', 'rockAverageMatchPoints', 'rockAwards',
-    'rbdLastPlayedAt', 'rbdNumTournaments', 'rbdAverageScore', 'rbdAverageMatchPoints', 'rbdAwards'
+    'rockLastPlayedAt', 'rockNumTournaments', 'rockAverageScore', 'rockAwards',
+    'rbdLastPlayedAt', 'rbdNumTournaments', 'rbdAverageScore', 'rbdAwards'
   ];
   return names.indexOf(name) > -1;
 }
@@ -59,12 +59,23 @@ function isNumericField (name) {
   var names = [
     'rockNumTournaments',
     'rockAverageScore',
-    'rockAverageMatchPoints',
     'rockAwards',
     'rbdNumTournaments',
     'rbdAverageScore',
-    'rbdAverageMatchPoints',
     'rbdAwards'
+  ];
+  return names.indexOf(name) > -1;
+}
+
+/**
+ * @returns {boolean} whether the field is a date field of the meber collection
+ */
+function isDateField (name) {
+  var names = [
+    'rockLastPlayedAt',
+    'rbdLastPlayedAt',
+    'registeredAt',
+    'validatedAt'
   ];
   return names.indexOf(name) > -1;
 }
@@ -346,10 +357,75 @@ function getFindCriterias (req, options) {
   return criteria.length > 0 ? criteria.length === 1 ? criteria[0] : {$and: criteria} : {};
 }
 
+function writeText (members, res) {
+  var now = moment.utc().format('YYYY-MM-DD');
+  res.setHeader('Content-Disposition', 'attachment; filename="members_' + now + '.txt"');
+  res.setHeader('Content-Type', 'text/plain;charset=utf-8');
+  members.forEach(function (member) {
+    res.write(member.bboName + '\r\n');
+  });
+  res.end();
+}
+
+function csvEscape (val) {
+  return val.replace(/"/g, '""');
+}
+
+function writeCsv (members, res) {
+  var now = moment.utc().format('YYYY-MM-DD');
+  res.setHeader('Content-Disposition', 'attachment; filename="members_' + now + '.csv"');
+  res.setHeader('Content-Type', 'text/csv;charset=utf-8');
+
+  if (members.length > 0) {
+    var sep = '';
+    _.each(_.keys(members[0]), function (field) {
+      res.write(sep + '"' + field + '"');
+      sep = ',';
+    });
+    res.write('\r\n');
+
+    members.forEach(function (member) {
+      sep = '';
+      _.each(member, function (val, field) {
+        res.write(sep);
+        if (isBooleanField(field)) {
+          res.write((val ? 'Y' : 'N'));
+        }
+        else if (isNumericField(field)) {
+          res.write(val.toFixed(2).toString());
+        }
+        else if (isDateField(field)) {
+          res.write(moment(val).utc().format());
+        }
+        else {
+          res.write('"' + csvEscape(val) + '",');
+        }
+
+        sep = ',';
+      });
+    });
+  }
+  res.end();
+}
+
+function writeXml (members, res) {
+  var obj = {
+    '?xml version=\"1.0\" encoding=\"UTF-8\"?': null,
+    members                                   : {member: members}
+  };
+
+  var now = moment.utc().format('YYYY-MM-DD');
+  res.setHeader('Content-Disposition', 'attachment; filename="members_' + now + '.xml"');
+  res.setHeader('Content-Type', 'application/xml;charset=utf-8');
+  res.write(o2x(obj));
+  res.end();
+}
+
 module.exports = {
 
   index: function (req, res) {
     Member.find({}, function (err, data) {
+      if (err) { console.error('members.index', err); }
       res.json(data);
     });
   },
@@ -357,7 +433,7 @@ module.exports = {
   getRock: function (req, res) {
     var limit = getLimit(req);
     var skip = getSkip(req);
-    var sort = getSort(req, ['bboName', 'nation', 'level', 'awards', 'averageScore', 'averageMatchPoints', 'numTournaments']);
+    var sort = getSort(req, ['bboName', 'nation', 'level', 'awards', 'averageMatchPoints', 'numTournaments']);
     var filter = getFindCriterias(req, {
       criteria        : {
         isEnabled    : true,
@@ -369,6 +445,7 @@ module.exports = {
       restrictedSearch: true
     });
     Member.find(filter).count(function (err, count) {
+      if (err) { console.error('members.getRock', err); }
       Member.aggregate([
         {$match: filter},
         {
@@ -377,8 +454,7 @@ module.exports = {
             nation            : 1,
             level             : 1,
             awards            : '$' + getFieldName('rockAwards'),
-            averageMatchPoints: '$' + getFieldName('rockAverageMatchPoints'),
-            averageScore      : '$' + getFieldName('rockAverageScore'),
+            averageMatchPoints: '$' + getFieldName('rockAverageScore'),
             numTournaments    : '$' + getFieldName('rockNumTournaments')
           }
         }
@@ -387,6 +463,7 @@ module.exports = {
           .skip(skip)
           .limit(limit)
           .exec(function (err, data) {
+            if (err) { console.error('members.getRock', err); }
             res.json({
               skip : skip,
               limit: limit,
@@ -401,7 +478,7 @@ module.exports = {
   getRbd: function (req, res) {
     var limit = getLimit(req);
     var skip = getSkip(req);
-    var sort = getSort(req, ['bboName', 'nation', 'level', 'awards', 'averageScore', 'averageMatchPoints', 'numTournaments']);
+    var sort = getSort(req, ['bboName', 'nation', 'level', 'awards', 'averageScore', 'numTournaments']);
     var filter = getFindCriterias(req, {
       criteria   : {
         isEnabled    : true,
@@ -411,17 +488,17 @@ module.exports = {
       }, doFilter: false, restrictedSearch: true
     });
     Member.find(filter).count(function (err, count) {
+      if (err) { console.error('members.getRbd', err); }
       Member.aggregate([
         {$match: filter},
         {
           $project: {
-            bboName           : 1,
-            nation            : 1,
-            level             : 1,
-            awards            : '$' + getFieldName('rbdAwards'),
-            averageMatchPoints: '$' + getFieldName('rbdAverageMatchPoints'),
-            averageScore      : '$' + getFieldName('rbdAverageScore'),
-            numTournaments    : '$' + getFieldName('rbdNumTournaments')
+            bboName       : 1,
+            nation        : 1,
+            level         : 1,
+            awards        : '$' + getFieldName('rbdAwards'),
+            averageScore  : '$' + getFieldName('rbdAverageScore'),
+            numTournaments: '$' + getFieldName('rbdNumTournaments')
           }
         }
       ])
@@ -429,6 +506,7 @@ module.exports = {
           .skip(skip)
           .limit(limit)
           .exec(function (err, data) {
+            if (err) { console.error('members.getRbd', err); }
             res.json({
               skip : skip,
               limit: limit,
@@ -455,68 +533,68 @@ module.exports = {
                              'isBanned',
                              'rockLastPlayedAt',
                              'rockNumTournaments',
-                             'rockAverageScore',
                              'rockAverageMatchPoints',
                              'rockAwards',
                              'rbdLastPlayedAt',
                              'rbdNumTournaments',
                              'rbdAverageScore',
-                             'rbdAverageMatchPoints',
                              'rbdAwards',
                              'registeredAt',
                              'validatedAt']);
     var filter = getFindCriterias(req);
     Member.find(filter).count(function (err, count) {
-      Member.aggregate([
-        {$match: filter},
-        {
-          $project: {
-            bboName               : 1,
-            name                  : 1,
-            nation                : 1,
-            level                 : 1,
-            email                 : 1,
-            isStarPlayer          : 1,
-            isRbdPlayer           : 1,
-            isEnabled             : 1,
-            isBlackListed         : 1,
-            isBanned              : 1,
-            rockLastPlayedAt      : '$' + getFieldName('rockLastPlayedAt'),
-            rockAwards            : '$' + getFieldName('rockAwards'),
-            rockAverageMatchPoints: '$' + getFieldName('rockAverageMatchPoints'),
-            rockAverageScore      : '$' + getFieldName('rockAverageScore'),
-            rockNumTournaments    : '$' + getFieldName('rockNumTournaments'),
-            rbdLastPlayedAt       : '$' + getFieldName('rbdLastPlayedAt'),
-            rbdAwards             : '$' + getFieldName('rbdAwards'),
-            rbdAverageMatchPoints : '$' + getFieldName('rbdAverageMatchPoints'),
-            rbdAverageScore       : '$' + getFieldName('rbdAverageScore'),
-            rbdNumTournaments     : '$' + getFieldName('rbdNumTournaments'),
-            registeredAt          : 1,
-            validatedAt           : 1
-          }
+          if (err) { console.error('members.getAll', err); }
+          Member.aggregate([
+                {$match: filter},
+                {
+                  $project: {
+                    bboName               : 1,
+                    name                  : 1,
+                    nation                : 1,
+                    level                 : 1,
+                    email                 : 1,
+                    isStarPlayer          : 1,
+                    isRbdPlayer           : 1,
+                    isEnabled             : 1,
+                    isBlackListed         : 1,
+                    isBanned              : 1,
+                    rockLastPlayedAt      : '$' + getFieldName('rockLastPlayedAt'),
+                    rockAwards            : '$' + getFieldName('rockAwards'),
+                    rockAverageMatchPoints: '$' + getFieldName('rockAverageScore'),
+                    rockNumTournaments    : '$' + getFieldName('rockNumTournaments'),
+                    rbdLastPlayedAt       : '$' + getFieldName('rbdLastPlayedAt'),
+                    rbdAwards             : '$' + getFieldName('rbdAwards'),
+                    rbdAverageScore       : '$' + getFieldName('rbdAverageScore'),
+                    rbdNumTournaments     : '$' + getFieldName('rbdNumTournaments'),
+                    registeredAt          : 1,
+                    validatedAt           : 1
+                  }
+                },
+                {$sort: sort},
+                {$skip: skip},
+                {$limit: limit}
+              ],
+              function (err, data) {
+                if (err) { console.error('members.getAll', err); }
+                res.json({
+                  skip : skip,
+                  limit: limit,
+                  sort : sort,
+                  total: count,
+                  rows : data
+                });
+              }
+          );
         }
-      ])
-          .sort(sort)
-          .skip(skip)
-          .limit(limit)
-          .exec(function (err, data) {
-            res.json({
-              skip : skip,
-              limit: limit,
-              sort : sort,
-              total: count,
-              rows : data
-            });
-          });
-    });
+    );
   },
 
   getBboNames: function (req, res) {
     var q = req.query.q || '';
     Member.find({bboName: {$regex: new RegExp(q, 'i')}})
         .select('bboName')
-        .exec(
-        function (err, data) {
+        .exec(function (err, data) {
+          if (err) { console.error('members.getBboName', err); }
           res.json(data);
         });
   },
@@ -524,6 +602,7 @@ module.exports = {
   getById: function (req, res) {
     Member.findOne({_id: req.params.id}, function (err, player) {
       if (err) {
+        if (err) { console.error('members.getById', err); }
         res.status(500).json({error: err});
       }
       else if (player === null) {
@@ -554,7 +633,7 @@ module.exports = {
               res.status(409).json(errors);
             }
             else {
-              console.log(err);
+              console.error('members.register', err);
               res.status(422).json({bboName: error});
             }
           }
@@ -587,7 +666,7 @@ module.exports = {
             res.status(409).json(errors);
           }
           else {
-            console.log(err);
+            console.error('members.add', err);
             res.status(422).json({bboName: error});
           }
         }
@@ -605,6 +684,7 @@ module.exports = {
     delete req.body.recaptcha_response_field;
     Member.findByIdAndUpdate(id, {$set: req.body}, function (err, updated) {
       if (err) {
+        console.error('members.update', err);
         res.json({error: 'Error updating member.'});
       }
       else {
@@ -616,6 +696,7 @@ module.exports = {
   delete: function (req, res) {
     Member.findOne({_id: req.params.id}, function (err, player) {
       if (err) {
+        console.error('members.delete', err);
         res.json({error: 'Member not found.'});
       }
       else {
@@ -624,6 +705,90 @@ module.exports = {
         });
       }
     });
+  },
+
+  export: function (req, res) {
+    var sort = getSort(req, ['bboName',
+                             'name',
+                             'nation',
+                             'level',
+                             'email',
+                             'isStarPlayer',
+                             'isRbdPlayer',
+                             'isEnabled',
+                             'isBlackListed',
+                             'isBanned',
+                             'rockLastPlayedAt',
+                             'rockNumTournaments',
+                             'rockAverageMatchPoints',
+                             'rockAwards',
+                             'rbdLastPlayedAt',
+                             'rbdNumTournaments',
+                             'rbdAverageScore',
+                             'rbdAwards',
+                             'registeredAt',
+                             'validatedAt']);
+    var filter = getFindCriterias(req);
+    Member.find(filter).count(function (err, count) {
+          if (err) { console.error('members.getAll', err); }
+          Member.aggregate([
+                {$match: filter},
+                {
+                  $project: {
+                    _id                   : 0,
+                    bboName               : 1,
+                    name                  : 1,
+                    nation                : 1,
+                    level                 : 1,
+                    email                 : 1,
+                    isStarPlayer          : 1,
+                    isRbdPlayer           : 1,
+                    isEnabled             : 1,
+                    isBlackListed         : 1,
+                    isBanned              : 1,
+                    rockLastPlayedAt      : '$' + getFieldName('rockLastPlayedAt'),
+                    rockAwards            : '$' + getFieldName('rockAwards'),
+                    rockAverageMatchPoints: '$' + getFieldName('rockAverageScore'),
+                    rockNumTournaments    : '$' + getFieldName('rockNumTournaments'),
+                    rbdLastPlayedAt       : '$' + getFieldName('rbdLastPlayedAt'),
+                    rbdAwards             : '$' + getFieldName('rbdAwards'),
+                    rbdAverageScore       : '$' + getFieldName('rbdAverageScore'),
+                    rbdNumTournaments     : '$' + getFieldName('rbdNumTournaments'),
+                    notes                 : 1,
+                    registeredAt          : 1,
+                    validatedAt           : 1
+                  }
+                },
+                {$sort: sort}
+              ],
+              function (err, members) {
+                if (err) { console.error('members.export', err); }
+
+                var type = req.params.type ? req.params.type.toLowerCase() : 'text';
+                switch (type) {
+                  case 'json':
+                    var now = moment.utc().format('YYYY-MM-DD');
+                    res.setHeader('Content-Disposition', 'attachment; filename="members_' + now + '.json"');
+                    res.json({members: members});
+                    break;
+
+                  case 'xml' :
+                    writeXml(members, res);
+                    break;
+
+                  case 'csv' :
+                    writeCsv(members, res);
+                    break;
+
+                  default:
+                    writeText(members, res);
+                    break;
+                }
+              }
+          );
+        }
+    );
   }
 
-};
+}
+;

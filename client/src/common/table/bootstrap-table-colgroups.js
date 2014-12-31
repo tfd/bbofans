@@ -17,7 +17,6 @@ $.extend($.fn.bootstrapTable.defaults, {
                      'bboName',
                      'rockNumTournaments',
                      'rockLastPlayedAt',
-                     'rockAverageScore',
                      'rockAverageMatchPoints',
                      'rockAwards'],
     'rbd scores'  : ['select',
@@ -26,7 +25,6 @@ $.extend($.fn.bootstrapTable.defaults, {
                      'rbdNumTournaments',
                      'rbdLastPlayedAt',
                      'rbdAverageScore',
-                     'rbdAverageMatchPoints',
                      'rbdAwards']
   }
 });

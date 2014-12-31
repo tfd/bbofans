@@ -4,6 +4,7 @@
   <div id="filter-bar"></div>
   <table data-toggle="table"
          data-url="/admin/blacklist"
+         data-export-url="/admin/blacklist/export"
          data-cache="false"
          data-classes="table table-hover"
          data-sort-name="bboName"
@@ -13,7 +14,8 @@
          data-page-list="[10, 25, 50, 100]"
          data-side-pagination="server"
          data-search="true"
-         data-show-refresh="true">
+         data-show-refresh="true"
+         data-show-export="true">
     <thead>
       <th data-field="bboName" data-sortable="true" data-switchable="false">BBO login</th>
       <th data-field="lastFrom" data-sortable="false" data-formatter="bsTable.formatters.date">From</th>

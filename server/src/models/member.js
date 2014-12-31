@@ -44,37 +44,33 @@ var MemberSchema = new Schema({
     lastPlayedAt       : {type: Date},
     playedInTournaments: [{type: Schema.Types.ObjectId, ref: 'Tournament'}],
     totalScores        : {
-      numTournaments    : {type: Number, default: 0},
-      averageScore      : {type: Number, default: 0},
-      averageMatchPoints: {type: Number, default: 0},
-      awards            : {type: Number, default: 0}
+      numTournaments: {type: Number, default: 0},
+      averageScore  : {type: Number, default: 0},
+      awards        : {type: Number, default: 0}
     },
     monthlyScores      : [{
-                            month             : {type: Number},
-                            year              : {type: Number},
-                            numTournaments    : {type: Number, default: 0},
-                            averageScore      : {type: Number, default: 0},
-                            averageMatchPoints: {type: Number, default: 0},
-                            awards            : {type: Number, default: 0}
-                          }],
+                            month         : {type: Number},
+                            year          : {type: Number},
+                            numTournaments: {type: Number, default: 0},
+                            averageScore  : {type: Number, default: 0},
+                            awards        : {type: Number, default: 0}
+                          }]
   },
   rbd            : {
     lastPlayedAt       : {type: Date},
     playedInTournaments: [{type: Schema.Types.ObjectId, ref: 'Tournament'}],
     totalScores        : {
-      numTournaments    : {type: Number, default: 0},
-      averageScore      : {type: Number, default: 0},
-      averageMatchPoints: {type: Number, default: 0},
-      awards            : {type: Number, default: 0}
+      numTournaments: {type: Number, default: 0},
+      averageScore  : {type: Number, default: 0},
+      awards        : {type: Number, default: 0}
     },
     monthlyScores      : [{
-                            month             : {type: Number},
-                            year              : {type: Number},
-                            numTournaments    : {type: Number, default: 0},
-                            averageScore      : {type: Number, default: 0},
-                            averageMatchPoints: {type: Number, default: 0},
-                            awards            : {type: Number, default: 0}
-                          }],
+                            month         : {type: Number},
+                            year          : {type: Number},
+                            numTournaments: {type: Number, default: 0},
+                            averageScore  : {type: Number, default: 0},
+                            awards        : {type: Number, default: 0}
+                          }]
   },
   registeredAt   : {type: Date},
   validatedAt    : {type: Date},
@@ -85,15 +81,13 @@ var MemberSchema = new Schema({
  * Helper functions.
  */
 
-function updateScores (scores, result) {
+function updateScores (isImps, scores, result) {
   var numTournaments = scores.numTournaments || 0;
   var sumOfScores = (scores.averageScore || 0) * numTournaments + (result.score || 0);
-  var sumOfMatchPoints = (scores.averageMatchPoints || 0) * numTournaments + (result.matchPoints || 0);
   numTournaments += 1;
 
   scores.numTournaments = numTournaments;
   scores.averageScore = sumOfScores / numTournaments;
-  scores.averageMatchPoints = sumOfMatchPoints / numTournaments;
   scores.awards += result.awards || 0;
 }
 
@@ -211,14 +205,18 @@ MemberSchema.methods = {
     var score = null;
     var newMonth = true;
     var newMonthlyScore = {
-      month             : tournament.date.getMonth(),
-      year              : tournament.date.getFullYear(),
-      numTournaments    : 0,
-      averageScore      : 0,
-      averageMatchPoints: 0,
-      awards            : 0
+      month         : tournament.date.getMonth(),
+      year          : tournament.date.getFullYear(),
+      numTournaments: 0,
+      awards        : 0
     };
     var league = tournament.isRbd ? this.rbd : this.rock;
+    if (tournament.isRbd) {
+      newMonthlyScore.averageScore = 0;
+    }
+    else {
+      newMonthlyScore.averageMatchPoints = 0;
+    }
 
     if (tournament.isRbd && !this.isRbdPlayer) {
       throw new Error('Member ' + this.bboName + ' is not enabled to play in RBD Tournaments');
@@ -236,13 +234,13 @@ MemberSchema.methods = {
     }
 
     // Update total scores
-    updateScores(league.totalScores, score);
+    updateScores(tournament.isRbd, league.totalScores, score);
 
     // Update monthly scores
     league.monthlyScores.every(function (monthlyScore, i) {
       if (monthlyScore.year === tournament.date.getFullYear() &&
           monthlyScore.month === tournament.date.getMonth()) {
-        updateScores(monthlyScore, score);
+        updateScores(tournament.isRbd, monthlyScore, score);
         newMonth = false;
         return false;
       }
@@ -251,7 +249,7 @@ MemberSchema.methods = {
 
     if (newMonth) {
       // First tournament in this month
-      updateScores(newMonthlyScore, score);
+      updateScores(tournament.isRbd, newMonthlyScore, score);
       league.monthlyScores.push(newMonthlyScore);
     }
 

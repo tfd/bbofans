@@ -6,7 +6,7 @@ module.exports = [{
                     title: 'Award System'
                   }, {
                     href : '/matchpoints',
-                    title: 'Matchpoint System'
+                    title: 'Match Point System'
                   }, {
                     href : '/bbolinks',
                     title: 'Links to BBO'

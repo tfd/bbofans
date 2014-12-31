@@ -14,13 +14,12 @@ var mongooseTypes = require("nifty-mongoose-types");
 var TournamentSchema = new Schema({
   name          : {type : String, required : 'Tournament name cannot be blank', trim : true, unique: true},
   date          : {type : Date, default : Date.now},
-  numPlayers    : {type : Number, required : 'Number of players cannout be blank', min: [4, 'Number of players must be at least {MIN}'] },
+  numPlayers    : {type : Number, required : 'Number of players cannot be blank', min: [4, 'Number of players must be at least {MIN}'] },
   isPair        : {type : Boolean, default : false},
   isRbd         : {type : Boolean, default : false},
   results       : [{
     players       : [{type : String}],
     score         : {type : Number, default : 0 },
-    matchPoints   : {type : Number, default : 0 },
     awards        : {type : Number, default : 0 }}],
   createdAt     : {type : Date, default : Date.now}
 });

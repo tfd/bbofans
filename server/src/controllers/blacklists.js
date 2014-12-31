@@ -3,67 +3,78 @@ var recaptcha = require('../controllers/recaptcha');
 var Blacklist = mongoose.model('Blacklist');
 var moment = require('moment');
 var async = require('async');
+var o2x = require('object-to-xml');
 
-function initCollection (cbInit) {
-  // Synchronize with Member.isBlackListed
-  var Members = mongoose.model('Member');
-  async.waterfall(
-    [
-      function findBlacklistedMembers(cb) {
-        Members.find({isBlackListed: true}, {_id: 0, bboName: 1}).exec(cb);
-      },
-      function forEachMember(members, cbMembers) {
-        async.map(members,
-          function addMemberToBlacklist(member, cbMember) {
-            async.waterfall(
-              [
-                function findBlacklist(cbFind) {
-                  Blacklist.findOne({bboName: member.bboName}, cbFind);
-                },
-                function updateOrCreateBlacklist(blacklist, cbBlacklist) {
-                  var now = moment();
-                  var expire = moment().add(1, 'M');
-                  if (blacklist) {
-                    var ok = false;
-                    blacklist.entries.forEach(function (row){
-                      if (row.from <= now && row.to >= now) { ok = true; }
-                    });
-                    if (ok) {
-                      cbBlacklist(null, blacklist);
-                    }
-                    else {
-                      blacklist.entries.push({ from: now, to: expire, reason: "Automatic update from Members collection."});
-                      blacklist.save(cbBlacklist);
-                    }
-                  }
-                  else {
-                    blacklist = new Blacklist({ bboName: member.bboName, entries: [] });
-                    blacklist.entries.push({ from: now, to: expire, reason: "Automatic add from Members collection."});
-                    blacklist.save(cbBlacklist);
-                  }
-                }
-              ],
-              cbMember
-            );
-          },
-          cbMembers
-        );
+function findBlacklistedMembers (Members) {
+  return function (cb) {
+    Members.find({isBlackListed: true}, {_id: 0, bboName: 1}).exec(cb);
+  };
+}
+
+function updateOrCreateBlacklist (bboName) {
+  return function (blacklist, cb) {
+    var now = moment.utc();
+    var expire = now.add(1, 'M');
+    if (blacklist) {
+      var ok = false;
+      blacklist.entries.forEach(function (row) {
+        if (row.from <= now && row.to >= now) { ok = true; }
+      });
+      if (ok) {
+        cb(null, blacklist);
       }
-    ],
-    cbInit
+      else {
+        blacklist.entries.push({from: now, to: expire, reason: "Automatic update from Members collection."});
+        blacklist.save(cb);
+      }
+    }
+    else {
+      blacklist = new Blacklist({bboName: bboName, entries: []});
+      blacklist.entries.push({from: now, to: expire, reason: "Automatic add from Members collection."});
+      blacklist.save(cb);
+    }
+  };
+}
+
+function findBlacklist (bboName) {
+  return function (cb) {
+    Blacklist.findOne({bboName: bboName}, cb);
+  };
+}
+
+function addMemberToBlacklist (member, cb) {
+  async.waterfall(
+      [
+        findBlacklist(member.bboName),
+        updateOrCreateBlacklist(member.bboName)
+      ],
+      cb
   );
 }
 
-initCollection( function (err, blacklists) {
-  if (err) { console.log("initCollection", err); }
-});
+function addMembersToBlacklist (members, cb) {
+  async.map(members, addMemberToBlacklist, cb);
+}
+
+function initCollection (cb) {
+  // Synchronize with Member.isBlackListed
+  var Members = mongoose.model('Member');
+  async.waterfall(
+      [
+        findBlacklistedMembers(Members),
+        addMembersToBlacklist
+      ],
+      cb
+  );
+}
 
 /**
- * @returns a sanitized value: only alphanumeric and spaces are allowed.
+ * @params {String} val - value to sanitize
+ * @returns {String} a sanitized value: only alphanumeric and spaces are allowed.
  *          Any other character is replaced with a dot so it works in a regexp.
  */
-function sanitize(field, val) {
-  val = val.replace( /[^a-zA-Z0-9_\s]/, ".").replace( /\s/, " ");
+function sanitize (val) {
+  val = val.replace(/[^a-zA-Z0-9_\s]/, ".").replace(/\s/, " ");
   return val;
 }
 
@@ -114,7 +125,7 @@ function getSort (req, fields) {
   var order = 'asc';
   if (req.query.sort && fields.indexOf(req.query.sort) >= 0) {
     field = req.query.sort;
-  } 
+  }
   if (req.query.order && ['asc', 'desc'].indexOf(req.query.order) >= 0) {
     order = req.query.order;
   }
@@ -127,89 +138,108 @@ function getSort (req, fields) {
  *
  * This is a simple text field that does a contains search on the bboName, name, and email fields.
  *
- * @param req {Objec} The http request.
- * @param restricted {Boolean} Set to true to exclude email from the search
- * @returns array of criterias to be applied in $and.
+ * @param req {Object} The http request.
+ * @returns {Object} array of criterias to be applied in $and.
  */
-function getSearchCriteria(req, options) {
-  if (options.doSearch === false) {
-    return [];
-  }
-
+function getSearchCriteria (req) {
   if (typeof req.query.search !== 'string' || req.query.search.length === 0) {
-    return [];
-  }
-  
-  var name = sanitize('bboName', req.query.search);
-  var criteria = [];
-
-  criteria.push({ bboName: new RegExp(name, 'i')});
-
-  return criteria;
-}
-
-/**
- * Build an initial array of criteria.
- *
- * @returns an array of criteria to be applied in $and.
- */
-function initializeCriteria(initialCriteria) {
-  if (initialCriteria) {
-    if (Object.prototype.toString.call(initialCriteria) === '[object Array]') {
-      return initialCriteria;
-    }
-    else {
-      return [initialCriteria];
-    }
+    return null;
   }
 
-  return [];
+  var name = sanitize(req.query.search);
+
+  return {bboName: new RegExp(name, 'i')};
 }
 
-/**
- * Read search from the query parameters.
- *
- * @returns an object that can be passed to mongo db find().
- */
-function getFindCriterias(req, options)
-{
-  options = options || {};
-  var criteria = initializeCriteria(options.criteria);
+function writeText (blacklist, res) {
+  var now = moment.utc().format('YYYY-MM-DD');
+  res.setHeader('Content-Disposition', 'attachment; filename="blacklist_' + now + '.txt"');
+  res.setHeader('Content-Type', 'text/plain;charset=utf-8');
+  blacklist.forEach(function (val) {
+    res.write(val.bboName + '\r\n');
+  });
+  res.end();
+}
 
-  // Handle 'search' query parameter
-  criteria = criteria.concat(getSearchCriteria(req, options));
+function csvEscape (val) {
+  return val.replace(/"/g, '""');
+}
 
-  return criteria.length > 0 ? criteria.length === 1 ? criteria[0] : { $and : criteria } : {};
+function writeCsv (blacklist, res) {
+  var now = moment.utc().format('YYYY-MM-DD');
+  res.setHeader('Content-Disposition', 'attachment; filename="blacklist_' + now + '.csv"');
+  res.setHeader('Content-Type', 'text/csv;charset=utf-8');
+  res.write('bboName,from,to,reason\r\n');
+  blacklist.forEach(function (val) {
+    var lastEntry = val.entries[val.entries.length - 1];
+    res.write('"' + csvEscape(val.bboName) + '",');
+    res.write(moment(lastEntry.from).utc().format() + ',');
+    res.write(moment(lastEntry.to).utc().format() + ',');
+    res.write('"' + csvEscape(lastEntry.reason) + '"\r\n');
+  });
+  res.end();
+}
+
+function writeXml (blacklist, res) {
+  blacklist.forEach(function (member) {
+    var entry = member.entries;
+    member.entries = {entry: entry};
+  });
+
+  console.log(blacklist);
+  var obj = {
+    '?xml version=\"1.0\" encoding=\"UTF-8\"?': null,
+    blacklist                                 : {member: blacklist}
+  };
+
+  var now = moment.utc().format('YYYY-MM-DD');
+  res.setHeader('Content-Disposition', 'attachment; filename="blacklist_' + now + '.xml"');
+  res.setHeader('Content-Type', 'application/xml;charset=utf-8');
+  res.write(o2x(obj));
+  res.end();
 }
 
 module.exports = {
-  
+
   getList: function (req, res) {
+    var now = moment.utc();
     var limit = getLimit(req);
     var skip = getSkip(req);
     var sort = getSort(req, ['bboName']);
-    var filter = getFindCriterias(req, { doFilter: false });
+    var filter = getSearchCriteria(req);
+
+    var aggr = [];
+    if (filter) {
+      aggr.push({$match: filter});
+    }
+    aggr.push({$project: {_id: {_id: '$_id', bboName: '$bboName', entries: '$entries'}, entries: '$entries'}});
+    aggr.push({$unwind: '$entries'});
+    aggr.push({$group: {_id: '$_id', entries: {$last: '$entries'}}});
+    aggr.push({$match: {'entries.from': {$lte: now.toDate()}, 'entries.to': {$gte: now.toDate()}}});
+    aggr.push({$project: {_id: '$_id._id', bboName: '$_id.bboName', entries: '$_id.entries'}});
+    aggr.push({$sort: sort});
+    aggr.push({$skip: skip});
+    aggr.push({$limit: limit});
+
     Blacklist.find(filter).count(function (err, count) {
-      Blacklist.find(filter)
-               .sort(sort)
-               .skip(skip)
-               .limit(limit)
-               .exec(function (err, data) {
+      if (err) { console.err('blacklist.getList', err); }
+      Blacklist.aggregate(aggr, function (err, data) {
+        if (err) { console.error('blacklists.getList', err); }
         res.json({
-          skip: skip,
+          skip : skip,
           limit: limit,
-          sort: sort,
+          sort : sort,
           total: count,
-          rows: data
+          rows : data
         });
       });
     });
   },
 
   getById: function (req, res) {
-    Blacklist.findOne({ _id: req.params.id }).exec(function (err, blacklist) {
+    Blacklist.findOne({_id: req.params.id}).exec(function (err, blacklist) {
       if (err) {
-        console.log('getById', err);
+        console.error('blacklist.getById', err);
         res.status(500).json({error: err});
       }
       else if (blacklist === null) {
@@ -222,9 +252,9 @@ module.exports = {
   },
 
   getByBboName: function (req, res) {
-    Blacklist.findOne({ bboName: req.query.bboName }).exec(function (err, blacklist) {
+    Blacklist.findOne({bboName: req.query.bboName}).exec(function (err, blacklist) {
       if (err) {
-        console.log('getByBboName', err);
+        console.error('blacklist.getByBboName', err);
         res.status(500).json({error: err});
       }
       else if (blacklist === null) {
@@ -236,9 +266,10 @@ module.exports = {
     });
   },
 
-  addEntry: function(req, res) {
+  addEntry: function (req, res) {
     Blacklist.addEntry(req.body.bboName, req.body.from, req.body.for, req.body.reason, function (err, blacklist) {
       if (err) {
+        console.error('blacklist.addEntry', err);
         res.status(409).json(err);
       }
       else {
@@ -246,29 +277,80 @@ module.exports = {
       }
     });
   },
-  
-  update: function(req, res) {
+
+  update: function (req, res) {
     var id = req.body._id;
     delete req.body._id;
-    Blacklist.findByIdAndUpdate(id, { $set: req.body }, function (err, updated) {
+    Blacklist.findByIdAndUpdate(id, {$set: req.body}, function (err, updated) {
       if (err) {
-        console.log("update", err);
+        console.error('blacklist.update', err);
         res.json({error: 'Error updating blacklist.'});
-      } else {
+      }
+      else {
         res.json(updated);
       }
     });
   },
 
-  delete: function(req, res) {
-    Blacklist.findOne({ _id: req.params.id }, function (err, blacklist) {
+  delete: function (req, res) {
+    Blacklist.findOne({_id: req.params.id}, function (err, blacklist) {
       if (err) {
-        console.log("delete", err);
+        console.error('blacklist.delete', err);
         res.json({error: 'Blacklist not found.'});
-      } else {
-        blacklist.remove(function(err, player){
+      }
+      else {
+        blacklist.remove(function (err, player) {
           res.json(200, {status: 'Success'});
         });
+      }
+    });
+  },
+
+  export: function (req, res) {
+    var now = moment.utc();
+    var sort = getSort(req, ['bboName']);
+    var filter = getSearchCriteria(req);
+
+    var aggr = [];
+    if (filter) {
+      aggr.push({$match: filter});
+    }
+    aggr.push({$project: {_id: {bboName: '$bboName', entries: '$entries'}, entries: '$entries'}});
+    aggr.push({$unwind: '$entries'});
+    aggr.push({$group: {_id: '$_id', entries: {$last: '$entries'}}});
+    aggr.push({$match: {'entries.from': {$lte: now.toDate()}, 'entries.to': {$gte: now.toDate()}}});
+    aggr.push({$project: {_id: 0, bboName: '$_id.bboName', entries: '$_id.entries'}});
+    aggr.push({$sort: sort});
+
+    Blacklist.aggregate(aggr, function (err, blacklisted) {
+      if (err) { console.error('blacklist.export', err); }
+
+      // Remove _id from entries, as it's not needed.
+      blacklisted.forEach(function (blacklist) {
+        blacklist.entries.forEach(function (entry) {
+          delete entry._id;
+        });
+      });
+
+      var type = req.params.type ? req.params.type.toLowerCase() : 'text';
+      switch (type) {
+        case 'json':
+          var now = moment.utc().format('YYYY-MM-DD');
+          res.setHeader('Content-Disposition', 'attachment; filename="blacklist_' + now + '.json"');
+          res.json({blacklist: blacklisted});
+          break;
+
+        case 'xml' :
+          writeXml(blacklisted, res);
+          break;
+
+        case 'csv' :
+          writeCsv(blacklisted, res);
+          break;
+
+        default:
+          writeText(blacklisted, res);
+          break;
       }
     });
   }

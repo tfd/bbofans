@@ -18,8 +18,13 @@ window.bsTable.formatters = window.bsTable.formatters || {
   percentage: function (value) {
     var v = parseFloat(value);
     return v.toFixed(2) + '%';
+  },
+
+  float: function (value) {
+    var v = parseFloat(value);
+    return v.toFixed(2);
   }
-}; 
+};
 
 Handlebars.registerHelper('formatDate', function(val) {
   return window.bsTable.formatters.date(val);
@@ -31,6 +36,10 @@ Handlebars.registerHelper('formatBoolean', function(val) {
 
 Handlebars.registerHelper('formatPercentage', function (val) {
   return window.bsTable.formatters.percentage(val);
+});
+
+Handlebars.registerHelper('formatFloat', function (val) {
+  return window.bsTable.formatters.float(val);
 });
 
 Handlebars.registerPartial('displayBboName', require('./displayBboName.hbs'));

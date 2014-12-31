@@ -1,4 +1,3 @@
-
 /*
  * Module dependencies.
  */
@@ -16,24 +15,24 @@ require('moment-range');
  */
 
 var EntrySchema = new Schema({
-  from   : {type : Date},
-  to     : {type : Date},
-  reason : {type : String, default : '', required : 'reason cannot be blank', trim : true}
+  from  : {type: Date},
+  to    : {type: Date},
+  reason: {type: String, default: '', required: 'reason cannot be blank', trim: true}
 }, {
   id: false
 });
 
 var BlacklistSchema = new Schema({
-  bboName   : {type : String, required : 'BBO name cannot be blank', unique: true, trim : true},
-  entries   : [EntrySchema],
-  createdAt : {type : Date, default: Date.now}
+  bboName  : {type: String, required: 'BBO name cannot be blank', unique: true, trim: true},
+  entries  : [EntrySchema],
+  createdAt: {type: Date, default: Date.now}
 });
 
 /*
  * Helper functions.
  */
 
-function handleError(msg, cb) {
+function handleError (msg, cb) {
   if (typeof cb === 'function') {
     cb(new Error(msg), null);
   }
@@ -46,8 +45,10 @@ function handleError(msg, cb) {
 BlacklistSchema.methods = {
   isMember: function (cb) {
     var Member = mongoose.model('Member');
-    Member.findOne({ bboName : this.bboName }, function (err, member) {
-      if (cb) cb(err || (member === null) ? false : true);
+    Member.findOne({bboName: this.bboName}, function (err, member) {
+      if (cb) {
+        cb(err || (member === null) ? false : true);
+      }
     });
   }
 };
@@ -55,7 +56,7 @@ BlacklistSchema.methods = {
 BlacklistSchema.statics = {
   addEntry: function (bboName, date, period, reason, cb) {
     var Blacklist = this;
-    Blacklist.findOne({bboName : bboName}, function (err, blacklist) {
+    Blacklist.findOne({bboName: bboName}, function (err, blacklist) {
       if (err) {
         cb(err, blacklist);
         return;
@@ -66,24 +67,24 @@ BlacklistSchema.statics = {
       }
 
       var fromDate = moment.utc(date);
-      if (! fromDate.isValid) {
-        cd({'from': 'Value "' + date +'" is an invalid date'}, blacklist);
+      if (!fromDate.isValid) {
+        cd({'from': 'Value "' + date + '" is an invalid date'}, blacklist);
         return;
       }
       var num = parseInt(period, 10);
       var type = period.slice(-1);
       var toDate = type === 'F' ? moment.utc('2050-12-31') : fromDate.clone().add(num, type);
-      if (! toDate.isValid()) {
-        cb({'for': 'Value "' + period +'" is an invalid duration'}, blacklist);
+      if (!toDate.isValid()) {
+        cb({'for': 'Value "' + period + '" is an invalid duration'}, blacklist);
         return;
       }
-      
-      if (! blacklist.entries) {
+
+      if (!blacklist.entries) {
         blacklist.entries = [];
       }
       blacklist.entries.push({
         'from': fromDate.toDate(),
-        'to': toDate.toDate(),
+        'to'  : toDate.toDate(),
         reason: reason
       });
 
@@ -101,14 +102,15 @@ BlacklistSchema.statics = {
           else {
             cb({bboName: error}, blacklist);
           }
-        } else {
-          // Update isBanned and isBlacklistedflags.
+        }
+        else {
+          // Update isBanned and isBlacklisted flags.
           var isBanned = (type === 'F');
           var isBlackListed = isBanned || moment().range(fromDate, toDate).contains(moment.utc());
           var Member = mongoose.model('Member');
           Member.update({bboName: bboName},
-                        {$set : { isBanned : isBanned, isBlackListed : isBlackListed }},
-                        cb);
+              {$set: {isBanned: isBanned, isBlackListed: isBlackListed}},
+              cb);
         }
       });
     });

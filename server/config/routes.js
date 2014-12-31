@@ -27,8 +27,8 @@ var admin = require('../src/controllers/admin');
 var commands = require('../src/controllers/commands');
 var blacklists = require('../src/controllers/blacklists');
 var recaptcha = require('../src/controllers/recaptcha');
+var updater = require('../src/controllers/updater');
 var login = require('./middlewares/authentication');
-
 /**
  * Expose routes
  */
@@ -36,6 +36,7 @@ var login = require('./middlewares/authentication');
 module.exports = function (app, config, passport) {
   // home route
   app.get('/recaptcha/:challenge/:response', recaptcha.check);
+  app.get('/update', updater.update);
   app.get('/members/rock', members.getRock);
   app.get('/members/rbd', members.getRbd);
   app.post('/register', members.register);
@@ -45,6 +46,8 @@ module.exports = function (app, config, passport) {
   app.get('/admin/members', memberManagerAuth, members.getAll);
   app.get('/admin/members/bboName', memberManagerAuth, members.getBboNames);
   app.post('/admin/members', memberManagerAuth, members.add);
+  app.get('/admin/members/export', memberManagerAuth, members.export);
+  app.get('/admin/members/export/:type', memberManagerAuth, members.export);
   app.put('/admin/members/:id', memberManagerAuth, members.update);
   app.get('/admin/members/:id', memberManagerAuth, members.getById);
   app.delete('/admin/members/:id', memberManagerAuth, members.delete);
@@ -56,6 +59,8 @@ module.exports = function (app, config, passport) {
   app.get('/admin/blacklist', blacklistManagerAuth, blacklists.getList);
   app.post('/admin/blacklist/entry', blacklistManagerAuth, blacklists.addEntry);
   app.get('/admin/blacklist/bboName', blacklistManagerAuth, blacklists.getByBboName);
+  app.get('/admin/blacklist/export', blacklistManagerAuth, blacklists.export);
+  app.get('/admin/blacklist/export/:type', blacklistManagerAuth, blacklists.export);
   app.put('/admin/blacklist/:id', blacklistManagerAuth, blacklists.update);
   app.get('/admin/blacklist/:id', blacklistManagerAuth, blacklists.getById);
   app.get('/admin/logout', admin.logout);

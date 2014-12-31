@@ -113,7 +113,9 @@ var BboFansApp = Marionette.Application.extend({
         var route = xhr.getResponseHeader('Location');
         if (route) { route = route.substring(1); }
         else { route = 'login';}
-        self.authentication.logout();
+        self.authentication.logout(function () {
+          messageBus.command('route:login');
+        });
       }
     });
 

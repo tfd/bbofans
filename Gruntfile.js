@@ -190,6 +190,7 @@ module.exports = function(grunt) {
         script: 'server/server.js',
         options: {
           nodeArgs: ['--debug'],
+          ignore: ['bower_components/**', 'build/**', 'client/**', 'node_modules/**', 'public/**'],
           watch: ['server/src', 'server/config'],
           env: {
             PORT: '3000'

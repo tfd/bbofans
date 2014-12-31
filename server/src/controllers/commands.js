@@ -3,15 +3,15 @@ var Member = mongoose.model('Member');
 var Blacklist = mongoose.model('Blacklist');
 var async = require('async');
 
-var flags = {
-  enable: { isEnabled : true },
-  disable: { isEnabled : false }
-};
-
 function sendMail(to, bcc, subject, message, cb) {
   console.log('sendMail', to, bcc, subject, message);
   cb(null, {});
 }
+
+var flags = {
+  enable: { isEnabled : true },
+  disable: { isEnabled : false }
+};
 
 var commands = {};
 
@@ -26,7 +26,7 @@ function commandFactory (func) {
       Member.findByIdAndUpdate(row._id, { $set : setter }, { new : false }).exec(cb);
     }, function (err, results) {
       if (err) {
-        console.log(func, err);
+        console.error("commandsFactory", func, err);
         res.json({error: 'Error executing ' + func});
       }
       else {
@@ -36,8 +36,11 @@ function commandFactory (func) {
   };
 }
 
-for (var func in flags) {
-  commandFactory(func);
+var func;
+for (func in flags) {
+  if (flags.hasOwnProperty(func)) {
+    commandFactory(func);
+  }
 }
 
 commands.validate = function (req, res) {
@@ -48,7 +51,7 @@ commands.validate = function (req, res) {
     Member.findByIdAndUpdate(row._id, { $set : { validatedAt : date } }, { new : false }).exec(cb);
   }, function (err, results) {
     if (err) {
-      console.log('validate', err);
+      console.error('commands.validate', err);
       res.json({error: 'Error setting "validatedAt" = ' + date});
     }
     else {
@@ -66,7 +69,7 @@ commands.email = function (req, res) {
   }, function (err, emails) {
     sendMail ("info@bbofans.com", emails, cmd.subject, cmd.message, function (err, result) {
       if (err) {
-        console.log('email', err);
+        console.error('commands.email', err);
         res.json({error: 'Error sending email'});
       }
       else {
@@ -83,7 +86,7 @@ commands.blacklist = function (req, res) {
     Blacklist.addEntry(row.bboName, cmd.from, cmd.for, cmd.reason, cb);
   }, function (err, blacklisted) {
     if (err) {
-      console.log('blacklist', err);
+      console.error('commands.blacklist', err);
       res.json({error: 'Error setting blacklist'});
     }
     else {
