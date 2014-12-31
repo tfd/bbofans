@@ -19,8 +19,8 @@ function addScoreToMember (tournament, callback) {
       }
     }
     catch (e) {
-      console.log('Exception thrown when adding scores for tournament ' + tournament.name + ' to member '
-                  + member.bboName + ': ' + e.message);
+      console.log('Exception thrown when adding scores for tournament ' + tournament.name + ' to member ' +
+                  member.bboName + ': ' + e.message);
       callback(); // ignore error!
     }
   };

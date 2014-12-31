@@ -19,7 +19,7 @@ var field2FlatNames = {
   'rbdLastPlayedAt'   : 'rbd.totalScores.lastPlayedAt',
   'rbdNumTournaments' : 'rbd.totalScores.numTournaments',
   'rbdAverageScore'   : 'rbd.totalScores.averageScore',
-  'rbdAwards'         : 'rbd.totalScores.awards'
+  'rbdAwards'         : 'rbd.totalScores.awards',
 };
 
 /**
@@ -37,7 +37,8 @@ function isValidFieldName (name) {
     'bboName', 'name', 'nation', 'email', 'level', 'role',
     'isStarPlayer', 'isRbdPlayer', 'isEnabled', 'isBlackListed', 'isBanned',
     'rockLastPlayedAt', 'rockNumTournaments', 'rockAverageScore', 'rockAwards',
-    'rbdLastPlayedAt', 'rbdNumTournaments', 'rbdAverageScore', 'rbdAwards'
+    'rbdLastPlayedAt', 'rbdNumTournaments', 'rbdAverageScore', 'rbdAwards',
+    'skill', '3AM', '7AM', '11AM', '3PM', '7PM', '11PM', 'info'
   ];
   return names.indexOf(name) > -1;
 }
@@ -47,7 +48,7 @@ function isValidFieldName (name) {
  */
 function isBooleanField (name) {
   var booleans = [
-    'isStarPlayer', 'isRbdPlayer', 'isEnabled', 'isBlackListed', 'isBanned'
+    'isStarPlayer', 'isRbdPlayer', 'isEnabled', 'isBlackListed', 'isBanned', '3AM', '7AM', '11AM', '3PM', '7PM', '11PM'
   ];
   return booleans.indexOf(name) > -1;
 }
@@ -523,27 +524,12 @@ module.exports = {
   getAll: function (req, res) {
     var limit = getLimit(req);
     var skip = getSkip(req);
-    var sort = getSort(req, ['bboName',
-                             'name',
-                             'nation',
-                             'level',
-                             'role',
-                             'email',
-                             'isStarPlayer',
-                             'isRbdPlayer',
-                             'isEnabled',
-                             'isBlackListed',
-                             'isBanned',
-                             'rockLastPlayedAt',
-                             'rockNumTournaments',
-                             'rockAverageScore',
-                             'rockAwards',
-                             'rbdLastPlayedAt',
-                             'rbdNumTournaments',
-                             'rbdAverageScore',
-                             'rbdAwards',
-                             'registeredAt',
-                             'validatedAt']);
+    var sort = getSort(req, ['bboName', 'name', 'nation', 'level', 'role', 'email', 'telephone',
+                             'isStarPlayer', 'isRbdPlayer', 'isEnabled', 'isBlackListed', 'isBanned',
+                             'rockLastPlayedAt', 'rockNumTournaments', 'rockAverageScore', 'rockAwards',
+                             'rbdLastPlayedAt', 'rbdNumTournaments', 'rbdAverageScore', 'rbdAwards',
+                             'skill', '3AM', '7AM', '11AM', '3PM', '7PM', '11PM', 'info',
+                             'registeredAt', 'validatedAt']);
     var filter = getFindCriterias(req);
     Member.find(filter).count(function (err, count) {
           if (err) { console.error('members.getAll', err); }
@@ -557,6 +543,7 @@ module.exports = {
                     level             : 1,
                     role              : 1,
                     email             : 1,
+                    telephone         : 1,
                     isStarPlayer      : 1,
                     isRbdPlayer       : 1,
                     isEnabled         : 1,
@@ -570,6 +557,14 @@ module.exports = {
                     rbdAwards         : '$' + getFieldName('rbdAwards'),
                     rbdAverageScore   : '$' + getFieldName('rbdAverageScore'),
                     rbdNumTournaments : '$' + getFieldName('rbdNumTournaments'),
+                    skill             : 1,
+                    '3AM'             : 1,
+                    '7AM'             : 1,
+                    '11AM'            : 1,
+                    '3PM'             : 1,
+                    '7PM'             : 1,
+                    '11PM'            : 1,
+                    info              : 1,
                     registeredAt      : 1,
                     validatedAt       : 1
                   }
@@ -604,7 +599,7 @@ module.exports = {
   },
 
   getById: function (req, res) {
-    Member.findOne({_id: req.params.id}, function (err, player) {
+    Member.findById(req.params.id, function (err, player) {
       if (err) {
         if (err) { console.error('members.getById', err); }
         res.status(500).json({error: err});
@@ -682,11 +677,10 @@ module.exports = {
   },
 
   update: function (req, res) {
-    var id = req.body._id;
-    delete req.body._id;
-    delete req.body.recaptcha_challenge_field;
-    delete req.body.recaptcha_response_field;
-    Member.findByIdAndUpdate(id, {$set: req.body}, function (err, updated) {
+    var member = req.body;
+    var id = member._id;
+    delete member._id;
+    Member.findByIdAndUpdate(id, {$set: member}, function (err, updated) {
       if (err) {
         console.error('members.update', err);
         res.json({error: 'Error updating member.'});

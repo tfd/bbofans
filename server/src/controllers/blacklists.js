@@ -11,7 +11,7 @@ function findBlacklistedMembers (Members) {
   };
 }
 
-function updateOrCreateBlacklist (bboName) {
+function updateOrCreateBlacklist (member) {
   return function (blacklist, cb) {
     var now = moment.utc();
     var expire = now.add(1, 'M');
@@ -29,7 +29,7 @@ function updateOrCreateBlacklist (bboName) {
       }
     }
     else {
-      blacklist = new Blacklist({bboName: bboName, entries: []});
+      blacklist = new Blacklist({bboName: member.bboName, entries: []});
       blacklist.entries.push({from: now, to: expire, reason: "Automatic add from Members collection."});
       blacklist.save(cb);
     }

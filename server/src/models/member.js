@@ -30,6 +30,7 @@ var MemberSchema = new Schema({
   name           : {type: String, required: 'Name cannot be blank', trim: true},
   nation         : {type: String, required: 'Nation cannot be blank', trim: true},
   email          : {type: Email, required: 'Email cannot be blank', unique: true, trim: true, validate: emailValidator},
+  telephone      : {type: String, trim: true},
   level          : {type: String, default: 'Beginner', trim: true},
   hashed_password: {type: String, required: 'Password cannot be blank', trim: true},
   salt           : {type: String},
@@ -40,6 +41,14 @@ var MemberSchema = new Schema({
   isBlackListed  : {type: Boolean, default: false},
   isBanned       : {type: Boolean, default: false},
   notes          : {type: String, default: '', trim: true},
+  skill          : {type: String, default: 'Tournament TD', trim: true},
+  '3AM'          : {type: Boolean, default: false},
+  '7AM'          : {type: Boolean, default: false},
+  '11AM'         : {type: Boolean, default: false},
+  '3PM'          : {type: Boolean, default: false},
+  '7PM'          : {type: Boolean, default: false},
+  '11PM'         : {type: Boolean, default: false},
+  info           : {type: String, default: '', trim: true},
   rock           : {
     lastPlayedAt       : {type: Date},
     playedInTournaments: [{type: Schema.Types.ObjectId, ref: 'Tournament'}],
@@ -81,7 +90,7 @@ var MemberSchema = new Schema({
  * Helper functions.
  */
 
-function updateScores (isImps, scores, result) {
+function updateScores (scores, result) {
   var numTournaments = scores.numTournaments || 0;
   var sumOfScores = (scores.averageScore || 0) * numTournaments + (result.score || 0);
   numTournaments += 1;
@@ -104,7 +113,7 @@ function handleError (msg, cb) {
  * @api public
  */
 function makeSalt () {
-  return Math.round((new Date().valueOf() * Math.random())) + '';
+  return Math.round((new Date().valueOf() * Math.random())).toString();
 }
 
 /**
@@ -234,13 +243,13 @@ MemberSchema.methods = {
     }
 
     // Update total scores
-    updateScores(tournament.isRbd, league.totalScores, score);
+    updateScores(league.totalScores, score);
 
     // Update monthly scores
-    league.monthlyScores.every(function (monthlyScore, i) {
+    league.monthlyScores.every(function (monthlyScore) {
       if (monthlyScore.year === tournament.date.getFullYear() &&
           monthlyScore.month === tournament.date.getMonth()) {
-        updateScores(tournament.isRbd, monthlyScore, score);
+        updateScores(monthlyScore, score);
         newMonth = false;
         return false;
       }
@@ -249,7 +258,7 @@ MemberSchema.methods = {
 
     if (newMonth) {
       // First tournament in this month
-      updateScores(tournament.isRbd, newMonthlyScore, score);
+      updateScores(newMonthlyScore, score);
       league.monthlyScores.push(newMonthlyScore);
     }
 
