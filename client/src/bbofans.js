@@ -29,6 +29,7 @@ var BboFansApp = Marionette.Application.extend({
     this.adminModule = require('./admin/module.js')(this);
     this.membersModule = require('./members/module.js')(this, 'admin');
     this.blacklistModule = require('./blacklist/module.js')(this, 'admin');
+    this.tdsModule = require('./tds/module.js')(this, 'admin');
   },
 
   getPopupRegion: function () {

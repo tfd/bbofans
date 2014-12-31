@@ -22,10 +22,11 @@ var blacklistManagerAuth = [auth.requiresLogin, auth.blacklist.hasAuthorization]
 
 var index = require('../src/controllers/index');
 var countries = require('../src/controllers/countries');
-var members = require('../src/controllers/members');
 var admin = require('../src/controllers/admin');
+var members = require('../src/controllers/members');
 var commands = require('../src/controllers/commands');
 var blacklists = require('../src/controllers/blacklists');
+var tds = require('../src/controllers/tournamentDirectors');
 var recaptcha = require('../src/controllers/recaptcha');
 var updater = require('../src/controllers/updater');
 var login = require('./middlewares/authentication');
@@ -63,6 +64,11 @@ module.exports = function (app, config, passport) {
   app.get('/admin/blacklist/export/:type', blacklistManagerAuth, blacklists.export);
   app.put('/admin/blacklist/:id', blacklistManagerAuth, blacklists.update);
   app.get('/admin/blacklist/:id', blacklistManagerAuth, blacklists.getById);
+  app.get('/admin/tds', tdManagerAuth, tds.getAll);
+  app.get('/admin/tds/export', tdManagerAuth, tds.export);
+  app.get('/admin/tds/export/:type', tdManagerAuth, tds.export);
+  app.put('/admin/tds/:id', tdManagerAuth, tds.update);
+  app.get('/admin/tds/:id', tdManagerAuth, tds.getById);
   app.get('/admin/logout', admin.logout);
   app.get('/*', index.index);
 }

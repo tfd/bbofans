@@ -5,31 +5,6 @@ var o2x = require('object-to-xml');
 var _ = require('underscore');
 
 /**
- * Hashmap of field names to flat names.
- *
- * The bootstrap-table isn't able to interpret nested JSON objects so I use
- * $project to rename nested fields. This hashmap reconstructs the correct
- * nested name from the projected name.
- */
-var field2FlatNames = {
-  skill : 'td.skill',
-  '3AM' : 'td.3AM',
-  '7AM' : 'td.7AM',
-  '11AM': 'td.11AM',
-  '3PM' : 'td.3PM',
-  '7PM' : 'td.7PM',
-  '11PM': 'td.11PM',
-  notes : 'td.skill'
-};
-
-/**
- * @returns {string} nested BSON name of the field.
- */
-function getFieldName (name) {
-  return field2FlatNames[name] || name;
-}
-
-/**
  * @returns {boolean} whether the given name is a valid field of the member collection.
  */
 function isValidFieldName (name) {
@@ -221,7 +196,7 @@ function getCriteria (field, criteria) {
       rule = getRule(field, type, criteria[type]);
       if (rule !== null) {
         filter = {};
-        filter[getFieldName(field)] = rule;
+        filter[field] = rule;
         arr.push(filter);
       }
     }
@@ -422,7 +397,10 @@ module.exports = {
                              '3PM',
                              '7PM',
                              '11PM']);
-    var filter = getFindCriterias(req);
+    var filter = getFindCriterias(req, {
+      criteria: { 'role' : { $in: ['admin', 'blacklist manager', 'td manager', 'td']  }}
+    });
+    console.log(filter);
     Member.find(filter).count(function (err, count) {
           if (err) { console.error('tournamentDirectors.getAll', err); }
           Member.aggregate([
@@ -433,14 +411,14 @@ module.exports = {
                     name     : 1,
                     email    : 1,
                     telephone: 1,
-                    skill    : '$' + getFieldName('skill'),
-                    notes    : '$' + getFieldName('notes'),
-                    '3AM'    : '$' + getFieldName('3AM'),
-                    '7AM'    : '$' + getFieldName('7AM'),
-                    '11AM'   : '$' + getFieldName('11AM'),
-                    '3PM'    : '$' + getFieldName('3PM'),
-                    '7PM'    : '$' + getFieldName('7PM'),
-                    '11PM'   : '$' + getFieldName('11PM')
+                    skill    : 1,
+                    notes    : 1,
+                    '3AM'    : 1,
+                    '7AM'    : 1,
+                    '11AM'   : 1,
+                    '3PM'    : 1,
+                    '7PM'    : 1,
+                    '11PM'   : 1
                   }
                 },
                 {$sort: sort},
@@ -471,14 +449,14 @@ module.exports = {
           name     : 1,
           email    : 1,
           telephone: 1,
-          skill    : '$' + getFieldName('skill'),
-          notes    : '$' + getFieldName('notes'),
-          '3AM'    : '$' + getFieldName('3AM'),
-          '7AM'    : '$' + getFieldName('7AM'),
-          '11AM'   : '$' + getFieldName('11AM'),
-          '3PM'    : '$' + getFieldName('3PM'),
-          '7PM'    : '$' + getFieldName('7PM'),
-          '11PM'   : '$' + getFieldName('11PM')
+          skill    : 1,
+          notes    : 1,
+          '3AM'    : 1,
+          '7AM'    : 1,
+          '11AM'   : 1,
+          '3PM'    : 1,
+          '7PM'    : 1,
+          '11PM'   : 1
         }
       }
     ], function (err, td) {
@@ -535,14 +513,14 @@ module.exports = {
                     name     : 1,
                     email    : 1,
                     telephone: 1,
-                    skill    : '$' + getFieldName('skill'),
-                    notes    : '$' + getFieldName('notes'),
-                    '3AM'    : '$' + getFieldName('3AM'),
-                    '7AM'    : '$' + getFieldName('7AM'),
-                    '11AM'   : '$' + getFieldName('11AM'),
-                    '3PM'    : '$' + getFieldName('3PM'),
-                    '7PM'    : '$' + getFieldName('7PM'),
-                    '11PM'   : '$' + getFieldName('11PM')
+                    skill    : 1,
+                    notes    : 1,
+                    '3AM'    : 1,
+                    '7AM'    : 1,
+                    '11AM'   : 1,
+                    '3PM'    : 1,
+                    '7PM'    : 1,
+                    '11PM'   : 1
                   }
                 },
                 {$sort: sort}
