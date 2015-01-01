@@ -4,6 +4,11 @@ var Blacklist = mongoose.model('Blacklist');
 var moment = require('moment');
 var async = require('async');
 var o2x = require('object-to-xml');
+var fields = ['bboName'];
+var fieldDefinitions = require('../utils/fieldDefinitions')(Blacklist, fields);
+var listQueryParameters = require('../utils/listQueryParameters')(fieldDefinitions);
+var exportToFile = require('../utils/exportToFile')('blacklist', 'member', fieldDefinitions);
+var _ = require('underscore');
 
 function findBlacklistedMembers (Members) {
   return function (cb) {
@@ -68,148 +73,37 @@ function initCollection (cb) {
   );
 }
 
-/**
- * @params {String} val - value to sanitize
- * @returns {String} a sanitized value: only alphanumeric and spaces are allowed.
- *          Any other character is replaced with a dot so it works in a regexp.
- */
-function sanitize (val) {
-  val = val.replace(/[^a-zA-Z0-9_\s]/, ".").replace(/\s/, " ");
-  return val;
-}
+exportToFile.setCsvHeaderWriter(function (fields, res) {
+  res.write('bboName,from,to,reason');
+});
 
-/**
- * Read limit from the query parameters.
- *
- * @returns The integer value of the limit query parameter if present, 10 otherwise.
- */
-function getLimit (req) {
-  var limit = 10;
-  if (req.query.limit) {
-    limit = parseInt(req.query.limit, 10);
-    if (isNaN(limit) || limit < 10) {
-      limit = 10;
-    }
-    else if (limit > 100) {
-      limit = 100;
-    }
-  }
-  return limit;
-}
+exportToFile.setCsvDocWriter(function (doc, res) {
+  var lastEntry = doc.entries[doc.entries.length - 1];
+  res.write('"' + exportToFile.csvEscape(doc.bboName) + '",');
+  res.write(moment(lastEntry.from).utc().format() + ',');
+  res.write(moment(lastEntry.to).utc().format() + ',');
+  res.write('"' + exportToFile.csvEscape(lastEntry.reason) + '"');
+});
 
-/**
- * Read offset from the query parameters.
- *
- * @returns The integer value of the offset query parameter if present, 0 otherwise.
- */
-function getSkip (req) {
-  var skip = 0;
-  if (req.query.offset) {
-    skip = parseInt(req.query.offset, 10);
-    if (isNaN(skip) || skip < 0) {
-      skip = 0;
-    }
-  }
-  return skip;
-}
-
-
-/**
- * Read sort and order from the query parameters.
- *
- * @returns An object with the sort field name as key and 1 or -1 as value.
- */
-function getSort (req, fields) {
-  var sort = {};
-  var field = 'bboName';
-  var order = 'asc';
-  if (req.query.sort && fields.indexOf(req.query.sort) >= 0) {
-    field = req.query.sort;
-  }
-  if (req.query.order && ['asc', 'desc'].indexOf(req.query.order) >= 0) {
-    order = req.query.order;
-  }
-  sort[field] = (order === 'asc' ? 1 : -1);
-  return sort;
-}
-
-/**
- * Read search query parameter.
- *
- * This is a simple text field that does a contains search on the bboName, name, and email fields.
- *
- * @param req {Object} The http request.
- * @returns {Object} array of criterias to be applied in $and.
- */
-function getSearchCriteria (req) {
-  if (typeof req.query.search !== 'string' || req.query.search.length === 0) {
-    return null;
-  }
-
-  var name = sanitize(req.query.search);
-
-  return {bboName: new RegExp(name, 'i')};
-}
-
-function writeText (blacklist, res) {
-  var now = moment.utc().format('YYYY-MM-DD');
-  res.setHeader('Content-Disposition', 'attachment; filename="blacklist_' + now + '.txt"');
-  res.setHeader('Content-Type', 'text/plain;charset=utf-8');
-  blacklist.forEach(function (val) {
-    res.write(val.bboName + '\r\n');
-  });
-  res.end();
-}
-
-function csvEscape (val) {
-  return val.replace(/"/g, '""');
-}
-
-function writeCsv (blacklist, res) {
-  var now = moment.utc().format('YYYY-MM-DD');
-  res.setHeader('Content-Disposition', 'attachment; filename="blacklist_' + now + '.csv"');
-  res.setHeader('Content-Type', 'text/csv;charset=utf-8');
-  res.write('bboName,from,to,reason\r\n');
-  blacklist.forEach(function (val) {
-    var lastEntry = val.entries[val.entries.length - 1];
-    res.write('"' + csvEscape(val.bboName) + '",');
-    res.write(moment(lastEntry.from).utc().format() + ',');
-    res.write(moment(lastEntry.to).utc().format() + ',');
-    res.write('"' + csvEscape(lastEntry.reason) + '"\r\n');
-  });
-  res.end();
-}
-
-function writeXml (blacklist, res) {
+exportToFile.setXmlCollectionPreparer(function (blacklist) {
   blacklist.forEach(function (member) {
     var entry = member.entries;
     member.entries = {entry: entry};
   });
-
-  console.log(blacklist);
-  var obj = {
-    '?xml version=\"1.0\" encoding=\"UTF-8\"?': null,
-    blacklist                                 : {member: blacklist}
-  };
-
-  var now = moment.utc().format('YYYY-MM-DD');
-  res.setHeader('Content-Disposition', 'attachment; filename="blacklist_' + now + '.xml"');
-  res.setHeader('Content-Type', 'application/xml;charset=utf-8');
-  res.write(o2x(obj));
-  res.end();
-}
+  return blacklist;
+});
 
 module.exports = {
 
   getList: function (req, res) {
     var now = moment.utc();
-    var limit = getLimit(req);
-    var skip = getSkip(req);
-    var sort = getSort(req, ['bboName']);
-    var filter = getSearchCriteria(req);
+    var limit = listQueryParameters.getLimit(req);
+    var skip = listQueryParameters.getSkip(req);
+    var sort = listQueryParameters.getSort(req, ['bboName']);
+    var filter = listQueryParameters.getFindCriteria(req, {doFilter: false});
 
     var aggr = [];
-    if (filter) {
+    if (!_.isEmpty(filter)) {
       aggr.push({$match: filter});
     }
     aggr.push({$project: {_id: {_id: '$_id', bboName: '$bboName', entries: '$entries'}, entries: '$entries'}});
@@ -308,11 +202,11 @@ module.exports = {
 
   export: function (req, res) {
     var now = moment.utc();
-    var sort = getSort(req, ['bboName']);
-    var filter = getSearchCriteria(req);
+    var sort = listQueryParameters.getSort(req, fields);
+    var filter = listQueryParameters.getFindCriteria(req, {doFilter: false});
 
     var aggr = [];
-    if (filter) {
+    if (!_.isEmpty(filter)) {
       aggr.push({$match: filter});
     }
     aggr.push({$project: {_id: {bboName: '$bboName', entries: '$entries'}, entries: '$entries'}});
@@ -333,25 +227,7 @@ module.exports = {
       });
 
       var type = req.params.type ? req.params.type.toLowerCase() : 'text';
-      switch (type) {
-        case 'json':
-          var now = moment.utc().format('YYYY-MM-DD');
-          res.setHeader('Content-Disposition', 'attachment; filename="blacklist_' + now + '.json"');
-          res.json({blacklist: blacklisted});
-          break;
-
-        case 'xml' :
-          writeXml(blacklisted, res);
-          break;
-
-        case 'csv' :
-          writeCsv(blacklisted, res);
-          break;
-
-        default:
-          writeText(blacklisted, res);
-          break;
-      }
+      exportToFile.export(type, blacklisted, res);
     });
   }
 
