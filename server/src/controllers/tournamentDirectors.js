@@ -4,38 +4,75 @@ var moment = require('moment');
 var o2x = require('object-to-xml');
 var _ = require('underscore');
 
+var fields = ['bboName',
+              'name',
+              'email',
+              'telephone',
+              'skill',
+              'info',
+              'h3am',
+              'h7am',
+              'h11am',
+              'h3pm',
+              'h7pm',
+              'h11pm'];
+
+/**
+ * Return the name of the field.
+ *
+ * This can be a nested field name.
+ *
+ * @param {String} field - the simple field name
+ * @returns {String} the real field name
+ */
+function getFieldName (field) {
+  return field;
+}
+
 /**
  * @returns {boolean} whether the given name is a valid field of the member collection.
  */
 function isValidFieldName (name) {
-  var names = [
-    'bboName', 'name', 'email', 'telephone', 'skill', 'notes', '3AM', '7AM', '11AM', '3PM', '7PM', '11PM'
-  ];
-  return names.indexOf(name) > -1;
+  return fields.indexOf(name) > -1;
 }
 
 /**
  * @returns {boolean} whether the given name is a boolean field of the member collection.
  */
 function isBooleanField (name) {
-  var booleans = [
-    '3AM', '7AM', '11AM', '3PM', '7PM', '11PM'
-  ];
-  return booleans.indexOf(name) > -1;
+  return Member.schema.path(name) instanceof mongoose.Schema.Types.Boolean;
 }
 
 /**
  * @returns {boolean} whether the given name is a numeric field of the member collection.
  */
 function isNumericField () {
-  return false;
+  return Member.schema.path(name) instanceof mongoose.Schema.Types.Number;
 }
 
 /**
  * @returns {boolean} whether the field is a date field of the meber collection
  */
 function isDateField () {
-  return false;
+  return Member.schema.path(name) instanceof mongoose.Schema.Types.Date;
+}
+
+/**
+ * Create an object that can be used in a $project to include the given fields.
+ *
+ * @param {Array} fields - array of field names to include in projection.
+ * @param {Object} options - optional options. Set excludeId to false to exclude the _id field.
+ * @returns {Object} list of fields to include
+ */
+function projectFields (fields, options) {
+  var select = {};
+  _.each(fields, function (field) {
+    select[field] = getFieldName(field) === field ? 1 : '$' + getFieldName(field);
+  });
+  if (options && options.excludeId) {
+    select._id = 0;
+  }
+  return select;
 }
 
 /**
@@ -315,11 +352,11 @@ function getFindCriterias (req, options) {
   return criteria.length > 0 ? criteria.length === 1 ? criteria[0] : {$and: criteria} : {};
 }
 
-function writeText (members, res) {
+function writeText (tds, res) {
   var now = moment.utc().format('YYYY-MM-DD');
   res.setHeader('Content-Disposition', 'attachment; filename="tds_' + now + '.txt"');
   res.setHeader('Content-Type', 'text/plain;charset=utf-8');
-  members.forEach(function (member) {
+  tds.forEach(function (member) {
     res.write(member.bboName + '\r\n');
   });
   res.end();
@@ -329,20 +366,20 @@ function csvEscape (val) {
   return val.replace(/"/g, '""');
 }
 
-function writeCsv (members, res) {
+function writeCsv (tds, res) {
   var now = moment.utc().format('YYYY-MM-DD');
   res.setHeader('Content-Disposition', 'attachment; filename="tds_' + now + '.csv"');
   res.setHeader('Content-Type', 'text/csv;charset=utf-8');
 
-  if (members.length > 0) {
+  if (tds.length > 0) {
     var sep = '';
-    _.each(_.keys(members[0]), function (field) {
+    _.each(_.keys(tds[0]), function (field) {
       res.write(sep + '"' + field + '"');
       sep = ',';
     });
     res.write('\r\n');
 
-    members.forEach(function (member) {
+    tds.forEach(function (member) {
       sep = '';
       _.each(member, function (val, field) {
         console.log(field, val);
@@ -368,10 +405,10 @@ function writeCsv (members, res) {
   res.end();
 }
 
-function writeXml (members, res) {
+function writeXml (tds, res) {
   var obj = {
     '?xml version=\"1.0\" encoding=\"UTF-8\"?': null,
-    tds                                       : {td: members}
+    tds                                       : {td: tds}
   };
 
   var now = moment.utc().format('YYYY-MM-DD');
@@ -386,46 +423,19 @@ module.exports = {
   getAll: function (req, res) {
     var limit = getLimit(req);
     var skip = getSkip(req);
-    var sort = getSort(req, ['bboName',
-                             'name',
-                             'telephone',
-                             'email',
-                             'notes',
-                             '3AM',
-                             '7AM',
-                             '11AM',
-                             '3PM',
-                             '7PM',
-                             '11PM']);
+    var sort = getSort(req, fields);
     var filter = getFindCriterias(req, {
-      criteria: { 'role' : { $in: ['admin', 'blacklist manager', 'td manager', 'td']  }}
+      criteria: {'role': {$in: ['admin', 'blacklist manager', 'td manager', 'td']}}
     });
-    console.log(filter);
     Member.find(filter).count(function (err, count) {
           if (err) { console.error('tournamentDirectors.getAll', err); }
-          Member.aggregate([
-                {$match: filter},
-                {
-                  $project: {
-                    bboName  : 1,
-                    name     : 1,
-                    email    : 1,
-                    telephone: 1,
-                    skill    : 1,
-                    notes    : 1,
-                    '3AM'    : 1,
-                    '7AM'    : 1,
-                    '11AM'   : 1,
-                    '3PM'    : 1,
-                    '7PM'    : 1,
-                    '11PM'   : 1
-                  }
-                },
-                {$sort: sort},
-                {$skip: skip},
-                {$limit: limit}
-              ],
-              function (err, tds) {
+          var aggr = [];
+          aggr.push({$match: filter});
+          aggr.push({$project: projectFields(fields)});
+          aggr.push({$sort: sort});
+          aggr.push({$skip: skip});
+          aggr.push({$limit: limit});
+          Member.aggregate(aggr, function (err, tds) {
                 if (err) { console.error('tournamentDirectors.getAll', err); }
                 res.json({
                   skip : skip,
@@ -441,25 +451,10 @@ module.exports = {
   },
 
   getById: function (req, res) {
-    Member.aggregate([
-      {$match: {_id: req.params.id}},
-      {
-        $project: {
-          bboName  : 1,
-          name     : 1,
-          email    : 1,
-          telephone: 1,
-          skill    : 1,
-          notes    : 1,
-          '3AM'    : 1,
-          '7AM'    : 1,
-          '11AM'   : 1,
-          '3PM'    : 1,
-          '7PM'    : 1,
-          '11PM'   : 1
-        }
-      }
-    ], function (err, td) {
+    var aggr = [];
+    aggr.push({$match: {_id: req.params.id}});
+    aggr.push({$project: projectFields(fields)});
+    Member.aggregate(aggr, function (err, td) {
       if (err) {
         if (err) { console.error('tournamentDirectors.getById', err); }
         res.status(500).json({error: err});
@@ -488,44 +483,17 @@ module.exports = {
   },
 
   export: function (req, res) {
-    var sort = getSort(req, ['bboName',
-                             'name',
-                             'email',
-                             'telephone',
-                             'skill',
-                             'notes',
-                             '3AM',
-                             '7AM',
-                             '11AM',
-                             '3PM',
-                             '7PM',
-                             '11PM'
-    ]);
-    var filter = getFindCriterias(req);
+    var sort = getSort(req, fields);
+    var filter = getFindCriterias(req, {
+      criteria: {'role': {$in: ['admin', 'blacklist manager', 'td manager', 'td']}}
+    });
     Member.find(filter).count(function (err) {
           if (err) { console.error('members.getAll', err); }
-          Member.aggregate([
-                {$match: filter},
-                {
-                  $project: {
-                    _id      : 0,
-                    bboName  : 1,
-                    name     : 1,
-                    email    : 1,
-                    telephone: 1,
-                    skill    : 1,
-                    notes    : 1,
-                    '3AM'    : 1,
-                    '7AM'    : 1,
-                    '11AM'   : 1,
-                    '3PM'    : 1,
-                    '7PM'    : 1,
-                    '11PM'   : 1
-                  }
-                },
-                {$sort: sort}
-              ],
-              function (err, tds) {
+          var aggr = [];
+          aggr.push({$match: filter});
+          aggr.push({$project: projectFields(fields, {excludeId: true})});
+          aggr.push({$sort: sort});
+          Member.aggregate(aggr, function (err, tds) {
                 if (err) { console.error('tournamentDirectors.export', err); }
 
                 var type = req.params.type ? req.params.type.toLowerCase() : 'text';
@@ -553,6 +521,4 @@ module.exports = {
         }
     );
   }
-
-}
-;
+};

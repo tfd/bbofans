@@ -34,9 +34,6 @@ News Manager
         <a class="list-group-item" href="/admin/members">Manage</a>
   {{/if}}
         <a class="list-group-item" href="/admin/blacklist">Blacklist</a>
-  {{#if isMemberManager}}
-        <a class="list-group-item" href="/admin/newsletter">Newsletter</a>
-  {{/if}}
       </div>
     </div>
   </div>
@@ -53,24 +50,6 @@ News Manager
     <div id="collapseTds" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTds">
       <div class="list-group" style="margin-bottom: 0;">
         <a class="list-group-item" href="/admin/tds">Manage</a>
-        <a class="list-group-item" href="/admin/tds/schedule">Schedule</a>
-      </div>
-    </div>
-  </div>
-{{/if}}
-{{#if isMemberManager}}
-  <div class="panel panel-default">
-    <div class="panel-heading" role="tab" id="headingUpload">
-      <h4 class="panel-title">
-        <a class="collapsed" data-toggle="collapse" data-parent="#admin-menu-accordion" href="#collapseUpload" aria-expanded="false" aria-controls="collapseUpload">
-          Upload Results
-        </a>
-      </h4>
-    </div>
-    <div id="collapseUpload" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingUpload">
-      <div class="list-group" style="margin-bottom: 0;">
-        <a class="list-group-item" href="/admin/upload/rock">Rock</a>
-        <a class="list-group-item" href="/admin/upload/rbd">R.B.D.</a>
       </div>
     </div>
   </div>

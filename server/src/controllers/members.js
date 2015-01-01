@@ -4,6 +4,14 @@ var Member = mongoose.model('Member');
 var moment = require('moment');
 var o2x = require('object-to-xml');
 var _ = require('underscore');
+
+var fields = ['bboName', 'name', 'nation', 'email', 'telephone', 'level', 'role',
+              'isStarPlayer', 'isRbdPlayer', 'isEnabled', 'isBlackListed', 'isBanned',
+              'rockLastPlayedAt', 'rockNumTournaments', 'rockAverageScore', 'rockAwards',
+              'rbdLastPlayedAt', 'rbdNumTournaments', 'rbdAverageScore', 'rbdAwards',
+              'skill', 'h3am', 'h7am', 'h11am', 'h3pm', 'h7pm', 'h11pm', 'info',
+              'registeredAt', 'validatedAt'];
+
 /**
  * Hashmap of field names to flat names.
  *
@@ -33,14 +41,7 @@ function getFieldName (name) {
  * @returns {boolean} whether the given name is a valid field of the member collection.
  */
 function isValidFieldName (name) {
-  var names = [
-    'bboName', 'name', 'nation', 'email', 'level', 'role',
-    'isStarPlayer', 'isRbdPlayer', 'isEnabled', 'isBlackListed', 'isBanned',
-    'rockLastPlayedAt', 'rockNumTournaments', 'rockAverageScore', 'rockAwards',
-    'rbdLastPlayedAt', 'rbdNumTournaments', 'rbdAverageScore', 'rbdAwards',
-    'skill', '3AM', '7AM', '11AM', '3PM', '7PM', '11PM', 'info'
-  ];
-  return names.indexOf(name) > -1;
+  return fields.indexOf(name) > -1;
 }
 
 /**
@@ -48,7 +49,17 @@ function isValidFieldName (name) {
  */
 function isBooleanField (name) {
   var booleans = [
-    'isStarPlayer', 'isRbdPlayer', 'isEnabled', 'isBlackListed', 'isBanned', '3AM', '7AM', '11AM', '3PM', '7PM', '11PM'
+    'isStarPlayer',
+    'isRbdPlayer',
+    'isEnabled',
+    'isBlackListed',
+    'isBanned',
+    'h3am',
+    'h7am',
+    'h11am',
+    'h3pm',
+    'h7pm',
+    'h11pm'
   ];
   return booleans.indexOf(name) > -1;
 }
@@ -79,6 +90,24 @@ function isDateField (name) {
     'validatedAt'
   ];
   return names.indexOf(name) > -1;
+}
+
+/**
+ * Create an object that can be used in a $project to include the given fields.
+ *
+ * @param {Array} fields - array of field names to include in projection.
+ * @param {Object} options - optional options. Set excludeId to false to exclude the _id field.
+ * @returns {Object} list of fields to include
+ */
+function projectFields (fields, options) {
+  var select = {};
+  _.each(fields, function (field) {
+    select[field] = getFieldName(field) === field ? 1 : '$' + getFieldName(field);
+  });
+  if (options && options.excludeId) {
+    select._id = 0;
+  }
+  return select;
 }
 
 /**
@@ -441,40 +470,33 @@ module.exports = {
       criteria        : {
         isEnabled    : true,
         isBlackListed: false,
-        isBanned     : false,
-        isRbdPlayer  : false
+        isBanned     : false
       },
       doFilter        : false,
       restrictedSearch: true
     });
     Member.find(filter).count(function (err, count) {
       if (err) { console.error('members.getRock', err); }
-      Member.aggregate([
-        {$match: filter},
-        {
-          $project: {
-            bboName       : 1,
-            nation        : 1,
-            level         : 1,
-            awards        : '$' + getFieldName('rockAwards'),
-            averageScore  : '$' + getFieldName('rockAverageScore'),
-            numTournaments: '$' + getFieldName('rockNumTournaments')
-          }
-        }
-      ])
-          .sort(sort)
-          .skip(skip)
-          .limit(limit)
-          .exec(function (err, data) {
-            if (err) { console.error('members.getRock', err); }
-            res.json({
-              skip : skip,
-              limit: limit,
-              sort : sort,
-              total: count,
-              rows : data
-            });
-          });
+      var aggr = [];
+      aggr.push({$match: filter});
+      aggr.push({
+        $project: projectFields([
+          'bboName', 'nation', 'level', 'rockAwards', 'rockAverageScore', 'rockNumTournaments'
+        ])
+      });
+      aggr.push({$sort: sort});
+      aggr.push({$skip: skip});
+      aggr.push({$limit: limit});
+      Member.aggregate(aggr, function (err, data) {
+        if (err) { console.error('members.getRock', err); }
+        res.json({
+          skip : skip,
+          limit: limit,
+          sort : sort,
+          total: count,
+          rows : data
+        });
+      });
     });
   },
 
@@ -492,32 +514,26 @@ module.exports = {
     });
     Member.find(filter).count(function (err, count) {
       if (err) { console.error('members.getRbd', err); }
-      Member.aggregate([
-        {$match: filter},
-        {
-          $project: {
-            bboName       : 1,
-            nation        : 1,
-            level         : 1,
-            awards        : '$' + getFieldName('rbdAwards'),
-            averageScore  : '$' + getFieldName('rbdAverageScore'),
-            numTournaments: '$' + getFieldName('rbdNumTournaments')
-          }
-        }
-      ])
-          .sort(sort)
-          .skip(skip)
-          .limit(limit)
-          .exec(function (err, data) {
-            if (err) { console.error('members.getRbd', err); }
-            res.json({
-              skip : skip,
-              limit: limit,
-              sort : sort,
-              total: count,
-              rows : data
-            });
-          });
+      var aggr = [];
+      aggr.push({$match: filter});
+      aggr.push({
+        $project: projectFields([
+          'bboName', 'nation', 'level', 'rbdAwards', 'rbdAverageScore', 'rbdNumTournaments'
+        ])
+      });
+      aggr.push({$sort: sort});
+      aggr.push({$skip: skip});
+      aggr.push({$limit: limit});
+      Member.aggregate(aggr, function (err, data) {
+        if (err) { console.error('members.getRbd', err); }
+        res.json({
+          skip : skip,
+          limit: limit,
+          sort : sort,
+          total: count,
+          rows : data
+        });
+      });
     });
   },
 
@@ -533,47 +549,13 @@ module.exports = {
     var filter = getFindCriterias(req);
     Member.find(filter).count(function (err, count) {
           if (err) { console.error('members.getAll', err); }
-          Member.aggregate([
-                {$match: filter},
-                {
-                  $project: {
-                    bboName           : 1,
-                    name              : 1,
-                    nation            : 1,
-                    level             : 1,
-                    role              : 1,
-                    email             : 1,
-                    telephone         : 1,
-                    isStarPlayer      : 1,
-                    isRbdPlayer       : 1,
-                    isEnabled         : 1,
-                    isBlackListed     : 1,
-                    isBanned          : 1,
-                    rockLastPlayedAt  : '$' + getFieldName('rockLastPlayedAt'),
-                    rockAwards        : '$' + getFieldName('rockAwards'),
-                    rockAverageScore  : '$' + getFieldName('rockAverageScore'),
-                    rockNumTournaments: '$' + getFieldName('rockNumTournaments'),
-                    rbdLastPlayedAt   : '$' + getFieldName('rbdLastPlayedAt'),
-                    rbdAwards         : '$' + getFieldName('rbdAwards'),
-                    rbdAverageScore   : '$' + getFieldName('rbdAverageScore'),
-                    rbdNumTournaments : '$' + getFieldName('rbdNumTournaments'),
-                    skill             : 1,
-                    '3AM'             : 1,
-                    '7AM'             : 1,
-                    '11AM'            : 1,
-                    '3PM'             : 1,
-                    '7PM'             : 1,
-                    '11PM'            : 1,
-                    info              : 1,
-                    registeredAt      : 1,
-                    validatedAt       : 1
-                  }
-                },
-                {$sort: sort},
-                {$skip: skip},
-                {$limit: limit}
-              ],
-              function (err, data) {
+          var aggr = [];
+          aggr.push({$match: filter});
+          aggr.push({$project: projectFields(fields)});
+          aggr.push({$sort: sort});
+          aggr.push({$skip: skip});
+          aggr.push({$limit: limit});
+          Member.aggregate(aggr, function (err, data) {
                 if (err) { console.error('members.getAll', err); }
                 res.json({
                   skip : skip,
@@ -626,7 +608,7 @@ module.exports = {
             var error = err.err.toString();
             if (error.indexOf('E11000 duplicate key error') === 0) {
               var fieldName = error.match(/members\.\$(.*)_\d/i)[1];
-              var fieldValue = error.match(/dup\skey:\s\{\s:\s\"(.*)\"\s\}/)[1];
+              var fieldValue = error.match(/dup\skey:\s\{\s:\s"(.*)"\s\}/)[1];
               var errors = {};
               errors[fieldName] = 'Value "' + fieldValue + '" already present in database';
               res.status(409).json(errors);
@@ -659,7 +641,7 @@ module.exports = {
           var error = err.err.toString();
           if (error.indexOf('E11000 duplicate key error') === 0) {
             var fieldName = error.match(/members\.\$(.*)_\d/i)[1];
-            var fieldValue = error.match(/dup\skey:\s\{\s:\s\"(.*)\"\s\}/)[1];
+            var fieldValue = error.match(/dup\skey:\s\{\s:\s"(.*)"\s\}/)[1];
             var errors = {};
             errors[fieldName] = 'Value "' + fieldValue + '" already present in database';
             res.status(409).json(errors);
@@ -706,62 +688,15 @@ module.exports = {
   },
 
   export: function (req, res) {
-    var sort = getSort(req, ['bboName',
-                             'name',
-                             'nation',
-                             'level',
-                             'email',
-                             'role',
-                             'isStarPlayer',
-                             'isRbdPlayer',
-                             'isEnabled',
-                             'isBlackListed',
-                             'isBanned',
-                             'rockLastPlayedAt',
-                             'rockNumTournaments',
-                             'rockAverageScore',
-                             'rockAwards',
-                             'rbdLastPlayedAt',
-                             'rbdNumTournaments',
-                             'rbdAverageScore',
-                             'rbdAwards',
-                             'registeredAt',
-                             'validatedAt']);
+    var sort = getSort(req, fields);
     var filter = getFindCriterias(req);
     Member.find(filter).count(function (err, count) {
           if (err) { console.error('members.getAll', err); }
-          Member.aggregate([
-                {$match: filter},
-                {
-                  $project: {
-                    _id               : 0,
-                    bboName           : 1,
-                    name              : 1,
-                    nation            : 1,
-                    level             : 1,
-                    role              : 1,
-                    email             : 1,
-                    isStarPlayer      : 1,
-                    isRbdPlayer       : 1,
-                    isEnabled         : 1,
-                    isBlackListed     : 1,
-                    isBanned          : 1,
-                    rockLastPlayedAt  : '$' + getFieldName('rockLastPlayedAt'),
-                    rockAwards        : '$' + getFieldName('rockAwards'),
-                    rockAverageScore  : '$' + getFieldName('rockAverageScore'),
-                    rockNumTournaments: '$' + getFieldName('rockNumTournaments'),
-                    rbdLastPlayedAt   : '$' + getFieldName('rbdLastPlayedAt'),
-                    rbdAwards         : '$' + getFieldName('rbdAwards'),
-                    rbdAverageScore   : '$' + getFieldName('rbdAverageScore'),
-                    rbdNumTournaments : '$' + getFieldName('rbdNumTournaments'),
-                    notes             : 1,
-                    registeredAt      : 1,
-                    validatedAt       : 1
-                  }
-                },
-                {$sort: sort}
-              ],
-              function (err, members) {
+          var aggr = [];
+          aggr.push({$match: filter});
+          aggr.push({$project: projectFields(fields, {excludeId: true})});
+          aggr.push({$sort: sort});
+          Member.aggregate(aggr, function (err, members) {
                 if (err) { console.error('members.export', err); }
 
                 var type = req.params.type ? req.params.type.toLowerCase() : 'text';
