@@ -1,9 +1,8 @@
 var Marionette = require('backbone.marionette');
-var $ = require('jquery');
 var messageBus = require('../../common/utils/messageBus');
 
 var HomepageRegisterView = require('./view');
-var Member = require('../../common/models/member');
+var Register = require('../../models/register');
 
 var HomepageRegisterController = Marionette.Controller.extend({
   initialize: function (options) {
@@ -12,8 +11,7 @@ var HomepageRegisterController = Marionette.Controller.extend({
   },
 
   show: function (region) {
-    var self = this;
-    var member = new Member();
+    var member = new Register();
     var registerView = new HomepageRegisterView({
       model: member
     });

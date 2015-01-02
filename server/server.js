@@ -26,7 +26,7 @@ var config = require('./config/config')[env];
 require('./config/mongoose')(config);
 
 // bootstrap passport config
-require('./config/passport')(passport, config)
+require('./config/passport')(passport, config);
 
 var app = express();
 

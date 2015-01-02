@@ -4,7 +4,6 @@
  */
 
 var express = require('express');
-var express = require('express');
 var session = require('express-session');
 var compression = require('compression');
 var morgan = require('morgan');
@@ -18,11 +17,11 @@ var serveFavicon = require('serve-favicon');
 var serveStatic = require('serve-static');
 var exphbs = require('express-handlebars');
 var flash = require('express-flash');
-var env = process.env.NODE_ENV || 'dev'
+var env = process.env.NODE_ENV || 'dev';
 
 module.exports = function (app, config, passport) {
 
-  app.set('showStackError', true)
+  app.set('showStackError', true);
 
   // Favicon handling should be the very first middleware
   app.use(serveFavicon(config.root + '/public/favicon.ico'));
@@ -76,4 +75,4 @@ module.exports = function (app, config, passport) {
   // routes should be at the last
   // app.use(app.router)
 
-}
+};

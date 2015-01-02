@@ -114,10 +114,10 @@ module.exports = function (collectionName, itemName, fieldDefinitions) {
      * Export a collection to a file.
      *
      * @param {String} type - type of file to create. One of json, xml, csv, or txt
-     * @param {Array} collection - array of items to export.
+     * @param {Array} collection - array of items to saveAs.
      * @param {Object} res - http response object to write the file to.
      */
-    export: function (type, collection, res) {
+    saveAs: function (type, collection, res) {
       switch (type) {
         case 'json':
           writeJson(collection, res);
@@ -221,7 +221,7 @@ module.exports = function (collectionName, itemName, fieldDefinitions) {
      *
      * The default function simply writes the bboName.
      *
-     * @param {ExportToFile~writeTextDoc} fn - function called to write a document to the text file
+     * @param {ExportToFile~writeTxtDoc} fn - function called to write a document to the text file
      */
     setTxtDocWriter: function (fn) {
       if (_.isFunction(fn)) {

@@ -54,4 +54,19 @@ News Manager
     </div>
   </div>
 {{/if}}
+    <div class="panel panel-default">
+      <div class="panel-heading" role="tab" id="headingUser">
+        <h4 class="panel-title">
+          <a class="collapsed" data-toggle="collapse" data-parent="#admin-menu-accordion" href="#collapseUser" aria-expanded="false" aria-controls="collapseUser">
+            Account Info
+          </a>
+        </h4>
+      </div>
+      <div id="collapseUser" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingUser">
+        <div class="list-group" style="margin-bottom: 0;">
+          <a class="list-group-item" href="/admin/user/:id">View</a>
+          <a class="list-group-item" href="/admin/user/password/:id">Change Password</a>
+        </div>
+      </div>
+    </div>
 </div>

@@ -1,14 +1,15 @@
 var Form = require('../../common/views/formWithErrorHandling');
 
 var RegisterView = Form.extend({
-  template: require('./template.hbs'),
-  tag: 'div',
+  template : require('./template.hbs'),
+  tag      : 'div',
   className: 'well',
-  idPrefix: 'member',
+  idPrefix : 'user',
 
   ui: Form.extendUi({
-    'reset': '.form-reset',
-    'nation': '#member-nation'
+    'reset' : '.form-reset',
+    'nation': '#account-nation',
+    'level': '#account-level'
   }),
 
   events: Form.extendEvents({
@@ -21,15 +22,11 @@ var RegisterView = Form.extend({
   },
 
   onRender: function () {
+    var self = this;
+
     this.loadCountries();
 
-    Recaptcha.create("6Ldpiv0SAAAAABQTt9sEh3l6nT2ixMwFVJLZl47I", "member-recaptcha", {
-      theme: "white"
-    });
-  },
-
-  onBeforeDestroy: function () {
-    Recaptcha.destroy();
+    self.ui.level.val(self.model.get('level'));
   }
 
 });

@@ -1,6 +1,6 @@
 /* jshint -W030 */
 var proxyquire = require('proxyquire'),
-    memberStub = sinon.spy( function () { return; } ),
+    memberStub = sinon.spy( function () {  } ),
     mongooseStub = { model: function () { return memberStub; } },
     members = proxyquire('../../src/controllers/member', {
         'mongoose' : mongooseStub
@@ -8,8 +8,7 @@ var proxyquire = require('proxyquire'),
 
 var res = {},
     req = {},
-    aggr = {},
-    query = {};
+    aggr = {};
 
 describe('Members Controller', function () {
   beforeEach(function () {

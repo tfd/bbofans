@@ -1,9 +1,7 @@
 var Marionette = require('backbone.marionette');
-var $ = require('jquery');
-var messageBus = require('../../common/utils/messageBus');
 
 var RbdMembersView = require('./view');
-var Member = require('../../common/models/member');
+var Member = require('../../models/member');
 
 var RbdMembersController = Marionette.Controller.extend({
   initialize: function (options) {

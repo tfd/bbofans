@@ -1,19 +1,19 @@
 var Backbone = require('backbone');
-var EntryCollection = require('./entryCollection');
+var BlacklistEntryCollection = require('./blacklistEntryCollection');
 var $ = require('jquery');
 
-Blacklist = Backbone.Model.extend({
+var Blacklist = Backbone.Model.extend({
   urlRoot: "admin/blacklist",
   idAttribute: "_id",
   
   defaults: {
     bboName: "",
-    entries: new EntryCollection()
+    entries: new BlacklistEntryCollection()
   },
 
   set: function(attributes, options) {
-    if (attributes.entries !== undefined && !(attributes.entries instanceof EntryCollection)) {
-        attributes.entries = new EntryCollection(attributes.entries);
+    if (attributes.entries !== undefined && !(attributes.entries instanceof BlacklistEntryCollection)) {
+        attributes.entries = new BlacklistEntryCollection(attributes.entries);
     }
     return Backbone.Model.prototype.set.call(this, attributes, options);
   },

@@ -1,7 +1,6 @@
 var mongoose = require('mongoose');
 var Member = mongoose.model('Member');
 var moment = require('moment');
-var o2x = require('object-to-xml');
 var _ = require('underscore');
 var fields = ['bboName',
               'name',
@@ -83,7 +82,7 @@ module.exports = {
     });
   },
 
-  export: function (req, res) {
+  saveAs: function (req, res) {
     var sort = listQueryParameters.getSort(req, fields);
     var filter = listQueryParameters.getFindCriteria(req, {
       criteria: {'role': {$in: ['admin', 'blacklist manager', 'td manager', 'td']}}
@@ -95,10 +94,10 @@ module.exports = {
           aggr.push({$project: fieldDefinitions.projectFields(fields, {excludeId: true})});
           aggr.push({$sort: sort});
           Member.aggregate(aggr, function (err, tds) {
-                if (err) { console.error('tournamentDirectors.export', err); }
+                if (err) { console.error('tournamentDirectors.saveAs', err); }
 
                 var type = req.params.type ? req.params.type.toLowerCase() : 'text';
-                exportToFile.export(type, tds, res);
+                exportToFile.saveAs(type, tds, res);
               }
           );
         }

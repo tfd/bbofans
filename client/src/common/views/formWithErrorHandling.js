@@ -20,13 +20,13 @@
  */
 
 /**
- * Fired immediatly before the form data is serialized, so you can do some adjustments.
+ * Fired immediately before the form data is serialized, so you can do some adjustments.
  * 
  * @event before:form:serialize/onBeforeFormSerialize
  */
 
 /**
- * Fired immediatly after the form data is serialized, but before form:submit is fired.
+ * Fired immediately after the form data is serialized, but before form:submit is fired.
  * 
  * @event form:serialize/onFormSerialize
  * @type {object} - the form data serialized with Backbone.Syphon.
@@ -78,7 +78,9 @@ var handleFormErrors = require('../../common/utils/handleFormErrors.js');
  *
  * @fires form:submit
  * @fires form:cancel
+ * @class
  * @constructor
+ * @extends Marionette.ItemView
  */
 var FormWithErrorHandlingView = Marionette.ItemView.extend({
   tag: 'div',
@@ -146,8 +148,29 @@ var FormWithErrorHandlingView = Marionette.ItemView.extend({
    */
   onFormDataInvalid: function (errors) {
     handleFormErrors(this, this.getOption('idPrefix'), errors);
-  }
+  },
 
+  /**
+   * Load countries from json and fill a select box.
+   *
+   * The select box must be identified as @ui.nation and the model must have a nation attribute.
+   */
+  loadCountries: function () {
+    var self = this;
+
+    $.getJSON('/data/countries.json', function (countries) {
+      _.each(countries, function (country) {
+        $('<option/>', {
+          value: country,
+          text: country
+        }).appendTo(self.ui.nation);
+      });
+
+      if (self.model && self.model.get('nation')) {
+        self.ui.nation.val(self.model.get('nation'));
+      }
+    });
+  }
 });
 
 /**

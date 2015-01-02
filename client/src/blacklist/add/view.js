@@ -3,7 +3,7 @@ var FormWithErrorHandling = require('../../common/views/formWithErrorHandling');
 var moment = require('moment');
 require('bootstrap-dateTimePicker');
 
-var Blacklist = require('../models/blacklist');
+var Blacklist = require('../../models/blacklist');
 
 var BlacklistAddView = FormWithErrorHandling.extend({
   template: require('./template.hbs'),

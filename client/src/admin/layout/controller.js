@@ -8,15 +8,15 @@ var AdminLayoutController = Marionette.Controller.extend({
     this.module = options.module;
 
     this.view = new AdminLayoutView();
-  },
-
-  show: function (region) {
-    region.show(this.view);
 
     this.regions = {
       content: this.view.content,
       menu: this.view.menu
     };
+  },
+
+  show: function (region) {
+    region.show(this.view);
   }
 });
 

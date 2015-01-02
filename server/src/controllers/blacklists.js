@@ -3,7 +3,6 @@ var recaptcha = require('../controllers/recaptcha');
 var Blacklist = mongoose.model('Blacklist');
 var moment = require('moment');
 var async = require('async');
-var o2x = require('object-to-xml');
 var fields = ['bboName'];
 var fieldDefinitions = require('../utils/fieldDefinitions')(Blacklist, fields);
 var listQueryParameters = require('../utils/listQueryParameters')(fieldDefinitions);
@@ -186,21 +185,22 @@ module.exports = {
     });
   },
 
-  delete: function (req, res) {
+  remove: function (req, res) {
     Blacklist.findOne({_id: req.params.id}, function (err, blacklist) {
       if (err) {
-        console.error('blacklist.delete', err);
+        console.error('blacklist.remove', err);
         res.json({error: 'Blacklist not found.'});
       }
       else {
-        blacklist.remove(function (err, player) {
+        blacklist.remove(function (err) {
+          if (err) { console.error('blacklist.remove', err); }
           res.json(200, {status: 'Success'});
         });
       }
     });
   },
 
-  export: function (req, res) {
+  saveAs: function (req, res) {
     var now = moment.utc();
     var sort = listQueryParameters.getSort(req, fields);
     var filter = listQueryParameters.getFindCriteria(req, {doFilter: false});
@@ -217,7 +217,7 @@ module.exports = {
     aggr.push({$sort: sort});
 
     Blacklist.aggregate(aggr, function (err, blacklisted) {
-      if (err) { console.error('blacklist.export', err); }
+      if (err) { console.error('blacklist.saveAs', err); }
 
       // Remove _id from entries, as it's not needed.
       blacklisted.forEach(function (blacklist) {
@@ -227,7 +227,7 @@ module.exports = {
       });
 
       var type = req.params.type ? req.params.type.toLowerCase() : 'text';
-      exportToFile.export(type, blacklisted, res);
+      exportToFile.saveAs(type, blacklisted, res);
     });
   }
 

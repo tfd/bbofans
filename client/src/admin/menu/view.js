@@ -1,5 +1,4 @@
 var Backbone = require('backbone');
-var Marionette = require('backbone.marionette');
 var $ = require('jquery');
 
 var AdminMenuView = Backbone.Marionette.ItemView.extend({

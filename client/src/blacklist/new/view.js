@@ -1,10 +1,9 @@
-var Form = require('../../common/views/formWithErrorHandling');
 var FormWithErrorHandling = require('../../common/views/formWithErrorHandling.js');
 var Bloodhound = require('typeAhead');
 var moment = require('moment');
 require('bootstrap-dateTimePicker');
 
-var Blacklist = require('../models/blacklist');
+var Blacklist = require('../../models/blacklist');
 
 var BlacklistNewView = FormWithErrorHandling.extend({
   template   : require('./template.hbs'),

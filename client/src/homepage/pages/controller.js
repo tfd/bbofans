@@ -1,5 +1,4 @@
 var Marionette = require('backbone.marionette');
-var messageBus = require('../../common/utils/messageBus');
 
 var homepageHomeTemplate = require('./home.hbs');
 var homepageRulesTemplate = require('./rules.hbs');
@@ -10,8 +9,6 @@ var createStaticView = require('../../common/views/staticContent');
 
 var HomepagePageController = Marionette.Controller.extend({
   initialize: function (options) {
-    var self = this;
-    
     this.app = options.app;
     this.module = options.module;
   },

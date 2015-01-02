@@ -1,0 +1,58 @@
+<h1>Modify account</h1>
+
+<form class="form-horizontal" role="form">
+  <div class="form-group col-md-8">
+    <label for="user-bboName" class="control-label">BBO nickname</label>
+    <input id="user-bboName" name="bboName" type="text" class="form-control" placeHolder="Enter BBO nickname" value="{{bboName}}"/>
+  </div>
+  <div class="clearfix"></div>
+  <div class="form-group col-md-8">
+    <label for="user-name" class="control-label">Name</label>
+    <input id="user-name" name="name" type="text" class="form-control" placeHolder="Enter name" value="{{name}}"/>
+  </div>
+  <div class="clearfix"></div>
+  <div class="form-group col-md-8">
+    <label for="user-email" class="control-label">Email</label>
+    <input id="user-email" name="email" type="email" class="form-control" placeHolder="Enter Email" value="{{email}}"/>
+  </div>
+  <div class="clearfix"></div>
+  <div class="form-group col-md-8">
+    <label for="user-telephone" class="control-label">Telephone</label>
+    <input id="user-telephone" name="telephone" type="text" class="form-control" placeHolder="Enter phone number" value="{{telephone}}"/>
+  </div>
+  <div class="clearfix"></div>
+  <div class="form-group col-md-5">
+    <!-- Countries are loaded at runtime from /data/countries.json -->
+    <label for="user-nation" class="control-label">Country</label>
+    <select id="user-nation" name="nation" class="form-control" />
+  </div>
+  <div class="clearfix"></div>
+  <div class="form-group col-md-3">
+    <label for="user-level" class="control-label">Skill level</label>
+    <select id="user-level" name="level" class="form-control">
+      <option>Beginner</option>
+      <option>Intermediate</option>
+      <option>Advanced</option>
+      <option>Expert</option>
+      <option>Champion</option>
+      <option>World Class</option>
+    </select>
+  </div>
+  <div class="clearfix"></div>
+  <div class="form-group col-md-4">
+    <label for="user-isStarPlayer" class="control-label">
+      <input type="checkbox" id="user-isStarPlayer" name="isStarPlayer" {{#if isStarPlayer}}checked{{/if}} />
+      Star Player
+    </label>
+  </div>
+  <div class="clearfix"></div>
+
+  <hr />
+
+  <div class="form-group col-md-12 text-right">
+    <button class="form-reset btn">Reset</button>
+    <button class="form-cancel btn">Cancel</button>
+    <button class="form-submit btn btn-primary">Save</button>
+  </div>
+  <div class="clearfix"></div>
+</form>

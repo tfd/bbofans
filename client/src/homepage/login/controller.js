@@ -1,7 +1,6 @@
 var Marionette = require('backbone.marionette');
-var $ = require('jquery');
 var HomepageLoginView = require('./view');
-var User = require('../../common/models/user');
+var User = require('../../models/user');
 var messageBus = require('../../common/utils/messageBus');
 var authentication = require('../../authentication/controller');
 
@@ -23,7 +22,7 @@ var HomepageLoginController = Marionette.Controller.extend({
       }
 
       loginView.on('form:submit', function (data) {
-        authentication.login(data.username, data.password, function (err, user) {
+        authentication.login(data.username, data.password, function (err) {
           if (err) {
             loginView.triggerMethod("form:data:invalid", err);
           }

@@ -12,7 +12,12 @@ var AdminMenuController = Marionette.Controller.extend({
       model: authentication.getUser()
     });
     this.view.on('navigate', function (route) {
-      messageBus.command('route:' + route);
+      if (route.indexOf(':id') > 0) {
+        messageBus.command('route:' + route, authentication.getUser().get('_id'));
+      }
+      else {
+        messageBus.command('route:' + route);
+      }
     });
   },
 

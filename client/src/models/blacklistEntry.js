@@ -1,7 +1,7 @@
 var Backbone = require('backbone');
 var moment = require('moment');
 
-Entry = Backbone.Model.extend({
+var BlacklistEntry = Backbone.Model.extend({
   idAttribute: "_id",
   
   defaults: {
@@ -11,4 +11,4 @@ Entry = Backbone.Model.extend({
   }
 });
 
-module.exports = Entry;
+module.exports = BlacklistEntry;

@@ -6,8 +6,8 @@ var messageBus = require('../../common/utils/messageBus');
 var Layout = require('./layout');
 var View = require('../details/view');
 var Form = require('../add/view');
-var Blacklist = require('../models/blacklist');
-var DurationEntry = require('../models/durationEntry');
+var Blacklist = require('../../models/blacklist');
+var DurationEntry = require('../../models/blacklistDurationEntry');
 
 var BlacklistEditImpl = function (options) {
   var self = this;

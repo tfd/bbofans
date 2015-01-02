@@ -1,10 +1,10 @@
 /* jshint -W030 */
 var proxyquire = require('proxyquire'),
-    tournamentStub = sinon.spy(function () { return; }),
+    tournamentStub = sinon.spy(function () {  }),
     memberStub = {},
     mongooseStub = { model: function (name) { return (name === 'Tournament' ? tournamentStub : memberStub); } },
     tournaments = proxyquire('../../src/controllers/tournaments', {
-      'mongoose' : mongooseStub,
+      'mongoose' : mongooseStub
     });
 
 var res = {},
@@ -96,7 +96,7 @@ describe('Tournaments Controller', function() {
       };
       
       newTournament.results = [{
-        players: ['bill'],
+        players: ['bill']
       }];
 
       tournaments.add(req, res);

@@ -6,7 +6,7 @@ var Marionette = require('backbone.marionette');
 var messageBus = require('./common/utils/messageBus');
 // Add radio shim to Marionette, as version 2.1 still uses wreqr instead of radio
 require('./common/utils/radioShim');
-var User = require('./common/models/user');
+var User = require('./models/user');
 var MainLayoutController = require('./mainLayout/controller');
 var moment = require('moment');
 var _ = require('underscore');
@@ -25,11 +25,12 @@ var BboFansApp = Marionette.Application.extend({
       el: options.container || '#bbofans-app-container'
     });
     this.navbarModule = require('./navbar/module')(this);
-    this.homepageModule = require('./homepage/module.js')(this);
-    this.adminModule = require('./admin/module.js')(this);
-    this.membersModule = require('./members/module.js')(this, 'admin');
-    this.blacklistModule = require('./blacklist/module.js')(this, 'admin');
-    this.tdsModule = require('./tds/module.js')(this, 'admin');
+    require('./homepage/module.js')(this);
+    require('./admin/module.js')(this);
+    require('./members/module.js')(this, 'admin');
+    require('./blacklist/module.js')(this, 'admin');
+    require('./tds/module.js')(this, 'admin');
+    require('./account/module.js')(this, 'admin');
   },
 
   getPopupRegion: function () {

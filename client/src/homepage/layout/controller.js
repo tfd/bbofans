@@ -1,5 +1,4 @@
 var Marionette = require('backbone.marionette');
-var $ = require('jquery');
 var HomepageLayoutView = require('./view');
 
 var HomepageLayoutController = Marionette.Controller.extend({

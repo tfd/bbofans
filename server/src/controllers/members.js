@@ -29,7 +29,7 @@ var field2FlatNames = {
   'rbdLastPlayedAt'   : 'rbd.totalScores.lastPlayedAt',
   'rbdNumTournaments' : 'rbd.totalScores.numTournaments',
   'rbdAverageScore'   : 'rbd.totalScores.averageScore',
-  'rbdAwards'         : 'rbd.totalScores.awards',
+  'rbdAwards'         : 'rbd.totalScores.awards'
 };
 var fieldDefinitions = require('../utils/fieldDefinitions')(Member, fields, field2FlatNames);
 var listQueryParameters = require('../utils/listQueryParameters')(fieldDefinitions);
@@ -47,7 +47,8 @@ module.exports = {
   getRock: function (req, res) {
     var limit = listQueryParameters.getLimit(req);
     var skip = listQueryParameters.getSkip(req);
-    var sort = listQueryParameters.getSort(req, ['bboName', 'nation', 'level', 'awards', 'averageScore', 'numTournaments']);
+    var sort = listQueryParameters.getSort(req,
+        ['bboName', 'nation', 'level', 'awards', 'averageScore', 'numTournaments']);
     var filter = listQueryParameters.getFindCriteria(req, {
       criteria        : {
         isEnabled    : true,
@@ -85,7 +86,8 @@ module.exports = {
   getRbd: function (req, res) {
     var limit = listQueryParameters.getLimit(req);
     var skip = listQueryParameters.getSkip(req);
-    var sort = listQueryParameters.getSort(req, ['bboName', 'nation', 'level', 'awards', 'averageScore', 'numTournaments']);
+    var sort = listQueryParameters.getSort(req,
+        ['bboName', 'nation', 'level', 'awards', 'averageScore', 'numTournaments']);
     var filter = listQueryParameters.getFindCriteria(req, {
       criteria   : {
         isEnabled    : true,
@@ -179,7 +181,7 @@ module.exports = {
         res.status(403).json({errors: {recaptcha: data.error}});
       }
       else {
-        var newMember = new Member(req.body);
+        var newMember = new Member(member);
         newMember.save(function (err, player) {
           if (err) {
             var error = err.err.toString();
@@ -210,8 +212,8 @@ module.exports = {
     }
     else {
       // New member, save it.
-      var member = new Member(req.body);
-      member.save(function (err, player) {
+      var memberToSave = new Member(req.body);
+      memberToSave.save(function (err, member) {
         if (err) {
           var error = err.err.toString();
           if (error.indexOf('E11000 duplicate key error') === 0) {
@@ -227,7 +229,7 @@ module.exports = {
           }
         }
         else {
-          res.json(player);
+          res.json(member);
         }
       });
     }
@@ -248,38 +250,68 @@ module.exports = {
     });
   },
 
-  delete: function (req, res) {
+  changePassword: function (req, res) {
+    var password = req.body;
+    var id = password._id;
+    delete password._id;
+    Member.findById(id, function (err, member) {
+      if (err) {
+        console.error('members.changePassword', err);
+        return res.json({error: 'Error changing password.'});
+      }
+
+      if (! member.authenticate(password.currentPassword)) {
+        return res.json({currentPassword: 'Incorrect password'});
+      }
+
+      if (password.newPassword !== password.repeatPassword) {
+        return res.json({repeatPassword: "doesn't match"});
+      }
+
+      member.password = password.newPassword;
+      member.save(function (err) {
+        if (err) {
+          console.error('members.changePassword', err);
+          return res.json({error: 'Error changing password.'});
+        }
+
+        res.json(member);
+      });
+    });
+  },
+
+  remove: function (req, res) {
     Member.findOne({_id: req.params.id}, function (err, player) {
       if (err) {
         console.error('members.delete', err);
         res.json({error: 'Member not found.'});
       }
       else {
-        player.remove(function (err, player) {
+        player.remove(function (err) {
+          if (err) { console.error('members.remove', err); }
           res.json(200, {status: 'Success'});
         });
       }
     });
   },
 
-  export: function (req, res) {
+  saveAs: function (req, res) {
     var sort = listQueryParameters.getSort(req, fields);
     var filter = listQueryParameters.getFindCriteria(req);
-    Member.find(filter).count(function (err, count) {
+    Member.find(filter).count(function (err) {
           if (err) { console.error('members.getAll', err); }
           var aggr = [];
           aggr.push({$match: filter});
           aggr.push({$project: fieldDefinitions.projectFields(fields, {excludeId: true})});
           aggr.push({$sort: sort});
           Member.aggregate(aggr, function (err, members) {
-                if (err) { console.error('members.export', err); }
+                if (err) { console.error('members.saveAs', err); }
                 var type = req.params.type ? req.params.type.toLowerCase() : 'txt';
-                exportToFile.export(type, members, res);
+                exportToFile.saveAs(type, members, res);
               }
           );
         }
     );
   }
 
-}
-;
+};

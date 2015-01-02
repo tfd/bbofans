@@ -1,5 +1,5 @@
 var Marionette = require('backbone.marionette');
-var TdCollection = require('./collection');
+var TdCollection = require('../../models/tdCarouselCollection');
 
 var HomepageCarouselView = require('./view');
 

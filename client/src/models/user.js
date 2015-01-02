@@ -1,6 +1,7 @@
 var Backbone = require('backbone');
+var _ = require('underscore');
 
-User = Backbone.Model.extend({
+var User = Backbone.Model.extend({
   urlRoot: "users",
   idAttribute: "_id",
   
@@ -13,7 +14,7 @@ User = Backbone.Model.extend({
     isUserManager: false
   },
 
-  validate: function(attrs, options) {
+  validate: function(attrs) {
     var errors = {};
     if (! attrs.username) {
       errors.username = "can't be blank";

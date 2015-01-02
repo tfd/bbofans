@@ -1,6 +1,7 @@
 var Backbone = require('backbone');
+var _ = require('underscore');
 
-Member = Backbone.Model.extend({
+var Member = Backbone.Model.extend({
   urlRoot: "admin/members",
   idAttribute: "_id",
   
@@ -13,7 +14,7 @@ Member = Backbone.Model.extend({
     isStarPlayer: false
   },
 
-  validate: function(attrs, options) {
+  validate: function(attrs) {
     var errors = {};
     if (! attrs.bboName) {
       errors.bboName = "can't be blank";

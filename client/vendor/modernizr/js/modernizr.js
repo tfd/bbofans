@@ -120,8 +120,9 @@ window.Modernizr = (function( window, document, undefined ) {
       // Documents served as xml will throw if using &shy; so use xml friendly encoded version. See issue #277
       style = ['&#173;','<style id="s', mod, '">', rule, '</style>'].join('');
       div.id = mod;
-      // IE6 will false positive on some tests due to the style element inside the test div somehow interfering offsetHeight, so insert it into body or fakebody.
-      // Opera will act all quirky when injecting elements in documentElement when page is served as xml, needs fakebody too. #270
+      // IE6 will false positive on some tests due to the style element inside the test div somehow interfering
+      // offsetHeight, so insert it into body or fakebody. Opera will act all quirky when injecting elements in
+      // documentElement when page is served as xml, needs fakebody too. #270
       (body ? div : fakeBody).innerHTML += style;
       fakeBody.appendChild(div);
       if ( !body ) {
@@ -195,7 +196,8 @@ window.Modernizr = (function( window, document, undefined ) {
         element = element || document.createElement(TAGNAMES[eventName] || 'div');
         eventName = 'on' + eventName;
 
-        // When using `setAttribute`, IE skips "unload", WebKit skips "unload" and "resize", whereas `in` "catches" those
+        // When using `setAttribute`, IE skips "unload", WebKit skips "unload" and "resize", whereas `in` "catches"
+        // those
         var isSupported = eventName in element;
 
         if ( !isSupported ) {
@@ -731,7 +733,7 @@ window.Modernizr = (function( window, document, undefined ) {
         // IE9 Running on Windows Server SKU can cause an exception to be thrown, bug #224
         try {
             if ( bool = !!elem.canPlayType ) {
-                bool      = new Boolean(bool);
+                bool      = Boolean(bool);
                 bool.ogg  = elem.canPlayType('video/ogg; codecs="theora"')      .replace(/^no$/,'');
 
                 // Without QuickTime, this value will be `undefined`. github.com/Modernizr/Modernizr/issues/546
@@ -751,7 +753,7 @@ window.Modernizr = (function( window, document, undefined ) {
 
         try {
             if ( bool = !!elem.canPlayType ) {
-                bool      = new Boolean(bool);
+                bool      = Boolean(bool);
                 bool.ogg  = elem.canPlayType('audio/ogg; codecs="vorbis"').replace(/^no$/,'');
                 bool.mp3  = elem.canPlayType('audio/mpeg;')               .replace(/^no$/,'');
 
@@ -1004,11 +1006,8 @@ window.Modernizr = (function( window, document, undefined ) {
     modElem = inputElem = null;
 
     /*>>shiv*/
-    /**
-     * @preserve HTML5 Shiv prev3.7.1 | @afarkas @jdalton @jon_neal @rem | MIT/GPL2 Licensed
-     */
-    ;(function(window, document) {
-        /*jshint evil:true */
+  (function (window, document) {
+    /*jshint evil:true */
         /** version */
         var version = '3.7.0';
 

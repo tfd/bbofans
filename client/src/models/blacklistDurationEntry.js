@@ -1,7 +1,8 @@
 var Backbone = require('backbone');
 var moment = require('moment');
+var _ = require('underscore');
 
-AddBlacklist = Backbone.Model.extend({
+var BlacklistDurationEntry = Backbone.Model.extend({
   urlRoot: "admin/blacklist/entry",
   idAttribute: "_id",
   
@@ -12,7 +13,7 @@ AddBlacklist = Backbone.Model.extend({
     reason: ''
   },
 
-  validate: function (attrs, options) {
+  validate: function (attrs) {
     var errors = {};
     if (! attrs.bboName) {
       errors.bboName = "can't be blank";
@@ -42,4 +43,4 @@ AddBlacklist = Backbone.Model.extend({
   
 });
 
-module.exports = AddBlacklist;
+module.exports = BlacklistDurationEntry;

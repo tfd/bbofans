@@ -1,6 +1,5 @@
 var Marionette = require('backbone.marionette');
 var AdminHomeView = require('./view');
-var $ = require('jquery');
 var messageBus = require('../../common/utils/messageBus');
 var authentication = require('../../authentication/controller');
 

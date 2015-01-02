@@ -1,14 +1,15 @@
 var messageBus = require('../common/utils/messageBus');
 var $ = require('jquery');
+var _ = require('underscore');
 
-var User = require('../common/models/user');
+var User = require('../models/user');
 
 var authentication = {
   checking: true,
 
   login: function (username, password, cb) {
     var self = this;
-    cb = cb || function () { return; };
+    cb = cb || _.noop;
 
     this.checking = true;
     $.ajax({
@@ -27,13 +28,13 @@ var authentication = {
         self.user = new User(rsp.user);
         cb(null, self.user);
       }
-      this.checking = false;
+      self.checking = false;
       messageBus.trigger('authenticated');
     });
   },
 
   logout: function (cb) {
-    cb = cb || function () { return; };
+    cb = cb || _.noop;
 
     delete this.user;
     $.ajax({url: '/admin/logout'}).complete(function () {
@@ -43,7 +44,7 @@ var authentication = {
 
   isAuthenticated: function (cb) {
     var self = this;
-    cb = cb || function () { return; };
+    cb = cb || _.noop;
 
     if (this.checking) {
       messageBus.on('authenticated', function () {

@@ -1,9 +1,8 @@
 var Marionette = require('backbone.marionette');
 var NewBlacklistView = require('./view');
-var DurationEntry = require('../models/durationEntry');
+var DurationEntry = require('../../models/blacklistDurationEntry');
 var messageBus = require('../../common/utils/messageBus');
 var moment = require('moment');
-var $ = require('jquery');
 
 var NewEntryController = Marionette.Controller.extend({
   initialize: function (options) {
@@ -25,15 +24,14 @@ var NewEntryController = Marionette.Controller.extend({
     this.app.showPopup();
 
     popupView.on('form:submit', function (data) {
-      var xhr = null;
-      xhr = durationEntry.save(data);
+      var xhr = durationEntry.save(data);
 
       if (xhr === false) {
         messageBus.command('log', "fail", xhr);
         popupView.triggerMethod("form:data:invalid", durationEntry.validationError);
       }
       else {
-        xhr.done(function (data) {
+        xhr.done(function () {
           messageBus.trigger('blacklist:changed');
         }).fail(function (xhr) {
           messageBus.command('log', "fail", xhr.responseJSON);

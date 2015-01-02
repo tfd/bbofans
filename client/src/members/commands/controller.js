@@ -1,7 +1,7 @@
 var Backbone = require('backbone');
 var Marionette = require('backbone.marionette');
 var messageBus = require('../../common/utils/messageBus');
-var $ = require('jquery');
+var _ = require('underscore');
 
 var MemberCommandsNoSelectionView = require('../commands/noSelectionView');
 var MemberCommandsFlagView = require('../commands/flagView');
@@ -9,9 +9,9 @@ var MemberCommandsEmailView = require('../commands/emailView');
 var MemberCommandsBlacklistView = require('../commands/blacklistView');
 var MemberCommandsInvalidCommandView = require('../commands/invalidCommandView');
 
-var FlagCommands = require('../models/flagCommands');
-var EmailCommand = require('../models/emailCommand');
-var BlacklistCommand = require('../models/blacklistCommand');
+var FlagCommands = require('../../models/flagCommands');
+var EmailCommand = require('../../models/emailCommand');
+var BlacklistCommand = require('../../models/blacklistCommand');
 var viewFactory = {};
 
 /*
@@ -23,7 +23,7 @@ var viewFactory = {};
  * $('#popupId').modal('show');
  * </code>
  */
-$.each(['validate', 'enable', 'disable'], function (i, cmd) {
+_.each(['validate', 'enable', 'disable'], function (cmd) {
   viewFactory[cmd] = function (rows) {
     var title = cmd[0].toUpperCase() + cmd.substring(1);
     return new MemberCommandsFlagView( {
@@ -95,7 +95,7 @@ var CommandsController = Marionette.Controller.extend({
     region.show(popupView);
     this.app.showPopup();
 
-    popupView.on('command:execute', function (data) {
+    popupView.on('form:submit', function (data) {
       var xhr = null;
       var model = null;
 
@@ -129,6 +129,10 @@ var CommandsController = Marionette.Controller.extend({
         });
         self.app.hidePopup();
       }
+    });
+
+    popupView.on('form:cancel', function () {
+      self.app.hidePopup();
     });
   }
 });

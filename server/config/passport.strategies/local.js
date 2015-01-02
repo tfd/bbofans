@@ -10,15 +10,24 @@ module.exports = new LocalStrategy({
     },
     function (username, password, done) {
       Member.findOne({bboName: username}, function (err, member) {
+        if (err) {
+          console.error('LocalStrategy', err);
+          return done(err, null);
+        }
+
         if (!member) {
-          done(null, false, {message: 'Invalid user'});
+          return done(null, false, {message: 'Invalid user'});
         }
-        else if (!member.authenticate(password)) {
-          done(null, false, {message: 'Invalid password'});
+
+        if (!member.authenticate(password)) {
+          return done(null, false, {message: 'Invalid password'});
         }
-        else {
-          member.getRole(done);
-        }
+
+        member.getRole(function (err, role) {
+          if (err) { return done (err, null); }
+          role.userId = member._id;
+          done(null, role);
+        });
       });
     });
 

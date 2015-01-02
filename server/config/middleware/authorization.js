@@ -13,6 +13,14 @@ module.exports = {
     res.redirect(403, '/login');
   },
 
+  isSameUser: function (req, res, next) {
+    if (req.params.id !== req.user.userId) {
+      req.flash('info', 'You are not authorized');
+      return res.redirect(403, '/admin/home');
+    }
+    next();
+  },
+
   member: {
     hasAuthorization: function (req, res, next) {
       if (! req.user.isMemberManager) {
