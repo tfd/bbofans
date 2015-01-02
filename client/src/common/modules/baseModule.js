@@ -113,7 +113,15 @@ var BaseModule = Marionette.Module.extend({
   },
 
   onStart: function () {
+    var self = this;
     this.firstTime = true;
+
+    _.each(this.options.controllers, function (Value, key) {
+      self.controllers[key] = new Value({
+        app   : self.app,
+        module: self
+      });
+    });
   },
 
   render: function (path, region) {

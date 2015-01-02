@@ -42,6 +42,7 @@ module.exports = function (app, config, passport) {
   app.get('/members/rock', members.getRock);
   app.get('/members/rbd', members.getRbd);
   app.post('/register', members.register);
+  app.get('/register/:id', members.getRegistrant);
   app.get('/countries', countries.get);
   app.get('/admin/session', admin.getUser);
   app.post('/admin/session', login(app, config, passport));

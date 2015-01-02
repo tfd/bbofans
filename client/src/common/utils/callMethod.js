@@ -24,4 +24,11 @@ _.mixin({
   }
 });
 
+// Add noop as it isn't included in all underscore distributions.
+if (!_.noop) {
+  _.mixin({
+    noop : function () { return undefined; }
+  });
+}
+
 module.exports = _.callMethod;

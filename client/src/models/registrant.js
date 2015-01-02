@@ -2,7 +2,7 @@ var Backbone = require('backbone');
 var Member = require('./member');
 var _ = require('underscore');
 
-var Register = Member.extend({
+var Registrant = Member.extend({
   urlRoot: "register",
 
   validate: function(attrs) {
@@ -20,4 +20,4 @@ var Register = Member.extend({
 
 });
 
-module.exports = Register;
+module.exports = Registrant;

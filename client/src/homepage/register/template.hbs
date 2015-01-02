@@ -2,34 +2,44 @@
 
 <form class="form-horizontal" role="form">
   <div class="form-group col-md-8">
-    <label for="member-bboName" class="control-label">BBO nickname</label>
-    <input id="member-bboName" name="bboName" type="text" class="form-control" placeHolder="Enter BBO nickname" value="{{bboName}}"/>
+    <label for="register-bboName" class="control-label">BBO nickname</label>
+    <input id="register-bboName" name="bboName" type="text" class="form-control" placeHolder="Enter BBO nickname" value="{{bboName}}"/>
   </div>
   <div class="clearfix"></div>
   <div class="form-group col-md-8">
-    <label for="member-name" class="control-label">Name</label>
-    <input id="member-name" name="name" type="text" class="form-control" placeHolder="Enter name" value="{{name}}"/>
+    <label for="register-password" class="control-label">Password</label>
+    <input id="register-password" name="password" type="password" class="form-control" placeHolder="Enter password" />
   </div>
   <div class="clearfix"></div>
   <div class="form-group col-md-8">
-    <label for="member-email" class="control-label">Email</label>
-    <input id="member-email" name="email" type="email" class="form-control" placeHolder="Enter Email" value="{{email}}"/>
+    <label for="register-repeatPassword" class="control-label">Re-enter password</label>
+    <input id="register-repeatPassword" name="repeatPassword" type="password" class="form-control" placeHolder="Enter password again" />
   </div>
   <div class="clearfix"></div>
   <div class="form-group col-md-8">
-    <label for="member-telephone" class="control-label">Telephone</label>
-    <input id="member-telephone" name="telephone" type="text" class="form-control" placeHolder="Enter phone number" value="{{telephone}}"/>
+    <label for="register-name" class="control-label">Name</label>
+    <input id="register-name" name="name" type="text" class="form-control" placeHolder="Enter name" value="{{name}}"/>
+  </div>
+  <div class="clearfix"></div>
+  <div class="form-group col-md-8">
+    <label for="register-email" class="control-label">Email</label>
+    <input id="register-email" name="email" type="email" class="form-control" placeHolder="Enter Email" value="{{email}}"/>
+  </div>
+  <div class="clearfix"></div>
+  <div class="form-group col-md-8">
+    <label for="register-telephone" class="control-label">Telephone</label>
+    <input id="register-telephone" name="telephone" type="text" class="form-control" placeHolder="Enter phone number" value="{{telephone}}"/>
   </div>
   <div class="clearfix"></div>
   <div class="form-group col-md-5">
     <!-- Countries are loaded at runtime from /data/countries.json -->
-    <label for="member-nation" class="control-label">Country</label>
-    <select id="member-nation" name="nation" class="form-control" />
+    <label for="register-nation" class="control-label">Country</label>
+    <select id="register-nation" name="nation" class="form-control" />
   </div>
   <div class="clearfix"></div>
   <div class="form-group col-md-3">
-    <label for="member-level" class="control-label">Skill level</label>
-    <select id="member-level" name="level" class="form-control">
+    <label for="register-level" class="control-label">Skill level</label>
+    <select id="register-level" name="level" class="form-control">
       <option>Beginner</option>
       <option>Intermediate</option>
       <option>Advanced</option>
@@ -40,16 +50,15 @@
   </div>
   <div class="clearfix"></div>
   <div class="form-group col-md-4">
-    <label for="member-isStarPlayer" class="control-label">
-      <input type="checkbox" id="member-isStarPlayer" name="isStarPlayer" {{#if isStarPlayer}}checked{{/if}} />
+    <label for="register-isStarPlayer" class="control-label">
+      <input type="checkbox" id="register-isStarPlayer" name="isStarPlayer" {{#if isStarPlayer}}checked{{/if}} />
       Star Player
     </label>
   </div>
   <div class="clearfix"></div>
   
   <div class="form-group col-md-8">
-    <label for="member-recaptcha" class="contol-label">Are you human?</label>
-    <div id="member-recaptcha"></div>
+    <div id="register-reCaptcha"></div>
   </div>
   <div class="clearfix"></div>
 

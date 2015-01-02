@@ -1,15 +1,11 @@
 var BaseModule = require('../common/modules/baseModule');
 var messageBus = require('../common/utils/messageBus');
 var _ = require('underscore');
-var controllerFactories = {
-  list: require('./list/controller'),
-  edit: require('./edit/controller')
-};
 
 module.exports = function (app, parentModuleName) {
   var moduleName = _.compact([parentModuleName, 'blacklist']).join('.');
 
-  var blacklistModule = app.module(moduleName, {
+  return app.module(moduleName, {
     moduleName : moduleName,
     moduleClass: BaseModule,
 
@@ -18,7 +14,12 @@ module.exports = function (app, parentModuleName) {
       "admin/blacklist/:id": '[' + moduleName + ']edit:show'
     },
 
-    define: function (blacklistModule, app) {
+    controllers: {
+      list: require('./list/controller'),
+      edit: require('./edit/controller')
+    },
+
+    define: function (blacklistModule) {
       blacklistModule.renderLayout = function (region) {
         this.region = region;
       };
@@ -26,18 +27,6 @@ module.exports = function (app, parentModuleName) {
       blacklistModule.getSubModuleRegion = function () {
         return this.region;
       };
-
-      blacklistModule.on('start', function () {
-        var self = this;
-        _.each(controllerFactories, function (Value, key) {
-          self.controllers[key] = new Value({
-            app   : app,
-            module: self
-          });
-        });
-      });
     }
   });
-
-  return blacklistModule;
 };

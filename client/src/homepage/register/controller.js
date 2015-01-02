@@ -2,7 +2,8 @@ var Marionette = require('backbone.marionette');
 var messageBus = require('../../common/utils/messageBus');
 
 var HomepageRegisterView = require('./view');
-var Register = require('../../models/register');
+var HomepageSuccessView = require('./successView');
+var Registrant = require('../../models/registrant');
 
 var HomepageRegisterController = Marionette.Controller.extend({
   initialize: function (options) {
@@ -11,33 +12,39 @@ var HomepageRegisterController = Marionette.Controller.extend({
   },
 
   show: function (region) {
-    var member = new Register();
+    var registrant = new Registrant();
     var registerView = new HomepageRegisterView({
-      model: member
+      model: registrant
     });
 
     registerView.on('form:submit', function (data) {
-      if (!Recaptcha.get_response()) {
-        registerView.triggerMethod("form:data:invalid", { 'recaptcha': "can't be blank" });
+      var xhr = registrant.save(data);
+      if (xhr === false) {
+        registerView.triggerMethod("form:data:invalid", registrant.validationError);
       }
       else {
-        var xhr = member.save(data);
-        if (xhr === false) {
-          registerView.triggerMethod("form:data:invalid", member.validationError);
-        }
-        else {
-          xhr.done(function (data) {
-            messageBus.command('log', "done", data);
-            messageBus.command("route:member:show", member.get("id"));
-          }).fail(function (xhr) {
-            messageBus.command('log', "fail", xhr.responseJSON);
-            registerView.triggerMethod("form:data:invalid", xhr.responseJSON);
-          });
-        }
+        xhr.done(function () {
+          messageBus.command("route:register/:id", registrant.get("_id"));
+        }).fail(function (xhr) {
+          messageBus.command('log', "fail", xhr.responseJSON);
+          registerView.triggerMethod("form:data:invalid", xhr.responseJSON);
+        });
       }
     });
 
     region.show(registerView);
+  },
+
+  success: function (region, id) {
+    var registrantToFetch = new Registrant({_id: id});
+    registrantToFetch.fetch().done(function (model) {
+      var registrant = new Registrant(model);
+      var successView = new HomepageSuccessView({
+        model: registrant
+      });
+
+      region.show(successView);
+    });
   }
 });
 

@@ -24,21 +24,28 @@ var rootPath = path.normalize(__dirname + '/../..');
  * </dl>
  */
 module.exports = {
-  dev: {
-    db: 'mongodb://localhost/bbofans_dev',
-    root: rootPath,
-    app: {
+  dev : {
+    db           : 'mongodb://localhost/bbofans_dev',
+    root         : rootPath,
+    app          : {
       name: 'BBOFans Website'
     },
     omitRecaptcha: false
   },
   test: {
-    db: 'mongodb://localhost/bbofans_test',
-    root: rootPath,
-    app: {
+    db           : 'mongodb://localhost/bbofans_test',
+    root         : rootPath,
+    app          : {
       name: 'BBOFans Website'
     },
     omitRecaptcha: true
   },
-  prod: {}
+  prod: {
+    db           : 'mongodb://localhost/bbofans_prod',
+    root         : rootPath,
+    app          : {
+      name: 'BBOFans Website'
+    },
+    omitRecaptcha: false
+  }
 };
