@@ -55,7 +55,7 @@ module.exports = function (app, config, passport) {
   app.get('/admin/members/saveAs/:type', memberManagerAuth, members.saveAs);
   app.put('/admin/members/:id', memberManagerAuth, members.update);
   app.get('/admin/members/:id', memberManagerAuth, members.getById);
-  app.delete('/admin/members/:id', memberManagerAuth, members.delete);
+  app.delete('/admin/members/:id', memberManagerAuth, members.remove);
   app.post('/admin/commands/enable', memberManagerAuth, commands.enable);
   app.post('/admin/commands/disable', memberManagerAuth, commands.disable);
   app.post('/admin/commands/blacklist', memberManagerAuth, commands.blacklist);
