@@ -1,18 +1,18 @@
-var Form = require('../../common/views/formWithErrorHandling');
+var FormWithErrorHandling = require('../../common/views/formWithErrorHandling');
 
-var RegisterView = Form.extend({
+var AccountView = FormWithErrorHandling.extend({
   template : require('./template.hbs'),
   tag      : 'div',
   className: 'well',
-  idPrefix : 'user',
+  idPrefix : 'account',
 
-  ui: Form.extendUi({
+  ui: FormWithErrorHandling.extendUi({
     'reset' : '.form-reset',
     'nation': '#account-nation',
     'level': '#account-level'
   }),
 
-  events: Form.extendEvents({
+  events: FormWithErrorHandling.extendEvents({
     'click @ui.reset': 'resetClicked'
   }),
 
@@ -31,4 +31,4 @@ var RegisterView = Form.extend({
 
 });
 
-module.exports = RegisterView;
+module.exports = AccountView;

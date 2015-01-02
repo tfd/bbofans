@@ -1,5 +1,5 @@
 var Backbone = require('backbone');
-var Register = require('./register');
+var Member = require('./member');
 var _ = require('underscore');
 
 /**
@@ -7,24 +7,10 @@ var _ = require('underscore');
  *
  * @class
  * @constructor
- * @augments Register
+ * @augments Member
  */
-var Account = Register.extend({
-  urlRoot: "admin/account",
-
-  validate: function(attrs) {
-    var errors = Member.prototype.validate.call(this, attrs) || {};
-    if (! attrs.password) {
-      errors.password = "cannot be blank";
-    }
-    if (attrs.password !== attrs.repeatPassword) {
-      errors.repeatPassword = "doesn't match";
-    }
-    if (!_.isEmpty(errors)) {
-      return errors;
-    }
-  }
-
+var Account = Member.extend({
+  urlRoot: "admin/account"
 });
 
 module.exports = Account;

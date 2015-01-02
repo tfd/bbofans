@@ -2,11 +2,11 @@ var Form = require('../../common/views/formWithErrorHandling');
 
 var Member = require('../../models/member');
 
-var RegisterView = Form.extend({
+var AdminAccountView = Form.extend({
   template : require('./template.hbs'),
   tag      : 'div',
   className: 'well',
   idPrefix : 'password'
 });
 
-module.exports = RegisterView;
+module.exports = AdminAccountView;

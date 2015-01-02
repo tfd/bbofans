@@ -1,6 +1,6 @@
 var Marionette = require('backbone.marionette');
 
-var UserView = Marionette.ItemView.extend({
+var AccountView = Marionette.ItemView.extend({
   template : require('./template.hbs'),
   className: 'well',
 
@@ -15,4 +15,4 @@ var UserView = Marionette.ItemView.extend({
   }
 });
 
-module.exports = UserView;
+module.exports = AccountView;

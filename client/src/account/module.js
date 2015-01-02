@@ -15,9 +15,9 @@ module.exports = function (app, parentModuleName) {
     moduleClass: BaseModule,
 
     routes: {
-      'admin/user/:id'         : '[' + moduleName + ']info:show',
-      'admin/user/password/:id': '[' + moduleName + ']password:show',
-      'admin/user/edit/:id'    : '[' + moduleName + ']edit:show'
+      'admin/account/:id'         : '[' + moduleName + ']info:show',
+      'admin/account/password/:id': '[' + moduleName + ']password:show',
+      'admin/account/edit/:id'    : '[' + moduleName + ']edit:show'
     },
 
     define: function (accountModule) {

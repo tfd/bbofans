@@ -46,7 +46,7 @@ module.exports = function (Model, fields, field2FlatNames) {
      * @returns {boolean} whether the given name is a boolean field of the member collection.
      */
     isBooleanField: function (name) {
-      return Model.schema.path(name) instanceof mongoose.Schema.Types.Boolean;
+      return Model.schema.path(this.getFieldName(name)) instanceof mongoose.Schema.Types.Boolean;
     },
 
     /**
@@ -54,7 +54,7 @@ module.exports = function (Model, fields, field2FlatNames) {
      * @returns {boolean} whether the given name is a numeric field of the member collection.
      */
     isNumericField: function (name) {
-      return Model.schema.path(name) instanceof mongoose.Schema.Types.Number;
+      return Model.schema.path(this.getFieldName(name)) instanceof mongoose.Schema.Types.Number;
     },
 
     /**
@@ -62,7 +62,7 @@ module.exports = function (Model, fields, field2FlatNames) {
      * @returns {boolean} whether the field is a date field of the meber collection
      */
     isDateField: function (name) {
-      return Model.schema.path(name) instanceof mongoose.Schema.Types.Date;
+      return Model.schema.path(this.getFieldName(name)) instanceof mongoose.Schema.Types.Date;
     },
 
     /**

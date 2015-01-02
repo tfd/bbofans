@@ -39,7 +39,11 @@ module.exports = {
 
   index: function (req, res) {
     Member.find({}, function (err, data) {
-      if (err) { console.error('members.index', err); }
+      if (err) {
+        console.error('members.index', err);
+        return res.status(500).json({error: err});
+      }
+
       res.json(data);
     });
   },
@@ -59,7 +63,11 @@ module.exports = {
       restrictedSearch: true
     });
     Member.find(filter).count(function (err, count) {
-      if (err) { console.error('members.getRock', err); }
+      if (err) {
+        console.error('members.getRock', err);
+        return res.status(500).json({error: err});
+      }
+
       var aggr = [];
       aggr.push({$match: filter});
       aggr.push({
@@ -71,7 +79,11 @@ module.exports = {
       aggr.push({$skip: skip});
       aggr.push({$limit: limit});
       Member.aggregate(aggr, function (err, data) {
-        if (err) { console.error('members.getRock', err); }
+        if (err) {
+          console.error('members.getRock', err);
+          return res.status(500).json({error: err});
+        }
+
         res.json({
           skip : skip,
           limit: limit,
@@ -97,7 +109,11 @@ module.exports = {
       }, doFilter: false, restrictedSearch: true
     });
     Member.find(filter).count(function (err, count) {
-      if (err) { console.error('members.getRbd', err); }
+      if (err) {
+        console.error('members.getRbd', err);
+        return res.status(500).json({error: err});
+      }
+
       var aggr = [];
       aggr.push({$match: filter});
       aggr.push({
@@ -109,7 +125,11 @@ module.exports = {
       aggr.push({$skip: skip});
       aggr.push({$limit: limit});
       Member.aggregate(aggr, function (err, data) {
-        if (err) { console.error('members.getRbd', err); }
+        if (err) {
+          console.error('members.getRbd', err);
+          return res.status(500).json({error: err});
+        }
+
         res.json({
           skip : skip,
           limit: limit,
@@ -127,7 +147,11 @@ module.exports = {
     var sort = listQueryParameters.getSort(req, fields);
     var filter = listQueryParameters.getFindCriteria(req);
     Member.find(filter).count(function (err, count) {
-          if (err) { console.error('members.getAll', err); }
+          if (err) {
+            console.error('members.getAll', err);
+            return res.status(500).json({error: err});
+          }
+
           var aggr = [];
           aggr.push({$match: filter});
           aggr.push({$project: fieldDefinitions.projectFields(fields)});
@@ -135,7 +159,11 @@ module.exports = {
           aggr.push({$skip: skip});
           aggr.push({$limit: limit});
           Member.aggregate(aggr, function (err, data) {
-                if (err) { console.error('members.getAll', err); }
+                if (err) {
+                  console.error('members.getAll', err);
+                  return res.status(500).json({error: err});
+                }
+
                 res.json({
                   skip : skip,
                   limit: limit,
@@ -154,7 +182,11 @@ module.exports = {
     Member.find({bboName: {$regex: new RegExp(q, 'i')}})
         .select('bboName')
         .exec(function (err, data) {
-          if (err) { console.error('members.getBboName', err); }
+          if (err) {
+            console.error('members.getBboName', err);
+            return res.status(500).json({error: err});
+          }
+
           res.json(data);
         });
   },
@@ -162,10 +194,11 @@ module.exports = {
   getById: function (req, res) {
     Member.findById(req.params.id, function (err, player) {
       if (err) {
-        if (err) { console.error('members.getById', err); }
-        res.status(500).json({error: err});
+        console.error('members.getById', err);
+        return res.status(500).json({error: err});
       }
-      else if (player === null) {
+
+      if (player === null) {
         res.status(404).json({error: 'Member not found.'});
       }
       else {
@@ -242,11 +275,14 @@ module.exports = {
     Member.findByIdAndUpdate(id, {$set: member}, function (err, updated) {
       if (err) {
         console.error('members.update', err);
-        res.json({error: 'Error updating member.'});
+        return res.status(500).json({error: err});
       }
-      else {
-        res.json(updated);
+
+      if (!updated) {
+        return res.status(404).json({_id: 'Member not found'});
       }
+
+      res.json(updated);
     });
   },
 
@@ -257,22 +293,26 @@ module.exports = {
     Member.findById(id, function (err, member) {
       if (err) {
         console.error('members.changePassword', err);
-        return res.json({error: 'Error changing password.'});
+        return res.status(500).json({error: err});
       }
 
-      if (! member.authenticate(password.currentPassword)) {
-        return res.json({currentPassword: 'Incorrect password'});
+      if (!member) {
+        return res.status(404).json({_id: 'Member not found'});
+      }
+
+      if (!member.authenticate(password.currentPassword)) {
+        return res.status(422).json({currentPassword: 'Incorrect password'});
       }
 
       if (password.newPassword !== password.repeatPassword) {
-        return res.json({repeatPassword: "doesn't match"});
+        return res.status(422).json({repeatPassword: "doesn't match"});
       }
 
       member.password = password.newPassword;
       member.save(function (err) {
         if (err) {
           console.error('members.changePassword', err);
-          return res.json({error: 'Error changing password.'});
+          return res.status(500).json({error: 'Error changing password.'});
         }
 
         res.json(member);
@@ -281,31 +321,46 @@ module.exports = {
   },
 
   remove: function (req, res) {
-    Member.findOne({_id: req.params.id}, function (err, player) {
+    Member.findOne({_id: req.params.id}, function (err, member) {
       if (err) {
-        console.error('members.delete', err);
-        res.json({error: 'Member not found.'});
+        console.error('members.remove', err);
+        return res.status(500).json({error: err});
       }
-      else {
-        player.remove(function (err) {
-          if (err) { console.error('members.remove', err); }
-          res.json(200, {status: 'Success'});
-        });
+
+      if (!member) {
+        return res.status(404).json({_id: 'Member not found'});
       }
+
+      member.remove(function (err) {
+        if (err) {
+          console.error('members.remove', err);
+          return res.status(500).json({error: err});
+        }
+
+        res.json({status: 'Success'});
+      });
     });
   },
 
   saveAs: function (req, res) {
     var sort = listQueryParameters.getSort(req, fields);
     var filter = listQueryParameters.getFindCriteria(req);
-    Member.find(filter).count(function (err) {
-          if (err) { console.error('members.getAll', err); }
+    Member.find(filter, function (err) {
+          if (err) {
+            console.error('members.getAll', err);
+            return res.status(500).json({error: err});
+          }
+
           var aggr = [];
           aggr.push({$match: filter});
           aggr.push({$project: fieldDefinitions.projectFields(fields, {excludeId: true})});
           aggr.push({$sort: sort});
           Member.aggregate(aggr, function (err, members) {
-                if (err) { console.error('members.saveAs', err); }
+                if (err) {
+                  console.error('members.saveAs', err);
+                  return res.status(500).json({error: err});
+                }
+
                 var type = req.params.type ? req.params.type.toLowerCase() : 'txt';
                 exportToFile.saveAs(type, members, res);
               }

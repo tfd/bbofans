@@ -1,10 +1,10 @@
 var Marionette = require('backbone.marionette');
 var messageBus = require('../../common/utils/messageBus');
 
-var AdminUserPasswordView = require('./view');
+var AdminAccountPasswordView = require('./view');
 var Password = require('../../models/password');
 
-var AdminUserPasswordController = Marionette.Controller.extend({
+var AdminAccountPasswordController = Marionette.Controller.extend({
   initialize: function (options) {
     this.app = options.app;
     this.module = options.module;
@@ -12,7 +12,7 @@ var AdminUserPasswordController = Marionette.Controller.extend({
 
   show: function (region, id) {
     var password = new Password({_id : id});
-    var passwordView = new AdminUserPasswordView({
+    var passwordView = new AdminAccountPasswordView({
       model: password
     });
 
@@ -36,4 +36,4 @@ var AdminUserPasswordController = Marionette.Controller.extend({
   }
 });
 
-module.exports = AdminUserPasswordController;
+module.exports = AdminAccountPasswordController;

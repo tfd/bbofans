@@ -115,9 +115,17 @@ module.exports = {
     aggr.push({$limit: limit});
 
     Blacklist.find(filter).count(function (err, count) {
-      if (err) { console.err('blacklist.getList', err); }
+      if (err) {
+        console.err('blacklist.getList', err);
+        return res.status(500).json({error: err});
+      }
+
       Blacklist.aggregate(aggr, function (err, data) {
-        if (err) { console.error('blacklists.getList', err); }
+        if (err) {
+          console.error('blacklists.getList', err);
+          return res.status(500).json({error: err});
+        }
+
         res.json({
           skip : skip,
           limit: limit,
@@ -130,32 +138,32 @@ module.exports = {
   },
 
   getById: function (req, res) {
-    Blacklist.findOne({_id: req.params.id}).exec(function (err, blacklist) {
+    Blacklist.findOne({_id: req.params.id}, function (err, blacklist) {
       if (err) {
         console.error('blacklist.getById', err);
-        res.status(500).json({error: err});
+        return res.status(500).json({error: err});
       }
-      else if (blacklist === null) {
-        res.status(404).json({error: 'Blacklist not found.'});
+
+      if (!blacklist) {
+        return res.status(404).json({_id: 'Blacklist not found.'});
       }
-      else {
-        res.json(blacklist);
-      }
+
+      res.json(blacklist);
     });
   },
 
   getByBboName: function (req, res) {
-    Blacklist.findOne({bboName: req.query.bboName}).exec(function (err, blacklist) {
+    Blacklist.findOne({bboName: req.query.bboName}, function (err, blacklist) {
       if (err) {
         console.error('blacklist.getByBboName', err);
-        res.status(500).json({error: err});
+        return res.status(500).json({error: err});
       }
-      else if (blacklist === null) {
-        res.status(404).json({error: 'Blacklist not found.'});
+
+      if (!blacklist) {
+        return res.status(404).json({bboName: 'Blacklist not found.'});
       }
-      else {
-        res.json(blacklist);
-      }
+
+      res.json(blacklist);
     });
   },
 
@@ -163,11 +171,14 @@ module.exports = {
     Blacklist.addEntry(req.body.bboName, req.body.from, req.body.for, req.body.reason, function (err, blacklist) {
       if (err) {
         console.error('blacklist.addEntry', err);
-        res.status(409).json(err);
+        return res.status(500).json({error: err});
       }
-      else {
-        res.json(blacklist);
+
+      if (!blacklist) {
+        return res.status(404).json({bboName: 'Blacklist not found.'});
       }
+
+      res.json(blacklist);
     });
   },
 
@@ -177,11 +188,14 @@ module.exports = {
     Blacklist.findByIdAndUpdate(id, {$set: req.body}, function (err, updated) {
       if (err) {
         console.error('blacklist.update', err);
-        res.json({error: 'Error updating blacklist.'});
+        return res.status(500).json({error: err});
       }
-      else {
-        res.json(updated);
+
+      if (!blacklist) {
+        return res.status(404).json({_id: 'Blacklist not found.'});
       }
+
+      res.json(updated);
     });
   },
 
@@ -189,14 +203,21 @@ module.exports = {
     Blacklist.findOne({_id: req.params.id}, function (err, blacklist) {
       if (err) {
         console.error('blacklist.remove', err);
-        res.json({error: 'Blacklist not found.'});
+        return res.status(500).json({error: err});
       }
-      else {
-        blacklist.remove(function (err) {
-          if (err) { console.error('blacklist.remove', err); }
-          res.json(200, {status: 'Success'});
-        });
+
+      if (!blacklist) {
+        return res.status(404).json({_id: 'Blacklist not found.'});
       }
+
+      blacklist.remove(function (err) {
+        if (err) {
+          console.error('blacklist.remove', err);
+          return res.status(500).json({error: err});
+        }
+
+        res.json(200, {status: 'Success'});
+      });
     });
   },
 
@@ -217,7 +238,10 @@ module.exports = {
     aggr.push({$sort: sort});
 
     Blacklist.aggregate(aggr, function (err, blacklisted) {
-      if (err) { console.error('blacklist.saveAs', err); }
+      if (err) {
+        console.error('blacklist.saveAs', err);
+        return res.status(500).json({error: err});
+      }
 
       // Remove _id from entries, as it's not needed.
       blacklisted.forEach(function (blacklist) {
