@@ -1,3 +1,8 @@
+/* jshint -W097 */
+"use strict";
+
+var env = process.env.NODE_ENV || 'dev';
+var config = require('../../config/config')[env];
 var mongoose = require('mongoose');
 var Member = mongoose.model('Member');
 var http = require('http');
@@ -7,6 +12,7 @@ var tidy = require('htmltidy').tidy;
 var async = require('async');
 var awards = require('../models/awards');
 var tournamentsController = require('../controllers/tournaments');
+var httpUtils = require('../utils/httpUtils');
 
 function download (address, cb) {
   var now = new Date();
@@ -24,23 +30,15 @@ function download (address, cb) {
       'User-Agent'    : 'bbo-fans/robot/1.0'
     }
   };
-  var data = [];
 
   var request = http.request(options);
 
-  request.on('response', function (response) {
-    response.setEncoding('utf8');
-    response.on('data', function (chunk) {
-      data.push(chunk);
-    });
-    response.on('end', function () {
-      if (cb) { cb(null, data.join('')); }
-    });
-
-  });
+  request.on('response', httpUtils.handleHttpResponse(function (response) {
+    cb (null, response);
+  }));
   request.on('error', function (e) {
     console.log('download', e);
-    if (cb) { cb(e, null); }
+    cb(e, null);
   });
 
   request.write(offset);
@@ -48,7 +46,7 @@ function download (address, cb) {
 }
 
 function downloadTournamentList (cb) {
-  download('http://webutil.bridgebase.com/v2/tarchive.php?m=h&h=bbo+fans', cb);
+  download(config.bbo.tournamentListUrl, cb);
 }
 
 function tidyHtml (html, cb) {

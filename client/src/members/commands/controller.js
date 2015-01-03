@@ -1,3 +1,6 @@
+/* jshint -W097 */
+"use strict";
+
 var Backbone = require('backbone');
 var Marionette = require('backbone.marionette');
 var messageBus = require('../../common/utils/messageBus');

@@ -1,3 +1,6 @@
+/* jshint -W097 */
+"use strict";
+
 /**
  * Adapted from:
  * @author zhixin wen <wenzhixin2010@gmail.com>

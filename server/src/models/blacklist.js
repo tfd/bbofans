@@ -1,3 +1,6 @@
+/* jshint -W097 */
+"use strict";
+
 /*
  * Module dependencies.
  */
@@ -68,7 +71,7 @@ BlacklistSchema.statics = {
 
       var fromDate = moment.utc(date);
       if (!fromDate.isValid) {
-        cd({'from': 'Value "' + date + '" is an invalid date'}, blacklist);
+        cb({'from': 'Value "' + date + '" is an invalid date'}, blacklist);
         return;
       }
       var num = parseInt(period, 10);

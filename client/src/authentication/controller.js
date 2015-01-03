@@ -1,4 +1,8 @@
+/* jshint -W097 */
+"use strict";
+
 var messageBus = require('../common/utils/messageBus');
+var Handlebars = require("hbsfy/runtime");
 var $ = require('jquery');
 var _ = require('underscore');
 
@@ -61,6 +65,13 @@ var authentication = {
   }
 
 };
+
+Handlebars.registerHelper('authentication', function(options) {
+  var data = Handlebars.createFrame(options.data || {});
+  data.user = authentication.getUser().toJSON();
+
+  options.fn(this, { data: data });
+});
 
 $.ajax({
   type: 'GET',

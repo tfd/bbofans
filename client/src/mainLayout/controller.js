@@ -1,3 +1,6 @@
+/* jshint -W097 */
+"use strict";
+
 var Marionette = require('backbone.marionette');
 var MainLayoutView = require('./view');
 var $ = require('jquery');

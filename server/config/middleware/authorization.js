@@ -1,3 +1,6 @@
+/* jshint -W097 */
+"use strict";
+
 /**
  *  Generic require login routing middleware
  */

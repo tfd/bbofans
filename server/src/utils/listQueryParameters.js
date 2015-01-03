@@ -1,37 +1,121 @@
+/* jshint -W097 */
+"use strict";
+
 /**
  * Utilities to parse the query parameters for list parameters limit, skip, sort, search, and filter.
  *
  * @module listQueryParameters
  */
 
+var _ = require('underscore');
+
 /**
- * @constructor
- * @class ListQueryParameters
+ * Read filter criteria for a field.
  *
+ * A criteria is an object that can have one or more of the following fields:
+ *
+ * @callback ListQueryParameters~criteriaFunction
+ * @param {string} field - name of field
+ * @param {Object} criteria - hash with one or more criteria for this field
+ * @param {String} criteria.eq - begins with or equals
+ * @param {String} criteria.neq - doesn't begin with or not equals
+ * @param {String} criteria.cnt - contains anywhere in the string
+ * @param {String} criteria.ncnt - doesn't contain
+ * @param {String} criteria.lte -less then
+ * @param {String} criteria.gte - greater then
+ * @param {String} criteria._values - list of accepted values. The values "ept" and "nept" have the special meaning
+ *                                    "empty" and "not empty".
+ * @returns {Array} array with one element for each criteria.
+ */
+
+/**
+ * @class ListQueryParameters
+
+ * @constructor
  * @param {FieldDefinitions} fieldDefinitions - definitions of fields that make up the table
- * @returns {ListQueryParameters} the ListQueryParameters object ofr the given fieldDefinitions
+ * @returns {ListQueryParameters} the ListQueryParameters object for the given fieldDefinitions
  */
 module.exports = function (fieldDefinitions) {
 
+  var criteriaFunctions = {};
+  var sanitizeFunctions = {};
+
   /**
-   * @param {String} field - name of field, used to determine the variable type
+   * Sanitize a boolean value.
+   *
    * @param {String} value - value to sanitize
-   * @returns {String|Number|Boolean} sanitized value: only alphanumeric and spaces are allowed.
+   * @returns {Boolean} sanitized value
+   */
+  function sanitizeBoolean(val) {
+    return (['yes', 'true', '1'].indexOf(val.toLowerCase()) >= 0);
+  }
+
+  /**
+   * Sanitize a float value.
+   *
+   * @param {String} value - value to sanitize
+   * @returns {Number} sanitized value
+   */
+  function sanitizeNumber(val) {
+    return parseFloat(val);
+  }
+
+  /**
+   * Sanitize a string value.
+   *
+   * @param {String} value - value to sanitize
+   * @returns {String} sanitized value: only alphanumeric and spaces are allowed.
    *          Any other character is replaced with a dot so it works in a regexp.
    */
-  function sanitize (field, val) {
-    if (fieldDefinitions.isNumericField(field)) {
-      return parseFloat(val);
-    }
-    if (fieldDefinitions.isBooleanField(val)) {
-      if (['yes', 'true', '1'].indexOf(val.toLowerCase()) >= 0) {
-        return true;
-      }
-      return false;
-    }
-    val = val.replace(/[^a-zA-Z0-9_\s]/, ".").replace(/\s/, " ");
-    return val;
+  function sanitizeString(val) {
+    return val.replace(/[^a-zA-Z0-9_\s]/, ".").replace(/\s/, " ");
   }
+
+  var ruleFunctions = {
+    'lte': function (field, value) {
+      return {$lt: sanitizeFunctions[field](value)};
+    },
+    'gte': function (field, value) {
+      return {$gt: sanitizeFunctions[field](value)};
+    },
+
+    'eq': function (field, value) {
+      return fieldDefinitions.isNumericField(field) ? {$eq: sanitizeNumber(value)} :
+             new RegExp('^' + sanitizeFunctions[field](value) + '.*', 'i');
+    },
+
+    'neq': function (field, value) {
+      return {$not: new RegExp('^' + sanitizeFunctions[field](value) + '.*', 'i')};
+    },
+
+    'cnt': function (field, value) {
+      return new RegExp(sanitizeFunctions[field](value), 'i');
+    },
+
+    'ncnt': function (field, value) {
+      return {$not: new RegExp(sanitizeFunctions[field](value), 'i')};
+    },
+
+    '_values': function (field, value) {
+      if (Object.prototype.toString.call(value) === '[object Array]') {
+        if (value.indexOf('ept') >= 0) {
+          return new RegExp('^$');
+        }
+        if (value.indexOf('nept') >= 0) {
+          return new RegExp('.+');
+        }
+
+        var values = [];
+        var i;
+        for (i = 0; i < value.length; ++i) {
+          if (value[i]) {
+            values.push(sanitizeFunctions[field](value[i]));
+          }
+        }
+        return {$in: values};
+      }
+    }
+  };
 
   /**
    * Get a single criteria rule.
@@ -43,71 +127,30 @@ module.exports = function (fieldDefinitions) {
    * @param {String} value - value to check against
    * @returns {Object} the criteria rule.
    */
-  function getRule (field, criteria, value) {
-    var values = [];
-    var i = 0;
-
-    switch (criteria) {
-      case 'lte':
-        return {$lt: sanitize(field, value)};
-
-      case 'gte':
-        return {$gt: sanitize(field, value)};
-
-      case 'eq':
-        return fieldDefinitions.isNumericField(field) ? {$eq: sanitize(field, value)} :
-               new RegExp('^' + sanitize(field, value) + '.*', 'i');
-
-      case 'neq':
-        return {$not: new RegExp('^' + sanitize(field, value) + '.*', 'i')};
-
-      case 'cnt':
-        return new RegExp(sanitize(field, value), 'i');
-
-      case 'ncnt':
-        return {$not: new RegExp(sanitize(field, value), 'i')};
-
-      case '_values':
-        if (Object.prototype.toString.call(value) === '[object Array]') {
-          if (value.indexOf('ept') >= 0) {
-            return new RegExp('^$');
-          }
-          if (value.indexOf('nept') >= 0) {
-            return new RegExp('.+');
-          }
-
-          values = [];
-          for (i = 0; i < value.length; ++i) {
-            if (value[i]) {
-              values.push(sanitize(field, value[i]));
-            }
-          }
-          return {$in: values};
-        }
-        break;
+  function getRule(field, criteria, value) {
+    if (ruleFunctions[criteria]) {
+      return ruleFunctions[criteria](field, value);
     }
+
     return null;
   }
 
   /**
    * Read filter criteria for a field.
    *
-   * A criteria is an object that can have one or more of the following fields:
-   *
-   * eq: begins with
-   * neq: doesn't begin with
-   * cnt: contains anywhere in the string
-   * ncnt: doesn't contain
-   * lte: less then
-   * gte: greater then
-   * _values: list of accpeted values. The values "ept" and "nept" have the special meaning
-   *          "empty" and "not empty".
-   *
    * @param {string} field - name of field
-   * @param {Object} criteria - hash with criterias for this field
-   * @returns {Array} array with one element for each criteria.
+   * @param {Object} criteria - hash with one or more criteria for this field
+   * @param {String} [criteria.eq] - begins with or equal
+   * @param {String} [criteria.neq] - doesn't begin with or not equal
+   * @param {String} [criteria.cnt] - contains anywhere in the string
+   * @param {String} [criteria.ncnt] - doesn't contain
+   * @param {String} [criteria.lte] - less then
+   * @param {String} [criteria.gte] - greater then
+   * @param {String[]} [criteria._values] - list of accepted values. The values "ept" and "nept" have the special meaning
+   *                                      "empty" and "not empty".
+   * @returns {Object[]} array with one element for each criteria.
    */
-  function getCriteria (field, criteria) {
+  function getCriteria(field, criteria) {
     var arr = [];
     var type = '';
     var rule = null;
@@ -118,7 +161,7 @@ module.exports = function (fieldDefinitions) {
         rule = getRule(field, type, criteria[type]);
         if (rule !== null) {
           filter = {};
-          filter[fieldDefinitions.getFieldName(field)] = rule;
+          filter[fieldDefinitions.getFieldFlatName(field)] = rule;
           arr.push(filter);
         }
       }
@@ -148,10 +191,10 @@ module.exports = function (fieldDefinitions) {
    *
    * @param {Object} req - query request
    * @param {Object} options
-   * @param {Boolean} options.doFilter - whether to include the filter field in the criteria
+   * @param {Boolean} [options.doFilter] - whether to include the filter field in the criteria
    * @returns {Array} an array of criteria to be applied in $and.
    */
-  function getFilterCriteria (req, options) {
+  function getFilterCriteria(req, options) {
     var criteria = [];
 
     if (options.doFilter === false) {
@@ -166,7 +209,7 @@ module.exports = function (fieldDefinitions) {
     var key;
     for (key in filter) {
       if (filter.hasOwnProperty(key) && fieldDefinitions.isValidFieldName(key)) {
-        criteria = criteria.concat(getCriteria(key, filter[key]));
+        criteria = criteria.concat(criteriaFunctions[key](key, filter[key]));
       }
     }
 
@@ -180,10 +223,10 @@ module.exports = function (fieldDefinitions) {
    *
    * @param {Object} req The http request.
    * @param {Object} options
-   * @param {Boolean} options.doSearch - whether to include the search field in the criteria
+   * @param {Boolean} [options.doSearch] - whether to include the search field in the criteria
    * @returns {Array} array of criteria to be applied in $and.
    */
-  function getSearchCriteria (req, options) {
+  function getSearchCriteria(req, options) {
     if (options.doSearch === false) {
       return [];
     }
@@ -192,7 +235,7 @@ module.exports = function (fieldDefinitions) {
       return [];
     }
 
-    var name = sanitize('bboName', req.query.search);
+    var name = sanitizeFunctions.bboName(req.query.search);
     var criteria = [];
 
     criteria.push({bboName: new RegExp(name, 'i')});
@@ -210,7 +253,7 @@ module.exports = function (fieldDefinitions) {
    * @params {Object} initialCriteria - hash with criteria.
    * @returns {Array} an array of criteria to be applied in $and.
    */
-  function initializeCriteria (initialCriteria) {
+  function initializeCriteria(initialCriteria) {
     if (initialCriteria) {
       if (Object.prototype.toString.call(initialCriteria) === '[object Array]') {
         return initialCriteria;
@@ -221,10 +264,28 @@ module.exports = function (fieldDefinitions) {
     return [];
   }
 
+  /**
+   * Initialize criteria and sanitize functions.
+   */
+  _.each(fieldDefinitions.getFieldNames(), function (name) {
+    criteriaFunctions[name] = getCriteria;
+
+    if (fieldDefinitions.isNumericField(name)) {
+      sanitizeFunctions[name] = sanitizeNumber;
+    }
+    else if (fieldDefinitions.isBooleanField(name)) {
+      sanitizeFunctions[name] = sanitizeBoolean;
+    }
+    else {
+      sanitizeFunctions[name] = sanitizeString;
+    }
+  });
+
   return {
     /**
      * Read offset from the query parameters.
      *
+     * @method ListQueryParameters#getSkip
      * @param {Object} req - query request
      * @returns {Number} The integer value of the offset query parameter if present, 0 otherwise.
      */
@@ -242,6 +303,7 @@ module.exports = function (fieldDefinitions) {
     /**
      * Read limit from the query parameters.
      *
+     * @method ListQueryParameters#getLimit
      * @param {Object} req - query request
      * @returns {number} integer value of the limit query parameter if present, 10 otherwise.
      */
@@ -262,6 +324,7 @@ module.exports = function (fieldDefinitions) {
     /**
      * Read sort and order from the query parameters.
      *
+     * @method ListQueryParameters#getSort
      * @param {Object} req - query request
      * @param {Array} fields - array of fields on which the user may sort..
      * @returns {Object} An object with the sort field name as key and 1 or -1 as value.
@@ -283,6 +346,7 @@ module.exports = function (fieldDefinitions) {
     /**
      * Read filter and search from the query parameters.
      *
+     * @method ListQueryParameters#getFindCriteria
      * @param {Object} req - the http request.
      * @param {Object} [options] - options to control the criteria included
      * @param {Object} [options.criteria] - initial criteria to include
@@ -301,6 +365,17 @@ module.exports = function (fieldDefinitions) {
       criteria = criteria.concat(getSearchCriteria(req, options));
 
       return criteria.length > 0 ? (criteria.length === 1 ? criteria[0] : {$and: criteria}) : {};
+    },
+
+    /**
+     * Set the function be called when analyzing the criteria for a specific field.
+     *
+     * @method ListQueryParameters#setCriteriaFunction
+     * @param {String} field - name of the field
+     * @param {ListQueryParameters~criteriaFunction} - function to call
+     */
+    setCriteriaFunction: function (field, fn) {
+      criteriaFunctions[field] = fn;
     }
 
   };

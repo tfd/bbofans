@@ -1,5 +1,7 @@
-var NavbarController = require('./controller');
+/* jshint -W097 */
+"use strict";
 
+var NavbarController = require('./controller');
 
 module.exports = function (app) {
   var navbarModule = app.module('navbar', {

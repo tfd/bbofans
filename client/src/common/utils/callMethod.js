@@ -1,3 +1,6 @@
+/* jshint -W097 */
+"use strict";
+
 var _ = require('underscore');
 
 _.mixin({

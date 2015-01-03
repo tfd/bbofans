@@ -1,3 +1,6 @@
+/* jshint -W097 */
+"use strict";
+
 /* jshint -W030 */
 var addProperty = require('./addProperty');
 var addMethod = require('./addMethod');
@@ -31,7 +34,7 @@ charTypes.letter = charTypes.letters = charTypes.lowercase + charTypes.uppercase
 charTypes.all = charTypes.specials + charTypes.letters + charTypes.numbers;
 
 function pick(str, min, max) {
-    var n, chars = '';
+    var n, chars = '', i;
 
     if (typeof max === 'undefined') {
         n = min;
@@ -39,7 +42,7 @@ function pick(str, min, max) {
         n = min + Math.floor(Math.random() * (max - min));
     }
 
-    for (var i = 0; i < n; i++) {
+    for (i = 0; i < n; i++) {
         chars += str.charAt(Math.floor(Math.random() * str.length));
     }
 
@@ -48,8 +51,8 @@ function pick(str, min, max) {
 
 // Credit to @Christoph: http://stackoverflow.com/a/962890/464744
 function shuffle(str) {
-    var array = str.split('');
-    var tmp, current, top = array.length;
+    var array = str.split(''),
+     tmp, current, top = array.length;
 
     if (top) while (--top) {
         current = Math.floor(Math.random() * top);
@@ -163,6 +166,7 @@ addMethod(GeneratePassword.prototype, 'between', function (minimum, maximum) {
 });
 
 function withMinLength(value) {
+  /* jshint validthis:true */
   var val = parseInt(value, 10);
   var max = flag(this, 'maxLength');
 
@@ -179,6 +183,7 @@ addMethod(GeneratePassword.prototype, 'minLen', withMinLength);
 addMethod(GeneratePassword.prototype, 'min', withMinLength);
 
 function withMaxLength(value) {
+  /* jshint validthis:true */
   var val = parseInt(value, 10);
   var min = flag(this, 'minLength');
 
@@ -195,6 +200,7 @@ addMethod(GeneratePassword.prototype, 'maxLen', withMaxLength);
 addMethod(GeneratePassword.prototype, 'max', withMaxLength);
 
 function withLength(minimum, maximum) {
+  /* jshint validthis:true */
   var min = parseInt(minimum, 10);
   var max = parseInt(maximum, 10);
 

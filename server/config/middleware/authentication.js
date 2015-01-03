@@ -1,3 +1,6 @@
+/* jshint -W097 */
+"use strict";
+
 module.exports = function (app, config, passport) {
   // Copied from https://gist.github.com/cultofmetatron/5349630
   return function (req, res) {

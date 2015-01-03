@@ -1,3 +1,6 @@
+/* jshint -W097 */
+"use strict";
+
 var Marionette = require('backbone.marionette');
 var routerFactory = require('../utils/routerCommandFactory');
 var messageBus = require('../utils/messageBus');

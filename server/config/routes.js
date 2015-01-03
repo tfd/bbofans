@@ -1,3 +1,6 @@
+/* jshint -W097 */
+"use strict";
+
 /*!
  * Module dependencies.
  */
@@ -10,6 +13,7 @@ var login = require('./middleware/authentication');
  * Route middleware
  */
 
+var loginAuth = [auth.requiresLogin];
 var memberAuth = [auth.requiresLogin, auth.isSameUser];
 var memberManagerAuth = [auth.requiresLogin, auth.member.hasAuthorization];
 var tdAuth = [auth.requiresLogin, auth.td.hasAuthorization];
@@ -22,12 +26,13 @@ var blacklistManagerAuth = [auth.requiresLogin, auth.blacklist.hasAuthorization]
 
 var index = require('../src/controllers/index');
 var countries = require('../src/controllers/countries');
+var register = require('../src/controllers/register');
 var admin = require('../src/controllers/admin');
 var members = require('../src/controllers/members');
 var commands = require('../src/controllers/commands');
 var blacklists = require('../src/controllers/blacklists');
-var tds = require('../src/controllers/tournamentDirectors');
-var recaptcha = require('../src/controllers/recaptcha');
+var tds = require('../src/controllers/tds');
+var reCaptcha = require('../src/controllers/reCaptcha');
 var updater = require('../src/controllers/updater');
 
 
@@ -37,12 +42,13 @@ var updater = require('../src/controllers/updater');
 
 module.exports = function (app, config, passport) {
   // home route
-  app.get('/recaptcha/:challenge/:response', recaptcha.check);
+  app.get('/reCaptcha/:response', reCaptcha.check);
   app.get('/update', updater.update);
   app.get('/members/rock', members.getRock);
   app.get('/members/rbd', members.getRbd);
-  app.post('/register', members.register);
-  app.get('/register/:id', members.getRegistrant);
+  app.post('/register', register.register);
+  app.get('/register/:id', register.getRegistrant);
+  app.get('/register/confirm/:id', register.confirmEmail);
   app.get('/countries', countries.get);
   app.get('/admin/session', admin.getUser);
   app.post('/admin/session', login(app, config, passport));
@@ -50,7 +56,7 @@ module.exports = function (app, config, passport) {
   app.put('/admin/account/:id', memberAuth, members.update);
   app.put('/admin/account/password/:id', memberAuth, members.changePassword);
   app.get('/admin/members', memberManagerAuth, members.getAll);
-  app.get('/admin/members/bboName', memberManagerAuth, members.getBboNames);
+  app.get('/admin/members/bboName', loginAuth, members.getBboNames);
   app.post('/admin/members', memberManagerAuth, members.add);
   app.get('/admin/members/saveAs', memberManagerAuth, members.saveAs);
   app.get('/admin/members/saveAs/:type', memberManagerAuth, members.saveAs);
@@ -62,13 +68,13 @@ module.exports = function (app, config, passport) {
   app.post('/admin/commands/blacklist', memberManagerAuth, commands.blacklist);
   app.post('/admin/commands/validate', memberManagerAuth, commands.validate);
   app.post('/admin/commands/email', memberManagerAuth, commands.email);
-  app.get('/admin/blacklist', blacklistManagerAuth, blacklists.getList);
+  app.get('/admin/blacklist', tdAuth, blacklists.getList);
   app.post('/admin/blacklist/entry', blacklistManagerAuth, blacklists.addEntry);
   app.get('/admin/blacklist/bboName', blacklistManagerAuth, blacklists.getByBboName);
   app.get('/admin/blacklist/saveAs', blacklistManagerAuth, blacklists.saveAs);
   app.get('/admin/blacklist/saveAs/:type', blacklistManagerAuth, blacklists.saveAs);
+  app.get('/admin/blacklist/:id', tdAuth, blacklists.getById);
   app.put('/admin/blacklist/:id', blacklistManagerAuth, blacklists.update);
-  app.get('/admin/blacklist/:id', blacklistManagerAuth, blacklists.getById);
   app.get('/admin/tds', tdManagerAuth, tds.getAll);
   app.get('/admin/tds/saveAs', tdManagerAuth, tds.saveAs);
   app.get('/admin/tds/saveAs/:type', tdManagerAuth, tds.saveAs);

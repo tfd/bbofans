@@ -1,5 +1,7 @@
+/* jshint -W097 */
+"use strict";
+
 var mongoose = require('mongoose');
-var recaptcha = require('../controllers/recaptcha');
 var Blacklist = mongoose.model('Blacklist');
 var moment = require('moment');
 var async = require('async');
@@ -185,7 +187,7 @@ module.exports = {
   update: function (req, res) {
     var id = req.body._id;
     delete req.body._id;
-    Blacklist.findByIdAndUpdate(id, {$set: req.body}, function (err, updated) {
+    Blacklist.findByIdAndUpdate(id, {$set: req.body}, function (err, blacklist) {
       if (err) {
         console.error('blacklist.update', err);
         return res.status(500).json({error: err});
@@ -195,7 +197,7 @@ module.exports = {
         return res.status(404).json({_id: 'Blacklist not found.'});
       }
 
-      res.json(updated);
+      res.json(blacklist);
     });
   },
 

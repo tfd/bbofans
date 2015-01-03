@@ -1,3 +1,6 @@
+/* jshint -W097 */
+"use strict";
+
 var Backbone = require('backbone');
 var BlacklistEntry = require('./blacklistEntry');
 

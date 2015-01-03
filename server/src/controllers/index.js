@@ -1,3 +1,5 @@
+/* jshint -W097 */
+"use strict";
 
 module.exports = {
   index: function (req, res) {

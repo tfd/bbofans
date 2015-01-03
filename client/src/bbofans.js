@@ -1,3 +1,6 @@
+/* jshint -W097 */
+"use strict";
+
 var Backbone = require('backbone');
 // Add jQuery to Backbone as it doesn't do it when using commonJS.
 var $ = require('jquery');

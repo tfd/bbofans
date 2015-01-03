@@ -1,3 +1,6 @@
+/* jshint -W097 */
+"use strict";
+
 var Backbone = require('backbone');
 var FormWithErrorHandling = require('../../common/views/formWithErrorHandling');
 var moment = require('moment');

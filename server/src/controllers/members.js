@@ -1,5 +1,7 @@
+/* jshint -W097 */
+"use strict";
+
 var mongoose = require('mongoose');
-var recaptcha = require('../controllers/recaptcha');
 var Member = mongoose.model('Member');
 var moment = require('moment');
 var _ = require('underscore');
@@ -34,6 +36,49 @@ var field2FlatNames = {
 var fieldDefinitions = require('../utils/fieldDefinitions')(Member, fields, field2FlatNames);
 var listQueryParameters = require('../utils/listQueryParameters')(fieldDefinitions);
 var exportToFile = require('../utils/exportToFile')('members', 'member', fieldDefinitions);
+
+/**
+ * Get the criteria for the validatedAt field.
+ *
+ * This criteria is an array of _values that can have only boolean values. True means that the member is to be
+ * validated. false means that the member is has already been validated. When both true and false are set no condition
+ * is returned.
+ *
+ * @param {String} field - the field name, always 'validatedAt.
+ * @param {Object} criteria
+ * @param {Boolean[]} criteria._values - array of boolean values,
+ * @returns {Object[]} array with conditions to be met by the validatedAt field.
+ */
+function getValidatedAtCriteria(field, criteria) {
+  if (_.isArray(criteria._values)) {
+    // this field needs special treatment!
+    var toValidate = false;
+
+    _.each(criteria._values, function (value) {
+      if (value) {
+        if (['true', 'yes', '1'].indexOf(value.toLowerCase()) >= 0) {
+          toValidate = true;
+        }
+        else if (toValidate) {
+          // Both true and false? Nothing to do.
+          toValidate = null;
+        }
+      }
+    });
+
+    if (toValidate === null) {
+      return [];
+    }
+
+    if (toValidate) {
+      return [{$or: [{validatedAt: {$exists: false}}, {validatedAt: {$type: 10}}]}];
+    }
+
+    return [{validatedAt: {$exists: true}}, {validatedAt: {$not: {$type: 10}}}];
+  }
+}
+
+listQueryParameters.setCriteriaFunction('validatedAt', getValidatedAtCriteria);
 
 module.exports = {
 
@@ -180,14 +225,23 @@ module.exports = {
   getBboNames: function (req, res) {
     var q = req.query.q || '';
     Member.find({bboName: {$regex: new RegExp(q, 'i')}})
-        .select('bboName')
+        .select('bboName -_id')
         .exec(function (err, data) {
           if (err) {
             console.error('members.getBboName', err);
             return res.status(500).json({error: err});
           }
 
-          res.json(data);
+          if (req.query.bloodhound) {
+            res.json(data);
+          }
+          else {
+            var arr = [];
+            _.each(data, function (member) {
+              arr.push(member.bboName);
+            });
+            res.json(arr);
+          }
         });
   },
 
@@ -203,62 +257,6 @@ module.exports = {
       }
       else {
         res.json(player);
-      }
-    });
-  },
-
-  register: function (req, res) {
-    var member = req.body;
-    recaptcha.checkDirect(req, member['g-recaptcha-response'], function (data) {
-      if (data.success === false) {
-        console.log('members.register', data.error-codes);
-        return res.status(422).json({reCaptcha: 'bad captcha'});
-      }
-
-      if (! member.password ) {
-        return res.status(422).json({password: 'cannot be blank'});
-      }
-      if (member.repeatPassword !== member.password) {
-        return res.status(422).json({repeatPassword: "doesn't match"});
-      }
-      delete member.repeatPassword;
-      delete member['g-recaptcha-response'];
-
-      var newMember = new Member(member);
-      newMember.save(function (err, player) {
-        if (err) {
-          var error = err.err.toString();
-          if (error.indexOf('E11000 duplicate key error') === 0) {
-            var fieldName = error.match(/members\.\$(.*)_\d/i)[1];
-            var fieldValue = error.match(/dup\skey:\s\{\s:\s"(.*)"\s\}/)[1];
-            var errors = {};
-            errors[fieldName] = 'Value "' + fieldValue + '" already present in database';
-            res.status(409).json(errors);
-          }
-          else {
-            console.error('members.register', err);
-            res.status(422).json({bboName: error});
-          }
-        }
-        else {
-          res.json(player);
-        }
-      });
-    });
-  },
-
-  getRegistrant: function (req, res) {
-    Member.findById(req.params.id, function (err, registrant) {
-      if (err) {
-        console.error('members.getById', err);
-        return res.status(500).json({error: err});
-      }
-
-      if (registrant === null) {
-        res.status(404).json({error: 'Member not found.'});
-      }
-      else {
-        res.json({ _id: registrant._id, bboName: registrant.bboName });
       }
     });
   },

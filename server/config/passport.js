@@ -1,3 +1,6 @@
+/* jshint -W097 */
+"use strict";
+
 var localStrategy = require('./passport.strategies/local');
 var Member = require('../src/models/member');
 var Role = require('../src/models/role');

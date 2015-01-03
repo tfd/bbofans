@@ -1,8 +1,12 @@
+/* jshint -W097 */
+"use strict";
+
 var Marionette = require('backbone.marionette');
 var BlacklistListView = require('./view');
 var NewBlacklistController = require('../new/controller');
 var Member = require('../../models/member');
 var messageBus = require('../../common/utils/messageBus');
+var _ = require('underscore');
 
 var MembersController = Marionette.Controller.extend({
   initialize: function (options) {

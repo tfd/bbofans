@@ -1,3 +1,6 @@
+/* jshint -W097 */
+"use strict";
+
 var Marionette = require('backbone.marionette');
 var NavbarView = require('./view');
 var MenuItems = require('./model');

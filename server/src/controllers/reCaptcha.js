@@ -1,21 +1,11 @@
+/* jshint -W097 */
+"use strict";
+
 var env = process.env.NODE_ENV || 'dev';
 var config = require('../../config/config')[env];
-
-var handleHttpResponse = function (callback) {
-  return function (response) {
-    var str = '';
-
-    // another chunk of data has been received, so append it to `str`
-    response.on('data', function (chunk) {
-      str += chunk;
-    });
-
-    // the whole response has been received, so we can process it
-    response.on('end', function () {
-      callback(str);
-    });
-  };
-};
+var fileUtils = require('../utils/fileUtils');
+var httpUtils = require('../utils/httpUtils');
+var _ = require('underscore');
 
 var getRemoteIpAddress = function (req, callback) {
   var http = require('http');
@@ -23,7 +13,7 @@ var getRemoteIpAddress = function (req, callback) {
     host: 'checkip.dyndns.com'
   };
 
-  http.request(options, handleHttpResponse(function (str) {
+  http.request(options, httpUtils.handleHttpResponse(function (str) {
     var prefix = 'Current IP Address: ';
     callback(str.substr(prefix.length));
   })).end();
@@ -32,18 +22,13 @@ var getRemoteIpAddress = function (req, callback) {
 var callReCaptchaServer = function (qs, callback) {
   var https = require('https');
 
-  var options = {
-    host   : 'www.google.com',
-    port   : 443,
-    path   : '/recaptcha/api/siteverify',
-    method : 'POST',
-    headers: {
-      'Content-Type'  : 'application/x-www-form-urlencoded',
-      'Content-Length': Buffer.byteLength(qs)
-    }
+  var options = _.extend({}, config.reCaptcha.httpsOptions);
+  options.headers = {
+    'Content-Type'  : 'application/x-www-form-urlencoded',
+    'Content-Length': Buffer.byteLength(qs)
   };
 
-  var httpsRequest = https.request(options, handleHttpResponse(function (rsp) {
+  var httpsRequest = https.request(options, httpUtils.handleHttpResponse(function (rsp) {
     console.log(rsp);
     var parts = rsp.split('\n');
     callback({
@@ -53,16 +38,6 @@ var callReCaptchaServer = function (qs, callback) {
   }));
   httpsRequest.write(qs);
   httpsRequest.end();
-};
-
-var getPrivateKey = function (callback) {
-  var fs = require('fs');
-  fs.readFile('./server/config/recaptcha.key', 'utf8', function (err, privatekey) {
-    if (err) {
-      console.log(err);
-    }
-    callback(err ? null : privatekey);
-  });
 };
 
 var checkCaptcha = function (req, response, callback) {
@@ -75,7 +50,7 @@ var checkCaptcha = function (req, response, callback) {
       });
     }
 
-    getPrivateKey(function (privatekey) {
+    fileUtils.readFileToString(config.reCaptcha.keyFile, function (privatekey) {
       if (!privatekey) {
         return callback({
           passed: false,
@@ -95,7 +70,7 @@ var checkCaptcha = function (req, response, callback) {
   });
 };
 
-if (config.omitRecaptcha === true) {
+if (config.omitReCaptcha === true) {
   checkCaptcha = function (req, response, callback) {
     callback({passed: true, error: ''});
   };

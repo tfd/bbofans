@@ -1,3 +1,6 @@
+/* jshint -W097 */
+"use strict";
+
 var BaseModule = require('../common/modules/baseModule');
 var messageBus = require('../common/utils/messageBus');
 var _ = require('underscore');

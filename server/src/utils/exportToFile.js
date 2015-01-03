@@ -1,3 +1,6 @@
+/* jshint -W097 */
+"use strict";
+
 /**
  * Export collection to various formats.
  *

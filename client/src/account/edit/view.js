@@ -1,3 +1,6 @@
+/* jshint -W097 */
+"use strict";
+
 var FormWithErrorHandling = require('../../common/views/formWithErrorHandling');
 
 var AccountView = FormWithErrorHandling.extend({

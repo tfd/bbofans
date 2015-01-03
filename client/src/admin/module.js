@@ -1,3 +1,6 @@
+/* jshint -W097 */
+"use strict";
+
 var AuthenticatedModule = require('../common/modules/authenticatedModule');
 var messageBus = require('../common/utils/messageBus');
 var authentication = require('../authentication/controller');

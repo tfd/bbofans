@@ -1,3 +1,6 @@
+/* jshint -W097 */
+"use strict";
+
 /*!
  * chai
  * Copyright(c) 2011 Jake Luer <jake@alogicalparadox.com>

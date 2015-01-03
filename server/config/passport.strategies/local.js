@@ -1,3 +1,6 @@
+/* jshint -W097 */
+"use strict";
+
 var LocalStrategy = require('passport-local').Strategy;
 var mongoose = require('mongoose');
 var Member = mongoose.model('Member');

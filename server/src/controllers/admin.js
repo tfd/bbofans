@@ -1,3 +1,6 @@
+/* jshint -W097 */
+"use strict";
+
 var mongoose = require('mongoose');
 var Role = mongoose.model('Role');
 var Member = mongoose.model('Member');

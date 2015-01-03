@@ -1,3 +1,6 @@
+/* jshint -W097 */
+"use strict";
+
 var Backbone = require('backbone');
 var Marionette = require('backbone.marionette');
 var moment = require('moment');
@@ -8,6 +11,7 @@ var View = require('../details/view');
 var Form = require('../add/view');
 var Blacklist = require('../../models/blacklist');
 var DurationEntry = require('../../models/blacklistDurationEntry');
+var authentication = require('../../authentication/controller');
 
 var BlacklistEditImpl = function (options) {
   var self = this;
@@ -59,9 +63,15 @@ var BlacklistEditImpl = function (options) {
       back();
     });
 
+    self.view.on('form:close', function () {
+      back();
+    });
+
     region.show(self.layout);
     self.layout.view.show(self.view);
-    self.layout.form.show(self.form);
+    if (authentication.getUser() && authentication.getUser().get('isBlacklistManager')) {
+      self.layout.form.show(self.form);
+    }
   }
 
   this.show = function (region, id) {

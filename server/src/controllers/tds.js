@@ -1,3 +1,6 @@
+/* jshint -W097 */
+"use strict";
+
 var mongoose = require('mongoose');
 var Member = mongoose.model('Member');
 var moment = require('moment');

@@ -1,3 +1,6 @@
+/* jshint -W097 */
+"use strict";
+
 var BaseModule = require('../common/modules/baseModule');
 var messageBus = require('../common/utils/messageBus');
 var _ = require('underscore');
@@ -10,16 +13,19 @@ module.exports = function (app, parentModuleName) {
     moduleClass: BaseModule,
 
     routes: {
-      "home"        : '[' + moduleName + ']pages:showHome',
-      "register"    : '[' + moduleName + ']register:show',
-      "register/:id": '[' + moduleName + ']register:success',
-      "rules"       : '[' + moduleName + ']pages:showRules',
-      "awards"      : '[' + moduleName + ']pages:showAwards',
-      "matchpoints" : '[' + moduleName + ']pages:showMatchPoints',
-      "bbolinks"    : '[' + moduleName + ']pages:showBboLinks',
-      "rbd"         : '[' + moduleName + ']rbd:show',
-      "rock"        : '[' + moduleName + ']rock:show',
-      "login"       : '[' + moduleName + ']login:show'
+      "serverError"       : '[' + moduleName + ']pages:showServerError',
+      "pageNotFound"      : '[' + moduleName + ']pages:showPageNotFound',
+      "home"              : '[' + moduleName + ']pages:showHome',
+      "register"          : '[' + moduleName + ']register:show',
+      "register/confirmed": '[' + moduleName + ']pages:showConfirmRegistration',
+      "register/:id"      : '[' + moduleName + ']register:success',
+      "rules"             : '[' + moduleName + ']pages:showRules',
+      "awards"            : '[' + moduleName + ']pages:showAwards',
+      "matchpoints"       : '[' + moduleName + ']pages:showMatchPoints',
+      "bbolinks"          : '[' + moduleName + ']pages:showBboLinks',
+      "rbd"               : '[' + moduleName + ']rbd:show',
+      "rock"              : '[' + moduleName + ']rock:show',
+      "login"             : '[' + moduleName + ']login:show'
     },
 
     controllers: {

@@ -1,3 +1,6 @@
+/* jshint -W097 */
+"use strict";
+
 var moment = require('moment');
 var Handlebars = require("hbsfy/runtime");
 

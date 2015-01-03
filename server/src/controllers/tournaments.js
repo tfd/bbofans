@@ -1,3 +1,6 @@
+/* jshint -W097 */
+"use strict";
+
 var mongoose = require('mongoose');
 var async = require('async');
 
@@ -7,7 +10,7 @@ var Member = mongoose.model('Member');
 function addScoreToMember (tournament, callback) {
   return function (err, member) {
     if (err) {
-      console.log('Could not find member ' + bboName + ': ' + err);
+      console.log('Could not find member ' + member.bboName + ': ' + err);
       callback(); // ignore error!
       return;
     }

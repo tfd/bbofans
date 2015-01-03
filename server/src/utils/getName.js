@@ -1,3 +1,6 @@
+/* jshint -W097 */
+"use strict";
+
 /*!
  * Chai - getName utility
  * Copyright(c) 2012-2014 Jake Luer <jake@alogicalparadox.com>

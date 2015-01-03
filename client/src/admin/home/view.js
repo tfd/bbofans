@@ -1,6 +1,9 @@
+/* jshint -W097 */
+"use strict";
+
 var Marionette = require('backbone.marionette');
 
-var AdminHomeView = Backbone.Marionette.ItemView.extend({
+var AdminHomeView = Marionette.ItemView.extend({
   template: require('./template.hbs')
 });
 

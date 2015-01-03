@@ -1,3 +1,6 @@
+/* jshint -W097 */
+"use strict";
+
 var FormWithErrorHandling = require('../../common/views/formWithErrorHandling.js');
 var Bloodhound = require('typeAhead');
 var moment = require('moment');
@@ -18,7 +21,7 @@ var BlacklistNewView = FormWithErrorHandling.extend({
   onRender: function () {
     var engine = new Bloodhound({
       name          : 'members',
-      remote        : '/admin/members/bboName?q=%QUERY',
+      remote        : '/admin/members/bboName?bloodhound=true&q=%QUERY',
       datumTokenizer: function (d) {
         return d.val ? [d.val] : [];
       },
