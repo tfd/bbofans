@@ -99,7 +99,7 @@ module.exports = function (grunt) {
     },
 
     copy       : {
-      bootsraè: {
+      bootstrap: {
         files: [{
                   expand : true,
                   flatten: true,
@@ -305,6 +305,7 @@ module.exports = function (grunt) {
                                    'jshint:clientDev',
                                    'jshint:server',
                                    'less:transpile',
+                                   'copy:bootstrap',
                                    'copy:tinymce',
                                    'copy:dev']);
   grunt.registerTask('build:prod', ['clean:prod',
@@ -316,6 +317,7 @@ module.exports = function (grunt) {
                                     'concat',
                                     'cssmin',
                                     'uglify',
+                                    'copy:bootstrap',
                                     'copy:tinymce',
                                     'copy:prod']);
 
