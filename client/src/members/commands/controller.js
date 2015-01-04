@@ -28,12 +28,14 @@ var viewFactory = {};
  */
 _.each(['validate', 'enable', 'disable'], function (cmd) {
   viewFactory[cmd] = function (rows) {
-    var title = cmd[0].toUpperCase() + cmd.substring(1);
+    var buttonTitle = cmd[0].toUpperCase() + cmd.substring(1);
+    var title = buttonTitle + ' members';
     return new MemberCommandsFlagView( {
       model: new Backbone.Model({
         command: cmd,
         rows: rows,
-        buttonTitle: title
+        title: title,
+        buttonTitle: buttonTitle
       })
     });
   };
@@ -44,6 +46,7 @@ viewFactory.email = function (rows) {
     model: new Backbone.Model({
       command: 'email',
       rows: rows,
+      title: 'Send emails',
       buttonTitle: 'Send'
     })
   });
@@ -53,6 +56,7 @@ viewFactory.blacklist = function (rows) {
     model: new Backbone.Model({
       command: 'blacklist',
       rows: rows,
+      title: 'Add members from blacklist',
       buttonTitle: 'Add to blacklist'
     })
   });
@@ -62,6 +66,7 @@ viewFactory.whitelist = function (rows) {
     model: new Backbone.Model({
       command: 'whitelist',
       rows: rows,
+      title: 'Remove members from blacklist',
       buttonTitle: 'Remove from blacklist'
     })
   });

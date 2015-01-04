@@ -2,27 +2,24 @@
 "use strict";
 
 var mongoose = require('mongoose');
-var fs = require('fs');
+var fileUtils = require('../utils/fileUtils');
 
-var countries;
-fs.realpath('server/data/countries.json', function (err, path) {
-  if (err) { console.error("Error reading countries.json", err); return; }
-  fs.readFile(path, 'utf8', function (err, data) {
-    if (err) { console.error("Error reading countries.json", err); return; }
-    countries = JSON.parse(data);
+module.exports = function (config) {
+
+  var countries;
+  fileUtils.readFileToJson(config.countriesFile, function (data) {
+    countries = data;
   });
-});
 
-module.exports = {
-  
-  get: function (req, res) {
-    var q = req.query.q || '';
-    q = q.toLowerCase();
-    var found = [];
-    countries.forEach(function (country) {
-      if (q.length === 0 || country.toLowerCase().indexOf(q) >= 0) { found.push(country); }
-    });
-    res.json(found);
-  }
-
+  return {
+    get: function (req, res) {
+      var q = req.query.q || '';
+      q = q.toLowerCase();
+      var found = [];
+      countries.forEach(function (country) {
+        if (q.length === 0 || country.toLowerCase().indexOf(q) >= 0) { found.push(country); }
+      });
+      res.json(found);
+    }
+  };
 };

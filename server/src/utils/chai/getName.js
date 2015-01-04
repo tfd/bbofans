@@ -16,7 +16,7 @@
  */
 
 module.exports = function (func) {
-  if (func.name) return func.name;
+  if (func.name) { return func.name; }
 
   var match = /^\s?function ([^(]*)\(/.exec(func);
   return match && match[1] ? match[1] : "";

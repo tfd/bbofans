@@ -44,6 +44,7 @@ var BboFansApp = Marionette.Application.extend({
 
   showPopup: function () {
     this.mainLayout.showPopup();
+    messageBus.trigger('popup:show');
   },
 
   hidePopup: function () {

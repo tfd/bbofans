@@ -1,5 +1,5 @@
 /* jshint -W030 */
-var flag = require('../../src/utils/flag');
+var flag = require('../../src/utils/chai/flag');
 
 describe('flag method', function () {
   var obj;

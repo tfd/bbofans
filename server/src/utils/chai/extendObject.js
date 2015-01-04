@@ -11,28 +11,30 @@
  * Main exports
  */
 
-var exports = module.exports = {};
+var extendObject = {};
 
 /*!
  * Flag utility
  */
 
-exports.flag = require('./flag');
+extendObject.flag = require('./flag');
 
 /*!
  * Function name
  */
 
-exports.getName = require('./getName');
+extendObject.getName = require('./getName');
 
 /*!
  * add Property
  */
 
-exports.addProperty = require('./addProperty');
+extendObject.addProperty = require('./addProperty');
 
 /*!
  * add Method
  */
 
-exports.addMethod = require('./addMethod');
+extendObject.addMethod = require('./addMethod');
+
+module.exports = extendObject;

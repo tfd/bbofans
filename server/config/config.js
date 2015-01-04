@@ -33,9 +33,11 @@ module.exports = {
     app          : {
       name: 'BBOFans Website'
     },
+    keyStoreFile : rootPath + '/server/data/keyStore.json',
+    countriesFile: rootPath + '/server/data/countries.json',
     omitReCaptcha: false,
     reCaptcha    : {
-      keyFile     : rootPath + '/server/config/reCaptcha.key',
+      key         : 'reCaptcha',
       httpsOptions: {
         host  : 'www.google.com',
         port  : 443,
@@ -44,7 +46,7 @@ module.exports = {
       }
     },
     mail         : {
-      keyFile        : rootPath + '/server/config/mail.key',
+      key            : 'mail',
       from           : '"BBO Fans Admin" <mailer@bbofans.com>',
       replyTo        : '"BBO Fans Admin" <info@bbofans.com>',
       bcc            : '"BBO Fans Admin" <info@bbofans.com>',
@@ -76,9 +78,11 @@ module.exports = {
     app          : {
       name: 'BBOFans Website'
     },
+    keyStoreFile : rootPath + '/server/data/keyStore.json',
+    countriesFile: rootPath + '/server/data/countries.json',
     omitReCaptcha: false,
     reCaptcha    : {
-      keyFile     : rootPath + '/server/config/reCaptcha.key',
+      key         : 'reCaptcha',
       httpsOptions: {
         host  : 'www.google.com',
         port  : 443,
@@ -87,7 +91,7 @@ module.exports = {
       }
     },
     mail         : {
-      keyFile        : rootPath + '/server/config/mail.key',
+      key            : 'mail',
       from           : '"BBO Fans Admin" <mailer@bbofans.com>',
       replyTo        : '"BBO Fans Admin" <info@bbofans.com>',
       bcc            : '"BBO Fans Admin" <info@bbofans.com>',

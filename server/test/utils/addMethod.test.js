@@ -1,5 +1,5 @@
 /* jshint -W030 */
-var addMethod = require('../../src/utils/addMethod');
+var addMethod = require('../../src/utils/chai/addMethod');
 
 describe('addMethod function', function () {
 

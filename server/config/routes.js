@@ -9,40 +9,48 @@ var async = require('async');
 var auth = require('./middleware/authorization');
 var login = require('./middleware/authentication');
 
-/**
- * Route middleware
- */
-
-var loginAuth = [auth.requiresLogin];
-var memberAuth = [auth.requiresLogin, auth.isSameUser];
-var memberManagerAuth = [auth.requiresLogin, auth.member.hasAuthorization];
-var tdAuth = [auth.requiresLogin, auth.td.hasAuthorization];
-var tdManagerAuth = [auth.requiresLogin, auth.tdManager.hasAuthorization];
-var blacklistManagerAuth = [auth.requiresLogin, auth.blacklist.hasAuthorization];
-
-/**
- * Controllers
- */
-
-var index = require('../src/controllers/index');
-var countries = require('../src/controllers/countries');
-var register = require('../src/controllers/register');
-var admin = require('../src/controllers/admin');
-var members = require('../src/controllers/members');
-var commands = require('../src/controllers/commands');
-var blacklists = require('../src/controllers/blacklists');
-var tds = require('../src/controllers/tds');
-var reCaptcha = require('../src/controllers/reCaptcha');
-var updater = require('../src/controllers/updater');
-
-
-/**
- * Expose routes
- */
-
 module.exports = function (app, config, passport) {
+
+  /**
+   * Route middleware
+   */
+
+  var loginAuth = [auth.requiresLogin];
+  var memberAuth = [auth.requiresLogin, auth.isSameUser];
+  var memberManagerAuth = [auth.requiresLogin, auth.member.hasAuthorization];
+  var tdAuth = [auth.requiresLogin, auth.td.hasAuthorization];
+  var tdManagerAuth = [auth.requiresLogin, auth.tdManager.hasAuthorization];
+  var blacklistManagerAuth = [auth.requiresLogin, auth.blacklist.hasAuthorization];
+
+  /**
+   * Utilities
+   */
+
+  config.servers = {};
+  config.servers.keyStore = require('../src/servers/keyStore')(config);
+  config.servers.sendMail = require('../src/servers/sendMail')(config);
+  config.servers.reCaptcha = require('../src/servers/reCaptcha')(config);
+
+  /**
+   * Controllers
+   */
+
+  var index = require('../src/controllers/index')(config);
+  var countries = require('../src/controllers/countries')(config);
+  var register = require('../src/controllers/register')(config);
+  var admin = require('../src/controllers/admin')(config);
+  var members = require('../src/controllers/members')(config);
+  var commands = require('../src/controllers/commands')(config);
+  var blacklists = require('../src/controllers/blacklists')(config);
+  var tds = require('../src/controllers/tds')(config);
+  var updater = require('../src/controllers/updater')(config);
+
+
+  /**
+   * Expose routes
+   */
+
   // home route
-  app.get('/reCaptcha/:response', reCaptcha.check);
   app.get('/update', updater.update);
   app.get('/members/rock', members.getRock);
   app.get('/members/rbd', members.getRbd);

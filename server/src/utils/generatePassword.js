@@ -2,66 +2,69 @@
 "use strict";
 
 /* jshint -W030 */
-var addProperty = require('./addProperty');
-var addMethod = require('./addMethod');
-var flag = require('./flag');
+var extendObject = require('./chai/extendObject');
+
 var GeneratePassword = function () {
-  flag(this, 'atLeast', 1);
-  flag(this, 'atMost', 1);
-  flag(this, 'minLength', 8);
-  flag(this, 'maxLength', 16);
-  flag(this, 'fill', false);
+  extendObject.flag(this, 'atLeast', 1);
+  extendObject.flag(this, 'atMost', 1);
+  extendObject.flag(this, 'minLength', 8);
+  extendObject.flag(this, 'maxLength', 16);
+  extendObject.flag(this, 'fill', false);
 
   this.password = '';
 };
 
 var charTypes = {
   punctuation: '!:?;,.',
-  brackets: '()[]{}',
+  brackets   : '()[]{}',
   apostrophes: '\'"`',
-  math: '+-*/<>=%',
-  others: '@#$^&_\\|~',
-  lowercase: 'abcdefghijklmnopqrstuvwxyz',
-  uppercase: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
-  numbers: '0123456789'
+  math       : '+-*/<>=%',
+  others     : '@#$^&_\\|~',
+  lowercase  : 'abcdefghijklmnopqrstuvwxyz',
+  uppercase  : 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+  numbers    : '0123456789'
 };
 charTypes.number = charTypes.numbers;
 charTypes.bracket = charTypes.brackets;
 charTypes.apostrophe = charTypes.apostrophes;
 charTypes.other = charTypes.others;
-charTypes.special = charTypes.specials = charTypes.punctuation + charTypes.brackets + charTypes.apostrophes + charTypes.math + charTypes.other;
+charTypes.special = charTypes.specials =
+charTypes.punctuation + charTypes.brackets + charTypes.apostrophes + charTypes.math + charTypes.other;
 charTypes.letter = charTypes.letters = charTypes.lowercase + charTypes.uppercase;
 charTypes.all = charTypes.specials + charTypes.letters + charTypes.numbers;
 
 function pick(str, min, max) {
-    var n, chars = '', i;
+  var n, chars = '', i;
 
-    if (typeof max === 'undefined') {
-        n = min;
-    } else {
-        n = min + Math.floor(Math.random() * (max - min));
-    }
+  if (max === undefined) {
+    n = min;
+  }
+  else {
+    n = min + Math.floor(Math.random() * (max - min));
+  }
 
-    for (i = 0; i < n; i++) {
-        chars += str.charAt(Math.floor(Math.random() * str.length));
-    }
+  for (i = 0; i < n; i++) {
+    chars += str.charAt(Math.floor(Math.random() * str.length));
+  }
 
-    return chars;
+  return chars;
 }
 
 // Credit to @Christoph: http://stackoverflow.com/a/962890/464744
 function shuffle(str) {
-    var array = str.split(''),
-     tmp, current, top = array.length;
+  var array = str.split(''),
+      tmp, current, top = array.length;
 
-    if (top) while (--top) {
-        current = Math.floor(Math.random() * top);
-        tmp = array[current];
-        array[current] = array[top];
-        array[top] = tmp;
+  if (top) {
+    while (--top) {
+      current = Math.floor(Math.random() * top);
+      tmp = array[current];
+      array[current] = array[top];
+      array[top] = tmp;
     }
+  }
 
-    return array.join('');
+  return array.join('');
 }
 
 /**
@@ -89,14 +92,14 @@ function shuffle(str) {
  * @name language chains
  * @api public
  */
-[ 'to', 'be', 'been', 'is', 'and', 'has', 'have', 'with', 'that', 'at', 'same' ].forEach(function (chain) {
-  addProperty(GeneratePassword.prototype, chain, function () {});
+['to', 'be', 'been', 'is', 'and', 'has', 'have', 'with', 'that', 'at', 'same'].forEach(function (chain) {
+  extendObject.addProperty(GeneratePassword.prototype, chain, function () {});
 });
 
-addMethod(GeneratePassword.prototype, 'get', function (minimum, maximum, charSet) {
+extendObject.addMethod(GeneratePassword.prototype, 'get', function (minimum, maximum, charSet) {
   var min = parseInt(minimum, 10);
   var max = parseInt(maximum, 10);
-  var type = (typeof charSet == 'undefined' ? 'all' : charSet);
+  var type = (charSet === undefined ? 'all' : charSet);
 
   if (!isNaN(min) || !isNaN(max)) {
     if (!isNaN(min)) { this.withMinLength(min); }
@@ -113,39 +116,39 @@ addMethod(GeneratePassword.prototype, 'get', function (minimum, maximum, charSet
   return this.password;
 });
 
-addMethod(GeneratePassword.prototype, 'least', function (value) {
+extendObject.addMethod(GeneratePassword.prototype, 'least', function (value) {
   var val = parseInt(value, 10);
-  var max = flag(this, 'atLeast');
+  var max = extendObject.flag(this, 'atLeast');
 
   if (isNaN(val) || val <= 0) { return; }
 
-  flag(this, 'atLeast', val);
-  if (max < val) { flag(this, 'atMost', val); }
-  flag(this, 'fill', false);
+  extendObject.flag(this, 'atLeast', val);
+  if (max < val) { extendObject.flag(this, 'atMost', val); }
+  extendObject.flag(this, 'fill', false);
 });
 
-addMethod(GeneratePassword.prototype, 'most', function (value) {
+extendObject.addMethod(GeneratePassword.prototype, 'most', function (value) {
   var val = parseInt(value, 10);
-  var min = flag(this, 'atLeast');
+  var min = extendObject.flag(this, 'atLeast');
 
   if (isNaN(val) || val <= 0) { return; }
 
-  flag(this, 'atMost', val);
-  if (min > val) { flag(this, 'atLeast', val); }
-  flag(this, 'fill', false);
+  extendObject.flag(this, 'atMost', val);
+  if (min > val) { extendObject.flag(this, 'atLeast', val); }
+  extendObject.flag(this, 'fill', false);
 });
 
-addMethod(GeneratePassword.prototype, 'exactly', function (value) {
+extendObject.addMethod(GeneratePassword.prototype, 'exactly', function (value) {
   var val = parseInt(value, 10);
 
   if (isNaN(val) || val <= 0) { return; }
 
-  flag(this, 'atLeast', val);
-  flag(this, 'atMost', val);
-  flag(this, 'fill', false);
+  extendObject.flag(this, 'atLeast', val);
+  extendObject.flag(this, 'atMost', val);
+  extendObject.flag(this, 'fill', false);
 });
 
-addMethod(GeneratePassword.prototype, 'between', function (minimum, maximum) {
+extendObject.addMethod(GeneratePassword.prototype, 'between', function (minimum, maximum) {
   var min = parseInt(minimum, 10);
   var max = parseInt(maximum, 10);
 
@@ -160,44 +163,44 @@ addMethod(GeneratePassword.prototype, 'between', function (minimum, maximum) {
     }
   }
 
-  flag(this, 'atLeast', min);
-  flag(this, 'atMost', max);
-  flag(this, 'fill', false);
+  extendObject.flag(this, 'atLeast', min);
+  extendObject.flag(this, 'atMost', max);
+  extendObject.flag(this, 'fill', false);
 });
 
 function withMinLength(value) {
   /* jshint validthis:true */
   var val = parseInt(value, 10);
-  var max = flag(this, 'maxLength');
+  var max = extendObject.flag(this, 'maxLength');
 
   if (isNaN(val) || val <= 0) { return; }
 
-  flag(this, 'minLength', val);
-  if (max < val) { flag(this, 'maxLength', val); }
-  flag(this, 'fill', true);
+  extendObject.flag(this, 'minLength', val);
+  if (max < val) { extendObject.flag(this, 'maxLength', val); }
+  extendObject.flag(this, 'fill', true);
 }
-addMethod(GeneratePassword.prototype, 'withMinLength', withMinLength);
-addMethod(GeneratePassword.prototype, 'withMinLen', withMinLength);
-addMethod(GeneratePassword.prototype, 'minLength', withMinLength);
-addMethod(GeneratePassword.prototype, 'minLen', withMinLength);
-addMethod(GeneratePassword.prototype, 'min', withMinLength);
+extendObject.addMethod(GeneratePassword.prototype, 'withMinLength', withMinLength);
+extendObject.addMethod(GeneratePassword.prototype, 'withMinLen', withMinLength);
+extendObject.addMethod(GeneratePassword.prototype, 'minLength', withMinLength);
+extendObject.addMethod(GeneratePassword.prototype, 'minLen', withMinLength);
+extendObject.addMethod(GeneratePassword.prototype, 'min', withMinLength);
 
 function withMaxLength(value) {
   /* jshint validthis:true */
   var val = parseInt(value, 10);
-  var min = flag(this, 'minLength');
+  var min = extendObject.flag(this, 'minLength');
 
   if (isNaN(val) || val <= 0) { return; }
 
-  flag(this, 'maxLength', val);
-  if (min > val) { flag(this, 'minLength', val); }
-  flag(this, 'fill', true);
+  extendObject.flag(this, 'maxLength', val);
+  if (min > val) { extendObject.flag(this, 'minLength', val); }
+  extendObject.flag(this, 'fill', true);
 }
-addMethod(GeneratePassword.prototype, 'withMaxLength', withMaxLength);
-addMethod(GeneratePassword.prototype, 'withMaxLen', withMaxLength);
-addMethod(GeneratePassword.prototype, 'maxLength', withMaxLength);
-addMethod(GeneratePassword.prototype, 'maxLen', withMaxLength);
-addMethod(GeneratePassword.prototype, 'max', withMaxLength);
+extendObject.addMethod(GeneratePassword.prototype, 'withMaxLength', withMaxLength);
+extendObject.addMethod(GeneratePassword.prototype, 'withMaxLen', withMaxLength);
+extendObject.addMethod(GeneratePassword.prototype, 'maxLength', withMaxLength);
+extendObject.addMethod(GeneratePassword.prototype, 'maxLen', withMaxLength);
+extendObject.addMethod(GeneratePassword.prototype, 'max', withMaxLength);
 
 function withLength(minimum, maximum) {
   /* jshint validthis:true */
@@ -208,17 +211,17 @@ function withLength(minimum, maximum) {
 
   if (isNaN(max) || max <= 0) { max = min; }
 
-  flag(this, 'minLength', min);
-  flag(this, 'maxLength', max);
-  flag(this, 'fill', true);
+  extendObject.flag(this, 'minLength', min);
+  extendObject.flag(this, 'maxLength', max);
+  extendObject.flag(this, 'fill', true);
 }
-addMethod(GeneratePassword.prototype, 'withLength', withLength);
-addMethod(GeneratePassword.prototype, 'withLen', withLength);
-addMethod(GeneratePassword.prototype, 'length', withLength);
-addMethod(GeneratePassword.prototype, 'len', withLength);
+extendObject.addMethod(GeneratePassword.prototype, 'withLength', withLength);
+extendObject.addMethod(GeneratePassword.prototype, 'withLen', withLength);
+extendObject.addMethod(GeneratePassword.prototype, 'length', withLength);
+extendObject.addMethod(GeneratePassword.prototype, 'len', withLength);
 
-addProperty(GeneratePassword.prototype, 'shuffle', function () {
-  if (this.password.length < flag(this, 'minLength')) {
+extendObject.addProperty(GeneratePassword.prototype, 'shuffle', function () {
+  if (this.password.length < extendObject.flag(this, 'minLength')) {
     this.all;
   }
   this.password = shuffle(this.password);
@@ -226,42 +229,45 @@ addProperty(GeneratePassword.prototype, 'shuffle', function () {
 
 function createPropertyForCharacterType(type) {
   return function () {
-    var min = flag(this, 'atLeast');
-    var max = flag(this, 'atMost');
+    var min = extendObject.flag(this, 'atLeast');
+    var max = extendObject.flag(this, 'atMost');
     var len = this.password.length;
 
-    if (flag(this, 'fill')) {
-      max = flag(this, 'maxLength') - len;
-      min = flag(this, 'minLength') - len;
+    if (extendObject.flag(this, 'fill')) {
+      max = extendObject.flag(this, 'maxLength') - len;
+      min = extendObject.flag(this, 'minLength') - len;
       if (max < 0 || min < 0) { return; }
     }
 
     this.password += pick(charTypes[type], min, max);
-    flag(this, 'atLeast', 1);
-    flag(this, 'atMost', 1);
-    flag(this, 'fill', false);
+    extendObject.flag(this, 'atLeast', 1);
+    extendObject.flag(this, 'atMost', 1);
+    extendObject.flag(this, 'fill', false);
   };
 }
-for (var type in charTypes) {
-  if(charTypes.hasOwnProperty(type)) {
-    addProperty(GeneratePassword.prototype, type, createPropertyForCharacterType(type));
+
+var type;
+for (type in charTypes) {
+  if (charTypes.hasOwnProperty(type)) {
+    extendObject.addProperty(GeneratePassword.prototype, type, createPropertyForCharacterType(type));
   }
 }
-addMethod(GeneratePassword.prototype, 'of', function (str) {  
-  var min = flag(this, 'atLeast');
-  var max = flag(this, 'atMost');
+
+extendObject.addMethod(GeneratePassword.prototype, 'of', function (str) {
+  var min = extendObject.flag(this, 'atLeast');
+  var max = extendObject.flag(this, 'atMost');
   var len = this.password.length;
 
-  if (flag(this, 'fill')) {
-    max = flag(this, 'maxLength') - len;
-    min = flag(this, 'minLength') - len;
+  if (extendObject.flag(this, 'fill')) {
+    max = extendObject.flag(this, 'maxLength') - len;
+    min = extendObject.flag(this, 'minLength') - len;
     if (max < 0 || min < 0) { return; }
   }
 
   this.password += pick(str, min, max);
-  flag(this, 'atLeast', 1);
-  flag(this, 'atMost', 1);
-  flag(this, 'fill', false);
+  extendObject.flag(this, 'atLeast', 1);
+  extendObject.flag(this, 'atMost', 1);
+  extendObject.flag(this, 'fill', false);
 });
 
 /**
@@ -302,10 +308,12 @@ addMethod(GeneratePassword.prototype, 'of', function (str) {
  *
  * Usage:
  *
+ * <code>
  *    var pwd = new GeneratePassword().atLeast(2).numbers
-                                       .atMost(5).uppercase
-                                       .withMinLength(8).withMaxLength(10).lowercase
-                                       .shuffle.get();
+ *                                    .atMost(5).uppercase
+ *                                    .withMinLength(8).withMaxLength(10).lowercase
+ *                                    .shuffle.get();
+ * </code>
  *
  * @name GeneratePassword
  * @api public

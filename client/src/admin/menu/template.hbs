@@ -1,22 +1,3 @@
-<!--
-Members
-  Members Mngr
-  BlackList Mngr
-  Export Members
-  Send Newsletter
-  Statistics
-  Import B.Dancer
-TD's
-  TD's Manager
-  TD's Schedule
-Upload Results
-Winners Manager
-  Rock
-  Best Dancer
-News Manager
-  Rock
-  Best Dancer
--->
 <h1>{{username}}</h1>
 <div class="panel-group" id="admin-menu-accordion" role="tablist" aria-multiselectable="false">
   <div class="panel panel-default">
@@ -57,12 +38,12 @@ News Manager
     <div class="panel panel-default">
       <div class="panel-heading" role="tab" id="headingUser">
         <h4 class="panel-title">
-          <a class="collapsed" data-toggle="collapse" data-parent="#admin-menu-accordion" href="#collapseUser" aria-expanded="false" aria-controls="collapseUser">
+          <a {{#unless isTd}}class="collapsed"{{/unless}} data-toggle="collapse" data-parent="#admin-menu-accordion" href="#collapseUser" aria-expanded="false" aria-controls="collapseUser">
             Account Info
           </a>
         </h4>
       </div>
-      <div id="collapseUser" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingUser">
+      <div id="collapseUser" class="panel-collapse collapse {{#unless isTd}}in{{/unless}}" role="tabpanel" aria-labelledby="headingUser">
         <div class="list-group" style="margin-bottom: 0;">
           <a class="list-group-item" href="/admin/account/:id">View</a>
           <a class="list-group-item" href="/admin/account/password/:id">Change Password</a>

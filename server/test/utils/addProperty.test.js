@@ -1,5 +1,5 @@
 /* jshint -W030 */
-var addProperty = require('../../src/utils/addProperty');
+var addProperty = require('../../src/utils/chai/addProperty');
 
 describe('addProperty function', function () {
 

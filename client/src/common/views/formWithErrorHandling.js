@@ -161,7 +161,7 @@ var FormWithErrorHandlingView = Marionette.ItemView.extend({
   loadCountries: function () {
     var self = this;
 
-    $.getJSON('/data/countries.json', function (countries) {
+    $.getJSON('/countries', function (countries) {
       _.each(countries, function (country) {
         $('<option/>', {
           value: country,
