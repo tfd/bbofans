@@ -28,7 +28,7 @@
     "jquery": "./build/vendor/jquery/jquery.js",
     "moment": "./build/vendor/moment/js/moment-with-locales.js",
     "tinymce": "./build/vendor/tinymce/js/tinymce.js",
-    "tinymce.modern": "./build/vendor/tinymce/js/theme.js",
+    "tinymce-modern": "./build/vendor/tinymce/js/theme.js",
     "typeAhead": "./build/vendor/typeahead.js/typeahead.bundle.js",
     "underscore": "./build/vendor/underscore/underscore.js"
   },
@@ -86,7 +86,7 @@
     "tinymce": {
       "exports": "tinymce"
     },
-    "tinymce.modern": {
+    "tinymce-modern": {
       "exports": "",
       "depends": [
         "tinymce:tinymce"

@@ -51,9 +51,9 @@ var authentication = {
     cb = cb || _.noop;
 
     if (this.checking) {
-      messageBus.on('authenticated', function () {
+      messageBus.on('authenticated', _.once(function () {
         cb(self.user !== undefined);
-      });
+      }));
     }
     else {
       cb(this.user !== undefined);
@@ -66,6 +66,15 @@ var authentication = {
 
 };
 
+/**
+ * Register a handlebars helper that can be used in the following way:
+ *
+ * {{#authentication}}
+ *   {{#if user.isMemberManager}}
+ *     User can manage members.
+ *   {{/if}}
+ * {{/authentication}}
+ */
 Handlebars.registerHelper('authentication', function(options) {
   var data = Handlebars.createFrame(options.data || {});
   data.user = authentication.getUser().toJSON();

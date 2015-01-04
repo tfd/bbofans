@@ -20,6 +20,7 @@ require('bootstrap-table');
 require('bootstrap-table-en-US');
 require('ie10-viewport-bug-workaround');
 require('./common/utils/reCaptcha.js');
+require('tinymce-modern');
 
 var BboFansApp = Marionette.Application.extend({
   initialize: function (options) {

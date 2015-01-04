@@ -25,11 +25,6 @@ module.exports = function (grunt) {
         options: {
           targetDir: 'build/vendor',
           layout   : 'byComponent'
-          /*
-           function (type, component, source) {
-           return component;
-           }
-           */
         }
       }
     },
@@ -59,7 +54,27 @@ module.exports = function (grunt) {
           browserifyOptions: {
             debug: true
           },
-          transform        : ['hbsfy']
+          transform        : ['hbsfy', function (file) {
+            // tinymce uses it's own require and define functions that confuse browserify.
+            var data = '';
+
+            // By default do nothing.
+            var write = function (buf) { data += buf; };
+            var end = function end() {
+              this.queue(data);
+              this.queue(null);
+            };
+
+            if (file.indexOf('build/vendor/tinymce/js/tinymce.js') >= 0) {
+              end = function () {
+                data = data.replace(/require\(/g, 'tinymceRequire(').replace(/define\(/g, 'tinymceDefine(');
+                this.queue(data);
+                this.queue(null);
+              };
+            }
+
+            return through(write, end);
+          }]
         }
       },
       prod: {
@@ -107,7 +122,7 @@ module.exports = function (grunt) {
                   dest   : 'public/fonts/'
                 }]
       },
-      tinymce: {
+      tinymce  : {
         files: [{
                   expand : true,
                   flatten: true,
@@ -127,7 +142,7 @@ module.exports = function (grunt) {
                   dest   : 'public/js/skins/lightgray/img/'
                 }]
       },
-      dev    : {
+      dev      : {
         files: [{
                   src : 'build/<%= pkg.name %>.js',
                   dest: 'public/js/<%= pkg.name %>.js'
@@ -139,7 +154,7 @@ module.exports = function (grunt) {
                   dest: 'public/img/**/*'
                 }]
       },
-      prod   : {
+      prod     : {
         files: [{
                   src : 'dist/<%= pkg.name %>.js',
                   dest: 'public/js/<%= pkg.name %>.js'
