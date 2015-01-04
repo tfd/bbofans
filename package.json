@@ -12,24 +12,25 @@
   "author": "Ronald van Uffelen <ronald.vanuffelen@gmail.com>",
   "main": "./server/server.js",
   "browser": {
-    "underscore": "./build/vendor/underscore/underscore.js",
-    "jquery": "./build/vendor/jquery/jquery.js",
     "backbone": "./build/vendor/backbone/backbone.js",
     "backbone.babysitter": "./build/vendor/backbone.babysitter/backbone.babysitter.js",
     "backbone.wreqr": "./build/vendor/backbone.wreqr/backbone.wreqr.js",
     "backbone.marionette": "./build/vendor/backbone.marionette/backbone.marionette.js",
-    "backbone.syphon": "./build/vendor/backbone.syphon/backbone.syphon.js",
+    "backbone.syphon": "./build/vendor/backbone.syphon/js/backbone.syphon.js",
     "backbone.radio": "./build/vendor/backbone.radio/backbone.radio.js",
-    "bootstrap": "./build/vendor/bootstrap/bootstrap.js",
-    "bootstrap-dateTimePicker": "./build/vendor/eonasdan-bootstrap-datetimepicker/bootstrap-datetimepicker.js",
-    "bootstrap-dialog": "./build/vendor/bootstrap-dialog/bootstrap-dialog.min.js",
+    "bootstrap": "./build/vendor/bootstrap/js/bootstrap.js",
+    "bootstrap-dateTimePicker": "./build/vendor/eonasdan-bootstrap-datetimepicker/js/bootstrap-datetimepicker.js",
+    "bootstrap-dialog": "./build/vendor/bootstrap-dialog/js/bootstrap-dialog.min.js",
     "bootstrap-table": "./build/vendor/bootstrap-table/bootstrap-table.js",
     "bootstrap-table-en-US": "./build/vendor/bootstrap-table/bootstrap-table-en-US.js",
-    "bootstrap-table-filter": "./build/vendor/bootstrap-table-filter/bootstrap-table-filter.js",
-    "bootstrap-table-flatJSON": "./build/vendor/bootstrap-table-flatJSON/bootstrap-table-flatJSON.js",
+    "bootstrap-table-filter": "./build/vendor/bootstrap-table-filter/js/bootstrap-table-filter.js",
     "ie10-viewport-bug-workaround": "./client/vendor/bootstrap/js/ie10-viewport-bug-workaround.js",
-    "moment": "./build/vendor/moment/moment-with-locales.js",
-    "typeAhead": "./build/vendor/typeahead.js/typeahead.bundle.js"
+    "jquery": "./build/vendor/jquery/jquery.js",
+    "moment": "./build/vendor/moment/js/moment-with-locales.js",
+    "tinymce": "./build/vendor/tinymce/js/tinymce.js",
+    "tinymce.modern": "./build/vendor/tinymce/js/theme.js",
+    "typeAhead": "./build/vendor/typeahead.js/typeahead.bundle.js",
+    "underscore": "./build/vendor/underscore/underscore.js"
   },
   "repository": {
     "type": "git",
@@ -44,9 +45,6 @@
     "test": "NODE_ENV=test grunt test"
   },
   "browserify-shim": {
-    "underscore": {
-      "exports": "_"
-    },
     "backbone.syphon": {
       "exports": "",
       "depends": [
@@ -85,11 +83,23 @@
         "jquery:jQuery"
       ]
     },
+    "tinymce": {
+      "exports": "tinymce"
+    },
+    "tinymce.modern": {
+      "exports": "",
+      "depends": [
+        "tinymce:tinymce"
+      ]
+    },
     "typeAhead": {
       "exports": "Bloodhound",
       "depends": [
         "underscore:_"
       ]
+    },
+    "underscore": {
+      "exports": "_"
     }
   },
   "browserify": {

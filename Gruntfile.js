@@ -24,9 +24,12 @@ module.exports = function (grunt) {
       install: {
         options: {
           targetDir: 'build/vendor',
-          layout   : function (type, component, source) {
-            return component;
-          }
+          layout   : 'byComponent'
+          /*
+           function (type, component, source) {
+           return component;
+           }
+           */
         }
       }
     },
@@ -57,26 +60,6 @@ module.exports = function (grunt) {
             debug: true
           },
           transform        : ['hbsfy']
-          /*
-           function (file) {
-           // This is needed to make backbone work: when detecting node.js
-           // it assumes (wrongly) that jQuery isn't needed. So we inject
-           // jQuery into the factory.
-           var data = '';
-           var match_require = "var _ = require('underscore')";
-           var replace_require = match_require + ", $ = require('jquery')";
-           var match_factory = "factory(root, exports, _);";
-           var replace_factory = "factory(root, exports, _, $);";
-           return through(write, end);
-
-           function write (buf) { data += buf }
-           function end () {
-           this.queue(data.replace(match_require, replace_require)
-           .replace(match_factory, replace_factory));
-           this.queue(null);
-           }
-           }]
-           */
         }
       },
       prod: {
@@ -102,13 +85,13 @@ module.exports = function (grunt) {
         files: {
           'build/<%= pkg.name %>.css': [
             // 'client/styles/reset.css',
-            'build/vendor/bootstrap/bootstrap.less',
-            'build/vendor/bootstrap/theme.less',
-            'build/vendor/bootstrap-dialog/bootstrap-dialog.less',
+            'build/vendor/bootstrap/less/bootstrap.less',
+            'build/vendor/bootstrap/less/theme.less',
+            'build/vendor/bootstrap-dialog/less/bootstrap-dialog.less',
             'client/vendor/bootstrap-datetimepicker/less/bootstrap-datetimepicker.less',
             'client/vendor/typeahead/less/typeahead.less',
             'build/vendor/bootstrap-table/*.css',
-            'build/vendor/bootstrap-table-filter/*.css',
+            'build/vendor/bootstrap-table-filter/css/*.css',
             'client/styles/less/main.less'
           ]
         }
@@ -116,9 +99,37 @@ module.exports = function (grunt) {
     },
 
     copy       : {
-      dev : {
+      bootsraè: {
         files: [{
-                  src : 'build/<%= pkg.name %>.js*',
+                  expand : true,
+                  flatten: true,
+                  src    : 'build/vendor/bootstrap/fonts/*',
+                  dest   : 'public/fonts/'
+                }]
+      },
+      tinymce: {
+        files: [{
+                  expand : true,
+                  flatten: true,
+                  src    : 'build/vendor/tinymce/css/*',
+                  dest   : 'public/js/skins/lightgray/'
+                },
+                {
+                  expand : true,
+                  flatten: true,
+                  src    : 'build/vendor/tinymce/fonts/*',
+                  dest   : 'public/js/skins/lightgray/fonts/'
+                },
+                {
+                  expand : true,
+                  flatten: true,
+                  src    : 'build/vendor/tinymce/img/*',
+                  dest   : 'public/js/skins/lightgray/img/'
+                }]
+      },
+      dev    : {
+        files: [{
+                  src : 'build/<%= pkg.name %>.js',
                   dest: 'public/js/<%= pkg.name %>.js'
                 }, {
                   src : 'build/<%= pkg.name %>.css',
@@ -128,7 +139,7 @@ module.exports = function (grunt) {
                   dest: 'public/img/**/*'
                 }]
       },
-      prod: {
+      prod   : {
         files: [{
                   src : 'dist/<%= pkg.name %>.js',
                   dest: 'public/js/<%= pkg.name %>.js'
@@ -294,6 +305,7 @@ module.exports = function (grunt) {
                                    'jshint:clientDev',
                                    'jshint:server',
                                    'less:transpile',
+                                   'copy:tinymce',
                                    'copy:dev']);
   grunt.registerTask('build:prod', ['clean:prod',
                                     'concat',
@@ -304,6 +316,7 @@ module.exports = function (grunt) {
                                     'concat',
                                     'cssmin',
                                     'uglify',
+                                    'copy:tinymce',
                                     'copy:prod']);
 
   grunt.registerTask('init:dev', ['clean', 'jshint:build', 'build:vendor']);
