@@ -7,8 +7,8 @@ var moment = require('moment');
 var _ = require('underscore');
 var fields = ['bboName',
               'name',
-              'email',
-              'telephone',
+              'emails',
+              'telephones',
               'skill',
               'info',
               'h3am',
@@ -39,25 +39,107 @@ module.exports = function () {
 
             var aggr = [];
             aggr.push({$match: filter});
+
+            // Get first email
+            aggr.push({
+              $project: {
+                _id      : {
+                  _id       : '$_id',
+                  bboName   : '$bboName',
+                  name      : '$name',
+                  nation    : '$nation',
+                  telephones: '$telephones',
+                  skill     : '$skill',
+                  h3am      : '$h3am',
+                  h7am      : '$h7am',
+                  h11am     : '$h11am',
+                  h3pm      : '$h3pm',
+                  h7pm      : '$h7pm',
+                  h11pm     : '$h11pm',
+                  info      : '$info'
+                }, emails: {$cond: [{$eq: ['$emails', [] ]}, [''], '$emails']}
+              }
+            });
+            aggr.push({$unwind: '$emails'});
+            aggr.push({$group: {_id: '$_id', email: {$first: '$emails'}}});
+            aggr.push({
+              $project: {
+                _id       : '$_id._id',
+                bboName   : '$_id.bboName',
+                name      : '$_id.name',
+                nation    : '$_id.nation',
+                emails    : '$email',
+                telephones: '$_id.telephones',
+                skill     : '$_id.skill',
+                h3am      : '$_id.h3am',
+                h7am      : '$_id.h7am',
+                h11am     : '$_id.h11am',
+                h3pm      : '$_id.h3pm',
+                h7pm      : '$_id.h7pm',
+                h11pm     : '$_id.h11pm',
+                info      : '$_id.info'
+              }
+            });
+
+            // Get first telephone
+            aggr.push({
+              $project: {
+                _id          : {
+                  _id    : '$_id',
+                  bboName: '$bboName',
+                  name   : '$name',
+                  nation : '$nation',
+                  emails : '$emails',
+                  skill  : '$skill',
+                  h3am   : '$h3am',
+                  h7am   : '$h7am',
+                  h11am  : '$h11am',
+                  h3pm   : '$h3pm',
+                  h7pm   : '$h7pm',
+                  h11pm  : '$h11pm',
+                  info   : '$info'
+                }, telephones: {$cond: [{$eq: ['$telephones', [] ]}, [''], '$telephones']}
+              }
+            });
+            aggr.push({$unwind: '$telephones'});
+            aggr.push({$group: {_id: '$_id', telephone: {$first: '$telephones'}}});
+            aggr.push({
+              $project: {
+                _id       : '$_id._id',
+                bboName   : '$_id.bboName',
+                name      : '$_id.name',
+                nation    : '$_id.nation',
+                emails    : '$_id.emails',
+                telephones: '$telephone',
+                skill     : '$_id.skill',
+                h3am      : '$_id.h3am',
+                h7am      : '$_id.h7am',
+                h11am     : '$_id.h11am',
+                h3pm      : '$_id.h3pm',
+                h7pm      : '$_id.h7pm',
+                h11pm     : '$_id.h11pm',
+                info      : '$_id.info'
+              }
+            });
+
             aggr.push({$project: fieldDefinitions.projectFields(fields)});
             aggr.push({$sort: sort});
             aggr.push({$skip: skip});
             aggr.push({$limit: limit});
             Member.aggregate(aggr, function (err, tds) {
-                  if (err) {
-                    console.error('tournamentDirectors.getAll', err);
-                    return res.status(500).json({error: err});
-                  }
+              if (err) {
+                console.error('tournamentDirectors.getAll', err);
+                return res.status(500).json({error: err});
+              }
 
-                  res.json({
-                    skip : skip,
-                    limit: limit,
-                    sort : sort,
-                    total: count,
-                    rows : tds
-                  });
-                }
-            );
+              res.json({
+                skip : skip,
+                limit: limit,
+                sort : sort,
+                total: count,
+                rows : tds
+              });
+            });
           }
       );
     },

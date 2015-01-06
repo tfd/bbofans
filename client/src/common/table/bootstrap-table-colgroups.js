@@ -7,10 +7,10 @@ $.extend($.fn.bootstrapTable.defaults, {
   showColumnGroups: false,
   // 'json', 'xml', 'png', 'csv', 'txt', 'sql', 'doc', 'excel', 'powerpoint', 'pdf'
   columnGroups    : {
-    'general info': ['select', 'bboName', 'registeredAt', 'name', 'nation', 'email', 'level', 'isEnabled'],
+    'general info': ['select', 'bboName', 'registeredAt', 'name', 'nation', 'emails', 'telephones', 'level', 'isEnabled'],
     'status'      : ['select',
                      'bboName',
-                     'email',
+                     'emails',
                      'role',
                      'isEnabled',
                      'isStarPlayer',

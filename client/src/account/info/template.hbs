@@ -3,8 +3,8 @@
 <div>
   <p><span class="col-md-2">BBO nickname:</span><span class="col-md-10">&nbsp;<strong>{{bboName}}</strong></span></p>
   <p><span class="col-md-2">Name:</span><span class="col-md-10">&nbsp;<strong>{{name}}</strong></span></p>
-  <p><span class="col-md-2">Email:</span><span class="col-md-10">&nbsp;<strong>{{email}}</strong></span></p>
-  <p><span class="col-md-2">Telephone:</span><span class="col-md-10">&nbsp;<strong>{{telephone}}</strong></span></p>
+  <p><span class="col-md-2">Email:</span><span class="col-md-10">&nbsp;{{#each emails}}{{#unless @first}}, {{/unless}}<strong>{{this}}</strong>{{/each}}</span></p>
+  <p><span class="col-md-2">Telephone:</span><span class="col-md-10">&nbsp;{{#each telephones}}{{#unless @first}}, {{/unless}}<strong>{{this}}</strong>{{/each}}</span></p>
   <p><span class="col-md-2">Country:</span><span class="col-md-10">&nbsp;<strong>{{nation}}</strong></span></p>
   <p><span class="col-md-2">Level:</span><span class="col-md-10">&nbsp;<strong>{{level}}</strong></span></p>
   <p><span class="col-md-2">Star player:</span><span class="col-md-10">&nbsp;<strong>{{{formatBoolean isStarPlayer}}}</strong></span></p>

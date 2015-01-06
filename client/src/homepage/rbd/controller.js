@@ -2,6 +2,7 @@
 "use strict";
 
 var Marionette = require('backbone.marionette');
+var messageBus = require('../../common/utils/messageBus');
 
 var RbdMembersView = require('./view');
 var Member = require('../../models/member');
@@ -19,6 +20,8 @@ var RbdMembersController = Marionette.Controller.extend({
     });
 
     region.show(view);
+
+    messageBus.command('show:winners:rbd');
   }
 });
 

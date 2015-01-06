@@ -33,7 +33,6 @@ var _ = require('underscore');
 
  * @constructor
  * @param {FieldDefinitions} fieldDefinitions - definitions of fields that make up the table
- * @returns {ListQueryParameters} the ListQueryParameters object for the given fieldDefinitions
  */
 module.exports = function (fieldDefinitions) {
 
@@ -240,8 +239,12 @@ module.exports = function (fieldDefinitions) {
 
     criteria.push({bboName: new RegExp(name, 'i')});
     if (options.restrictedSearch !== true) {
-      criteria.push({name: new RegExp(name, 'i')});
-      criteria.push({email: new RegExp(name, 'i')});
+      if (fieldDefinitions.isValidFieldName('name')) {
+        criteria.push({name: new RegExp(name, 'i')});
+      }
+      if (fieldDefinitions.isValidFieldName('emails')) {
+        criteria.push({emails: new RegExp(name, 'i')});
+      }
     }
 
     return [{$or: criteria}];
@@ -285,7 +288,7 @@ module.exports = function (fieldDefinitions) {
     /**
      * Read offset from the query parameters.
      *
-     * @method ListQueryParameters#getSkip
+     * @methodOf ListQueryParameters#
      * @param {Object} req - query request
      * @returns {Number} The integer value of the offset query parameter if present, 0 otherwise.
      */
@@ -303,7 +306,7 @@ module.exports = function (fieldDefinitions) {
     /**
      * Read limit from the query parameters.
      *
-     * @method ListQueryParameters#getLimit
+     * @methodOf ListQueryParameters#
      * @param {Object} req - query request
      * @returns {number} integer value of the limit query parameter if present, 10 otherwise.
      */
@@ -324,7 +327,7 @@ module.exports = function (fieldDefinitions) {
     /**
      * Read sort and order from the query parameters.
      *
-     * @method ListQueryParameters#getSort
+     * @methodOf ListQueryParameters#
      * @param {Object} req - query request
      * @param {Array} fields - array of fields on which the user may sort..
      * @returns {Object} An object with the sort field name as key and 1 or -1 as value.
@@ -346,7 +349,7 @@ module.exports = function (fieldDefinitions) {
     /**
      * Read filter and search from the query parameters.
      *
-     * @method ListQueryParameters#getFindCriteria
+     * @methodOf ListQueryParameters#
      * @param {Object} req - the http request.
      * @param {Object} [options] - options to control the criteria included
      * @param {Object} [options.criteria] - initial criteria to include
@@ -370,7 +373,7 @@ module.exports = function (fieldDefinitions) {
     /**
      * Set the function be called when analyzing the criteria for a specific field.
      *
-     * @method ListQueryParameters#setCriteriaFunction
+     * @methodOf ListQueryParameters#
      * @param {String} field - name of the field
      * @param {ListQueryParameters~criteriaFunction} - function to call
      */

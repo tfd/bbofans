@@ -54,6 +54,8 @@ module.exports = function (app, config, passport) {
   app.get('/update', updater.update);
   app.get('/members/rock', members.getRock);
   app.get('/members/rbd', members.getRbd);
+  app.get('/winners/rock', members.getRockWinners);
+  app.get('/winners/rbd', members.getRbdWinners);
   app.post('/register', register.register);
   app.get('/register/:id', register.getRegistrant);
   app.get('/register/confirm/:id', register.confirmEmail);

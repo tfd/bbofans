@@ -70,16 +70,18 @@ var authentication = {
  * Register a handlebars helper that can be used in the following way:
  *
  * {{#authentication}}
- *   {{#if user.isMemberManager}}
+ *   {{#if @user.isMemberManager}}
  *     User can manage members.
  *   {{/if}}
  * {{/authentication}}
  */
 Handlebars.registerHelper('authentication', function(options) {
+console.log('authentication', options);
   var data = Handlebars.createFrame(options.data || {});
   data.user = authentication.getUser().toJSON();
 
-  options.fn(this, { data: data });
+  console.log('data', data);
+  return options.fn(this, { data: data });
 });
 
 $.ajax({

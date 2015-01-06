@@ -3,9 +3,26 @@
 
 var Marionette = require('backbone.marionette');
 var messageBus = require('../../common/utils/messageBus');
+var _ = require('underscore');
 
 var AdminAccountEditView = require('./view');
 var Account = require('../../models/account');
+
+function addToArray(data, fieldName) {
+  var pluralFieldName = fieldName + 's';
+  if (data[fieldName]) {
+    var arr = [];
+    _.each(data[fieldName], function (val) {
+      if (val) {
+        arr.push(val);
+      }
+    });
+    if (!_.isEmpty(arr)) {
+      data[pluralFieldName] = arr;
+    }
+    delete data[fieldName];
+  }
+}
 
 var AdminAccountEditController = Marionette.Controller.extend({
   initialize: function (options) {
@@ -22,6 +39,9 @@ var AdminAccountEditController = Marionette.Controller.extend({
       });
 
       editView.on('form:submit', function (data) {
+        addToArray(data, 'email');
+        addToArray(data, 'telephone');
+
         var xhr = account.save(data);
         if (xhr === false) {
           editView.triggerMethod("form:data:invalid", account.validationError);

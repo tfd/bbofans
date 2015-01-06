@@ -5,6 +5,7 @@ var env = process.env.NODE_ENV || 'dev';
 var config = require('../../config/config')[env];
 var mongoose = require('mongoose');
 var Member = mongoose.model('Member');
+var Tournament = mongoose.model('Tournament');
 var http = require('http');
 var url = require('url');
 var parser = require('libxml-to-js');
@@ -13,6 +14,8 @@ var async = require('async');
 var awards = require('../models/awards');
 var tournamentsController = require('../controllers/tournaments');
 var httpUtils = require('../utils/httpUtils');
+var _ = require('underscore');
+var moment = require('moment');
 
 module.exports = function () {
 
@@ -53,11 +56,12 @@ module.exports = function () {
 
   function tidyHtml(html, cb) {
     var opts = {
-      'doctype'      : 'omit',
-      'tidy-mark'    : false,
-      'indent'       : false,
-      'hide-comments': true,
-      'output-xml'   : true
+      'doctype'         : 'omit',
+      'tidy-mark'       : false,
+      'indent'          : false,
+      'hide-comments'   : true,
+      'output-xml'      : true,
+      'numeric-entities': true
     };
     // Remove xmlns as it gives problems to the XPATH parser, to do this remove the DOCTYPE also.
     html = html.replace(/<html[^>]*>/g, '<html>').replace(/<!DOCTYPE[^>]*>/gi, '');
@@ -69,7 +73,22 @@ module.exports = function () {
     // Race</a>
     tidyHtml(html, function (err, xml) {
       if (err) { return cb(err, null); }
-      parser(xml, '//a[@class="ldr"]', cb);
+      parser(xml, '//tr[td/a[@class="ldr"]]', function (err, tr) {
+        if (err) {
+          return cb(err, null);
+        }
+
+        var links = [];
+        _.each(tr, function (row) {
+          var date = moment().year().toString() + ' ' + row.td[0]['#'].substring(4);
+          links.push({
+            date : moment(date, 'YYYY MMM DD hh:mm A').toDate(),
+            title: row.td[5].a['@'].title,
+            href : row.td[5].a['@'].href
+          });
+        });
+        cb(null, links);
+      });
     });
   }
 
@@ -91,25 +110,30 @@ module.exports = function () {
   }
 
   function sortByScore(results, cb) {
-    async.sortBy(results, function (result, cb) {
-      cb(null, result.score);
-    }, cb);
+    if (results[results.length - 1].score < 0) {
+      // IMPs
+      async.sortBy(results, function (result, cb) {
+        cb(null, result.score * -1);
+      }, cb);
+    }
+    else {
+      // Match points
+      async.sortBy(results, function (result, cb) {
+        cb(null, 100 - result.score);
+      }, cb);
+    }
   }
 
-  function setTournamentType(title) {
+  function setTournamentType(date, title) {
     return function (results, cb) {
       var tournament = {
         name      : title,
+        date      : date,
         numPlayers: 0,
         isPairs   : false,
         isRbd     : false,
         results   : results
       };
-
-      var year = 20 + parseInt(title.substring(0, 2), 10);
-      var month = parseInt(title.substring(2, 2), 10) - 1;
-      var day = parseInt(title.substring(4, 2), 10);
-      tournament.date = new Date(year, month, day);
 
       if (results.length > 0) {
         tournament.isPairs = results[0].players.length > 1;
@@ -136,8 +160,7 @@ module.exports = function () {
   }
 
   function createTournament(link, cb) {
-    var title = link['@'].title;
-    var url = 'http://webutil.bridgebase.com/v2/' + link['@'].href;
+    var url = 'http://webutil.bridgebase.com/v2/' + link.href;
 
     async.waterfall([
       function (cb) {
@@ -145,7 +168,7 @@ module.exports = function () {
       },
       getTournamentResults,
       sortByScore,
-      setTournamentType(title),
+      setTournamentType(link.date, link.title),
       calculateAwards
     ], cb);
   }
@@ -176,10 +199,9 @@ module.exports = function () {
         async.eachSeries(tournaments, function (tournament, cb) {
           if (tournament.isRbd) { numRbd++; }
           else { numRock++; }
-          if (tournament.isPair) { numPairs++; }
+          if (tournament.isPairs) { numPairs++; }
           numPlayers += tournament.numPlayers;
-
-          tournamentsController.addTournament(tournament, cb);
+          Tournament.addTournament(tournament, cb);
         }, function (err) {
           if (err) { console.error('updater.update', err); }
 

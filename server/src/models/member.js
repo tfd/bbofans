@@ -32,8 +32,13 @@ var MemberSchema = new Schema({
   bboName        : {type: String, required: 'BBO name cannot be blank', unique: true, trim: true},
   name           : {type: String, required: 'Name cannot be blank', trim: true},
   nation         : {type: String, required: 'Nation cannot be blank', trim: true},
-  email          : {type: Email, required: 'Email cannot be blank', unique: true, trim: true, validate: emailValidator},
-  telephone      : {type: String, trim: true},
+  emails         : [{type     : Email,
+                      required: 'Email cannot be blank',
+                      unique  : true,
+                      trim    : true,
+                      validate: emailValidator
+                    }],
+  telephones     : [{type: String, trim: true}],
   level          : {type: String, default: 'Beginner', trim: true},
   hashed_password: {type: String, required: 'Password cannot be blank', trim: true},
   salt           : {type: String},
@@ -61,6 +66,7 @@ var MemberSchema = new Schema({
       awards        : {type: Number, default: 0}
     },
     monthlyScores      : [{
+                            _id           : false,
                             month         : {type: Number},
                             year          : {type: Number},
                             numTournaments: {type: Number, default: 0},
@@ -77,6 +83,7 @@ var MemberSchema = new Schema({
       awards        : {type: Number, default: 0}
     },
     monthlyScores      : [{
+                            _id           : false,
                             month         : {type: Number},
                             year          : {type: Number},
                             numTournaments: {type: Number, default: 0},
@@ -93,7 +100,7 @@ var MemberSchema = new Schema({
  * Helper functions.
  */
 
-function updateScores (scores, result) {
+function updateScores(scores, result) {
   var numTournaments = scores.numTournaments || 0;
   var sumOfScores = (scores.averageScore || 0) * numTournaments + (result.score || 0);
   numTournaments += 1;
@@ -103,7 +110,7 @@ function updateScores (scores, result) {
   scores.awards += result.awards || 0;
 }
 
-function handleError (msg, cb) {
+function handleError(msg, cb) {
   if (typeof cb === 'function') {
     cb(new Error(msg), null);
   }
@@ -115,7 +122,7 @@ function handleError (msg, cb) {
  * @return {String}
  * @api public
  */
-function makeSalt () {
+function makeSalt() {
   return Math.round((new Date().valueOf() * Math.random())).toString();
 }
 
@@ -126,7 +133,7 @@ function makeSalt () {
  * @return {String}
  * @api public
  */
-function encryptPassword (password, salt) {
+function encryptPassword(password, salt) {
   if (!password) {
     return '';
   }

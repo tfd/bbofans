@@ -4,7 +4,7 @@
 var mongoose = require('mongoose');
 var Role = mongoose.model('Role');
 var Member = mongoose.model('Member');
-var Generator = require('../utils/generatePassword');
+var Generator = require('password-generator');
 var async = require('async');
 
 module.exports = function () {

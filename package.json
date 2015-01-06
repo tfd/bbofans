@@ -10,6 +10,10 @@
   "version": "0.0.1",
   "private": false,
   "author": "Ronald van Uffelen <ronald.vanuffelen@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/tfd/bbofans.git"
+  },
   "main": "./server/server.js",
   "browser": {
     "backbone": "./build/vendor/backbone/backbone.js",
@@ -131,6 +135,7 @@
     "object-to-xml": "0.0.2",
     "passport": "~0.2.1",
     "passport-local": "~1.0.0",
+    "password-generator": "git+ssh://git@github.com/tfd/password-generator.git",
     "serve-favicon": "~2.1.7",
     "serve-static": "~1.7.1",
     "underscore": "^1.7.0"
@@ -153,6 +158,7 @@
     "grunt-contrib-uglify": "~0.2.7",
     "grunt-contrib-watch": "~0.5.3",
     "grunt-env": "~0.4.2",
+    "grunt-extract-sourcemap": "~0.1.13",
     "grunt-handlebars": "0.0.6",
     "grunt-karma": "~0.9.0",
     "grunt-nodemon": "~0.3.0",
@@ -167,13 +173,12 @@
     "karma-phantomjs-launcher": "~0.1.1",
     "karma-sinon": "~1.0.3",
     "load-grunt-tasks": "~0.2.0",
+    "nodemon": "~1.2.1",
     "proxyquire": "~0.5.2",
     "request": "~2.33.0",
     "sinon": "~1.8.1",
     "sinon-chai": "~2.5.0",
     "time-grunt": "~0.2.3",
-    "nodemon": "~1.2.1",
-    "through": "~2.3.6",
-    "grunt-extract-sourcemap": "~0.1.13"
+    "through": "~2.3.6"
   }
 }

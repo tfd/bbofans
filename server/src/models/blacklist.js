@@ -22,7 +22,7 @@ var EntrySchema = new Schema({
   to    : {type: Date},
   reason: {type: String, default: '', required: 'reason cannot be blank', trim: true}
 }, {
-  id: false
+  _id: false
 });
 
 var BlacklistSchema = new Schema({

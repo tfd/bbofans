@@ -1,0 +1,22 @@
+<h3>Leader board</h3>
+
+<div>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Awards</th>
+        <th><span class="average">Match Points</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each items}}
+      <tr>
+        <td>{{bboName}}</td>
+        <td>{{awards}}</td>
+        <td>{{formatPercentage averageScore}}</td>
+      </tr>
+      {{/each}}
+    </tbody>
+  </table>
+</div>

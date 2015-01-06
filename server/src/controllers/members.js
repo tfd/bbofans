@@ -11,7 +11,7 @@ var _ = require('underscore');
  *
  * @type {string[]}
  */
-var fields = ['bboName', 'name', 'nation', 'email', 'telephone', 'level', 'role',
+var fields = ['bboName', 'name', 'nation', 'emails', 'telephones', 'level', 'role',
               'isStarPlayer', 'isRbdPlayer', 'isEnabled', 'isBlackListed', 'isBanned',
               'rockLastPlayedAt', 'rockNumTournaments', 'rockAverageScore', 'rockAwards',
               'rbdLastPlayedAt', 'rbdNumTournaments', 'rbdAverageScore', 'rbdAwards',
@@ -82,6 +82,40 @@ module.exports = function () {
   }
 
   listQueryParameters.setCriteriaFunction('validatedAt', getValidatedAtCriteria);
+
+  /**
+   * Get winners of a given month.
+   *
+   * @param {string} type - type of tournament. One of rock or rbd.
+   * @param {number} month - month of year, starting with 0 for january
+   * @param {number} year - year
+   * @param {string} field - field to use for sorting. One of averageScore or awards.
+   * @param {function} cb - function called with the result
+   */
+  function getWinners(type, month, year, field, cb) {
+    var sortField = type + '.monthlyScores.' + field;
+    var sort = {};
+    sort[sortField] = -1;
+
+    var match = {};
+    match[type + '.monthlyScores.month'] = month;
+    match[type + '.monthlyScores.year'] = year;
+
+    var aggr = [];
+    aggr.push({$unwind: '$' + type + '.monthlyScores'});
+    aggr.push({$match: match});
+    aggr.push({$sort: sort});
+    aggr.push({
+      $project: {
+        _id         : 0,
+        bboName     : 1,
+        averageScore: '$' + type + '.monthlyScores.averageScore',
+        awards      : '$' + type + '.monthlyScores.awards'
+      }
+    });
+    aggr.push({$limit: 10});
+    Member.aggregate(aggr, cb);
+  }
 
   return {
 
@@ -189,6 +223,34 @@ module.exports = function () {
       });
     },
 
+    getRockWinners: function (req, res) {
+      var month = req.query.month ? parseInt(req.query.month, 10) : moment().month();
+      var year = req.query.year ? parseInt(req.query.year, 10) : moment().year();
+      var sortField = (req.query.score && req.query.score !== 'no' ? 'averageScore' : 'awards');
+      getWinners('rock', month, year, sortField, function (err, result) {
+        if (err) {
+          console.error('members.getRockWinners', err);
+          return res.status(500).json({error: err});
+        }
+
+        res.json(result);
+      });
+    },
+
+    getRbdWinners: function (req, res) {
+      var month = req.query.month ? parseInt(req.query.month, 10) : moment().month();
+      var year = req.query.year ? parseInt(req.query.year, 10) : moment().year();
+      var sortField = (req.query.score && req.query.score !== 'no' ? 'averageScore' : 'awards');
+      getWinners('rbd', month, year, sortField, function (err, result) {
+        if (err) {
+          console.error('members.getRockWinners', err);
+          return res.status(500).json({error: err});
+        }
+
+        res.json(result);
+      });
+    },
+
     getAll: function (req, res) {
       var limit = listQueryParameters.getLimit(req);
       var skip = listQueryParameters.getSkip(req);
@@ -200,8 +262,154 @@ module.exports = function () {
               return res.status(500).json({error: err});
             }
 
+            // Project email and telephone instead of arrays emails and telephones.
+            var project = fieldDefinitions.projectFields(fields);
+            project.email = 1;
+            project.emails = 0;
+            project.telephone = 1;
+            project.telephones = 0;
+
             var aggr = [];
             aggr.push({$match: filter});
+
+            // Get first email
+            aggr.push({
+              $project: {
+                _id      : {
+                  _id            : '$_id',
+                  bboName        : '$bboName',
+                  name           : '$name',
+                  nation         : '$nation',
+                  telephones     : '$telephones',
+                  level          : '$level',
+                  hashed_password: '$hashed_password',
+                  salt           : '$salt',
+                  role           : '$role',
+                  isStarPlayer   : '$isStarPlayer',
+                  isRbdPlayer    : '$isRbdPlayer',
+                  isEnabled      : '$isEnabled',
+                  isBlackListed  : '$isBlackListed',
+                  isBanned       : '$isBanned',
+                  notes          : '$notes',
+                  skill          : '$skill',
+                  h3am           : '$h3am',
+                  h7am           : '$h7am',
+                  h11am          : '$h11am',
+                  h3pm           : '$h3pm',
+                  h7pm           : '$h7pm',
+                  h11pm          : '$h11pm',
+                  info           : '$info',
+                  rock           : '$rock',
+                  rbd            : '$rbd',
+                  registeredAt   : '$registeredAt',
+                  validatedAt    : '$validatedAt'
+                }, emails: {$cond: [{$eq: ['$emails', []]}, [''], '$emails']}
+              }
+            });
+            aggr.push({$unwind: '$emails'});
+            aggr.push({$group: {_id: '$_id', email: {$first: '$emails'}}});
+            aggr.push({
+              $project: {
+                _id            : '$_id._id',
+                bboName        : '$_id.bboName',
+                name           : '$_id.name',
+                nation         : '$_id.nation',
+                emails         : '$email',
+                telephones     : '$_id.telephones',
+                level          : '$_id.level',
+                hashed_password: '$_id.hashed_password',
+                salt           : '$_id.salt',
+                role           : '$_id.role',
+                isStarPlayer   : '$_id.isStarPlayer',
+                isRbdPlayer    : '$_id.isRbdPlayer',
+                isEnabled      : '$_id.isEnabled',
+                isBlackListed  : '$_id.isBlackListed',
+                isBanned       : '$_id.isBanned',
+                notes          : '$_id.notes',
+                skill          : '$_id.skill',
+                h3am           : '$_id.h3am',
+                h7am           : '$_id.h7am',
+                h11am          : '$_id.h11am',
+                h3pm           : '$_id.h3pm',
+                h7pm           : '$_id.h7pm',
+                h11pm          : '$_id.h11pm',
+                info           : '$_id.info',
+                rock           : '$_id.rock',
+                rbd            : '$_id.rbd',
+                registeredAt   : '$_id.registeredAt',
+                validatedAt    : '$_id.validatedAt'
+              }
+            });
+
+            // Get first telephone
+            aggr.push({
+              $project: {
+                _id          : {
+                  _id            : '$_id',
+                  bboName        : '$bboName',
+                  name           : '$name',
+                  nation         : '$nation',
+                  emails         : '$emails',
+                  level          : '$level',
+                  hashed_password: '$hashed_password',
+                  salt           : '$salt',
+                  role           : '$role',
+                  isStarPlayer   : '$isStarPlayer',
+                  isRbdPlayer    : '$isRbdPlayer',
+                  isEnabled      : '$isEnabled',
+                  isBlackListed  : '$isBlackListed',
+                  isBanned       : '$isBanned',
+                  notes          : '$notes',
+                  skill          : '$skill',
+                  h3am           : '$h3am',
+                  h7am           : '$h7am',
+                  h11am          : '$h11am',
+                  h3pm           : '$h3pm',
+                  h7pm           : '$h7pm',
+                  h11pm          : '$h11pm',
+                  info           : '$info',
+                  rock           : '$rock',
+                  rbd            : '$rbd',
+                  registeredAt   : '$registeredAt',
+                  validatedAt    : '$validatedAt'
+                }, telephones: {$cond: [{$eq: ['$telephones', []]}, [''], '$telephones']}
+              }
+            });
+            aggr.push({$unwind: '$telephones'});
+            aggr.push({$group: {_id: '$_id', telephone: {$first: '$telephones'}}});
+            aggr.push({
+              $project: {
+                _id            : '$_id._id',
+                bboName        : '$_id.bboName',
+                name           : '$_id.name',
+                nation         : '$_id.nation',
+                emails         : '$_id.emails',
+                telephones     : '$telephone',
+                level          : '$_id.level',
+                hashed_password: '$_id.hashed_password',
+                salt           : '$_id.salt',
+                role           : '$_id.role',
+                isStarPlayer   : '$_id.isStarPlayer',
+                isRbdPlayer    : '$_id.isRbdPlayer',
+                isEnabled      : '$_id.isEnabled',
+                isBlackListed  : '$_id.isBlackListed',
+                isBanned       : '$_id.isBanned',
+                notes          : '$_id.notes',
+                skill          : '$_id.skill',
+                h3am           : '$_id.h3am',
+                h7am           : '$_id.h7am',
+                h11am          : '$_id.h11am',
+                h3pm           : '$_id.h3pm',
+                h7pm           : '$_id.h7pm',
+                h11pm          : '$_id.h11pm',
+                info           : '$_id.info',
+                rock           : '$_id.rock',
+                rbd            : '$_id.rbd',
+                registeredAt   : '$_id.registeredAt',
+                validatedAt    : '$_id.validatedAt'
+              }
+            });
+
             aggr.push({$project: fieldDefinitions.projectFields(fields)});
             aggr.push({$sort: sort});
             aggr.push({$skip: skip});

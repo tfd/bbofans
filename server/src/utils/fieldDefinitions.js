@@ -11,15 +11,14 @@ var mongoose = require('mongoose');
 var _ = require('underscore');
 
 /**
- * @constructor
  * @class FieldDefinitions
  *
+ * @constructor
  * @param {Object} Model - model of the table
  * @param {String[]} fields - array of field names.
- * @param {Object} [field2FlatNames] - hash of field names to full field names.
- * @returns {FieldDefinitions} a FieldDefinitions object for the given fields.
+ * @param {Object} [field2FlatNames] - hash of field names to flat field names.
  */
-module.exports = function (Model, fields, field2FlatNames) {
+module.exports = function FieldDefinitions(Model, fields, field2FlatNames) {
   field2FlatNames = field2FlatNames || {};
 
   return {
@@ -28,41 +27,54 @@ module.exports = function (Model, fields, field2FlatNames) {
      *
      * This can be a nested field name.
      *
-     * @name FieldDefinitions#getFieldFlatName
+     * @methodOf FieldDefinitions#
      * @param {String} field - the simple field name
-     * @returns {String} the real field name
+     * @returns {String} the flat field name
      */
     getFieldFlatName: function (field) {
       return field2FlatNames[field] || field;
     },
 
     /**
-     * @name FieldDefinitions#isValidFieldName
-     * @returns {boolean} whether the given name is a valid field of the member collection.
+     * @methodOf FieldDefinitions#
+     * @param {string} name - name of the field
+     * @returns {boolean} whether the given name is a valid field of the collection.
      */
     isValidFieldName: function (name) {
       return fields.indexOf(name) > -1;
     },
 
     /**
-     * @name FieldDefinitions#isBooleanField
-     * @returns {boolean} whether the given name is a boolean field of the member collection.
+     * @methodOf FieldDefinitions#
+     * @param {string} name - name of the field
+     * @returns {boolean} whether the given name is an array field of the collection.
+     */
+    isArrayField: function (name) {
+      return Model.schema.path(this.getFieldFlatName(name)) instanceof mongoose.Schema.Types.Array;
+    },
+
+    /**
+     * @methodOf FieldDefinitions#
+     * @param {string} name - name of the field
+     * @returns {boolean} whether the given name is a boolean field of the collection.
      */
     isBooleanField: function (name) {
       return Model.schema.path(this.getFieldFlatName(name)) instanceof mongoose.Schema.Types.Boolean;
     },
 
     /**
-     * @name FieldDefinitions#isNumericField
-     * @returns {boolean} whether the given name is a numeric field of the member collection.
+     * @methodOf FieldDefinitions#
+     * @param {string} name - name of the field
+     * @returns {boolean} whether the given name is a numeric field of the collection.
      */
     isNumericField: function (name) {
       return Model.schema.path(this.getFieldFlatName(name)) instanceof mongoose.Schema.Types.Number;
     },
 
     /**
-     * @name FieldDefinitions#isDateField
-     * @returns {boolean} whether the field is a date field of the meber collection
+     * @methodOf FieldDefinitions#
+     * @param {string} name - name of the field
+     * @returns {boolean} whether the field is a date field of the collection
      */
     isDateField: function (name) {
       return Model.schema.path(this.getFieldFlatName(name)) instanceof mongoose.Schema.Types.Date;
@@ -71,7 +83,7 @@ module.exports = function (Model, fields, field2FlatNames) {
     /**
      * Create an object that can be used in a $project to include the given fields.
      *
-     * @name FieldDefinitions#projectFields
+     * @methodOf FieldDefinitions#
      * @param {Array} fields - array of field names to include in projection.
      * @param {Object} [options] - options
      * @param {Boolean} options.excludeId - set to true to exclude the _id field from the projection
@@ -89,6 +101,12 @@ module.exports = function (Model, fields, field2FlatNames) {
       return select;
     },
 
+    /**
+     * Get names of all the fields defined in the collection.
+     *
+     * @methodOf FieldDefinitions#
+     * @returns {String[]} array of all fields in the collection
+     */
     getFieldNames: function () {
       return fields;
     }

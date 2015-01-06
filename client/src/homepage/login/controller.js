@@ -36,6 +36,8 @@ var HomepageLoginController = Marionette.Controller.extend({
       });
       region.show(loginView);
     });
+
+    messageBus.command('show:winners:rock');
   }
 
 });

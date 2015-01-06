@@ -1,6 +1,10 @@
 <div class="well">
   <h1>Blacklist</h1>
+  {{#authentication}}
+    {{#if @user.isBlacklistManager}}
   <button type="button" class="btn btn-primary form-new">Add new blacklist member</button>
+    {{/if}}
+  {{/authentication}}
   <div id="filter-bar"></div>
   <table data-toggle="table"
          data-url="/admin/blacklist"

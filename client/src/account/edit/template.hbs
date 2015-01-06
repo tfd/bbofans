@@ -13,12 +13,44 @@
   <div class="clearfix"></div>
   <div class="form-group col-md-8">
     <label for="account-email" class="control-label">Email</label>
-    <input id="account-email" name="email" type="email" class="form-control" placeHolder="Enter Email" value="{{email}}"/>
+    {{#each emails}}
+      {{#if @first}}
+    <input id="account-email-{{@index}}" name="email[{{@index}}]" width="20" type="email" class="form-control account-email" placeHolder="Enter Email" value="{{this}}" data-index="{{@index}}"/>
+      {{else}}
+    <div class="input-group">
+      <input id="account-email-{{@index}}" name="email[{{@index}}]" width="20" type="email" class="form-control account-email" placeHolder="Enter Email" value="{{this}}" data-index="{{@index}}"/>
+      <span class="input-group-btn">
+        <button id="account-remove-email-{{@index}}" type="button" class="btn btn-default account-remove-email" aria-label="Left Align" data-index="{{@index}}" title="Remove Email">
+          <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+        </button>
+      </span>
+    </div>
+      {{/if}}
+    {{/each}}
+    <button id="account-add-email" type="button" class="btn btn-default" aria-label="Left Align" title="Add Email">
+      <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+    </button>
   </div>
   <div class="clearfix"></div>
   <div class="form-group col-md-8">
     <label for="account-telephone" class="control-label">Telephone</label>
-    <input id="account-telephone" name="telephone" type="text" class="form-control" placeHolder="Enter phone number" value="{{telephone}}"/>
+    {{#each telephones}}
+      {{#if @first}}
+    <input id="account-telephone-{{@index}}" name="telephone[{{@index}}]" width="20" type="email" class="form-control account-telephone" placeHolder="Enter Telephone" value="{{this}}" data-index="{{@index}}"/>
+      {{else}}
+    <div class="input-group">
+      <input id="account-telephone-{{@index}}" name="telephone[{{@index}}]" width="20" type="email" class="form-control account-telephone" placeHolder="Enter Telephone" value="{{this}}" data-index="{{@index}}"/>
+      <span class="input-group-btn">
+        <button id="account-remove-telephone-{{@index}}" type="button" class="btn btn-default account-remove-telephone" aria-label="Left Align" data-index="{{@index}}" title="Remove Telephone">
+          <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+        </button>
+      </span>
+    </div>
+      {{/if}}
+    {{/each}}
+    <button id="account-add-telephone" type="button" class="btn btn-default" aria-label="Left Align" title="Add Telephone">
+      <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+    </button>
   </div>
   <div class="clearfix"></div>
   <div class="form-group col-md-5">

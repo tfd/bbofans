@@ -15,8 +15,9 @@ module.exports = function (app, parentModuleName) {
     moduleClass: AuthenticatedModule,
 
     routes: {
-      "admin"     : '[' + moduleName + ']home:show',
-      "admin/home": '[' + moduleName + ']home:show'
+      'admin'       : '[' + moduleName + ']home:show',
+      'admin/home'  : '[' + moduleName + ']home:show',
+      'admin/logout': '[' + moduleName + ']home:logout'
     },
 
     controllers: {

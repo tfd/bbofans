@@ -9,44 +9,6 @@ var Member = mongoose.model('Member');
 
 module.exports = function () {
 
-  function addScoreToMember(tournament, callback) {
-    return function (err, member) {
-      if (err) {
-        console.log('Could not find member ' + member.bboName + ': ' + err);
-        callback(); // ignore error!
-        return;
-      }
-
-      try {
-        if (member) {
-          member.addTournament(tournament);
-          member.save(callback);
-        }
-      }
-      catch (e) {
-        console.log('Exception thrown when adding scores for tournament ' + tournament.name + ' to member ' +
-                    member.bboName + ': ' + e.message);
-        callback(); // ignore error!
-      }
-    };
-  }
-
-  function processPlayer(tournament) {
-    return function (bboName, callback) {
-      Member.find({bboName: bboName}, addScoreToMember(tournament, callback));
-    };
-  }
-
-  function processResult(tournament) {
-    return function (result, callback) {
-      async.eachSeries(result.players, processPlayer(tournament), callback);
-    };
-  }
-
-  function addTournamentToPlayers(tournament, callback) {
-    async.eachSeries(tournament.results, processResult(tournament), callback);
-  }
-
   return {
     index: function (req, res) {
       Tournament.find({}, function (err, tournament) {
@@ -73,7 +35,7 @@ module.exports = function () {
     },
 
     add: function (req, res) {
-      this.addTournament(req.body, function (err, tournament) {
+      Tournament.addTournament(req.body, function (err, tournament) {
         if (err) {
           res.json({error: 'Error adding Tournament.'});
         }
@@ -105,32 +67,6 @@ module.exports = function () {
             res.json(200, {status: 'Success'});
           });
         }
-      });
-    },
-
-    addTournament: function (tournament, cb) {
-      Tournament.findOne({name: tournament.name}, function (err, t) {
-        if (err) {
-          console.log('tournaments.addTournament', err);
-          return cb(err, null);
-        }
-
-        if (t) {
-          // tournament already added., just skip
-          console.log('tournaments.addTournament', 'Tournament "' + t.name + '" already added');
-          return cb(null, t);
-        }
-
-        var newTournament = new Tournament(tournament);
-        newTournament.save(function (err, tournament) {
-          if (err) {
-            console.error('tournaments.addTournament', err);
-            cb({error: 'Error adding Tournament.'}, null);
-          }
-          else {
-            addTournamentToPlayers(tournament, cb);
-          }
-        });
       });
     }
   };

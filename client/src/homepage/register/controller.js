@@ -8,6 +8,17 @@ var HomepageRegisterView = require('./view');
 var HomepageSuccessView = require('./successView');
 var Registrant = require('../../models/registrant');
 
+function convertArrayErrorToFieldError(errors) {
+  if (errors.emails) {
+    errors.email = errors.emails;
+    delete errors.emails;
+  }
+  if (errors.telephones) {
+    errors.telephone = errors.telephones;
+    delete errors.telephones;
+  }
+}
+
 var HomepageRegisterController = Marionette.Controller.extend({
   initialize: function (options) {
     this.app = options.app;
@@ -21,8 +32,15 @@ var HomepageRegisterController = Marionette.Controller.extend({
     });
 
     registerView.on('form:submit', function (data) {
+      // Convert telephones and emails to array.
+      data.emails = [data.email];
+      data.telephones = [data.telephone];
+      delete data.email;
+      delete data.telephone;
+
       var xhr = registrant.save(data);
       if (xhr === false) {
+        convertArrayErrorToFieldError(registrant.validationError);
         registerView.triggerMethod("form:data:invalid", registrant.validationError);
       }
       else {
@@ -30,12 +48,15 @@ var HomepageRegisterController = Marionette.Controller.extend({
           messageBus.command("route:register/:id", registrant.get("_id"));
         }).fail(function (xhr) {
           messageBus.command('log', "fail", xhr.responseJSON);
+          convertArrayErrorToFieldError(xhr.responseJSON);
           registerView.triggerMethod("form:data:invalid", xhr.responseJSON);
         });
       }
     });
 
     region.show(registerView);
+
+    messageBus.command('show:winners:rock');
   },
 
   success: function (region, id) {

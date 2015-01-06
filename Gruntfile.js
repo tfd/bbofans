@@ -82,7 +82,27 @@ module.exports = function (grunt) {
           'build/<%= pkg.name %>.js': ['client/src/main.js']
         },
         options: {
-          transform: ['hbsfy']
+          transform: ['hbsfy', function (file) {
+            // tinymce uses it's own require and define functions that confuse browserify.
+            var data = '';
+
+            // By default do nothing.
+            var write = function (buf) { data += buf; };
+            var end = function end() {
+              this.queue(data);
+              this.queue(null);
+            };
+
+            if (file.indexOf('build/vendor/tinymce/js/tinymce.js') >= 0) {
+              end = function () {
+                data = data.replace(/require\(/g, 'tinymceRequire(').replace(/define\(/g, 'tinymceDefine(');
+                this.queue(data);
+                this.queue(null);
+              };
+            }
+
+            return through(write, end);
+          }]
         }
       },
       test: {

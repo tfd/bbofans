@@ -11,7 +11,8 @@ var Member = Backbone.Model.extend({
   defaults: {
     bboName: "",
     name: "",
-    email: "",
+    emails: [""],
+    telephones: [""],
     nation: "Netherlands",
     level: "Beginner",
     isStarPlayer: false
@@ -25,8 +26,8 @@ var Member = Backbone.Model.extend({
     if (! attrs.name) {
       errors.name = "can't be blank";
     }
-    if (! attrs.email) {
-      errors.email = "can't be blank";
+    if (! attrs.emails || attrs.emails.length === 0 || ! attrs.emails[0]) {
+      errors.emails = "can't be blank";
     }
     if( ! _.isEmpty(errors)){
       return errors;

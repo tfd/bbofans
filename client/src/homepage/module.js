@@ -35,7 +35,8 @@ module.exports = function (app, parentModuleName) {
       carousel: require('./td_carousel/controller'),
       rbd     : require('./rbd/controller'),
       rock    : require('./rock/controller'),
-      login   : require('./login/controller')
+      login   : require('./login/controller'),
+      winners : require('./winners/controller')
     },
 
     define: function (homepageModule) {
@@ -43,6 +44,7 @@ module.exports = function (app, parentModuleName) {
         this.region = region;
         this.controllers.layout.show(region);
         this.controllers.carousel.show(this.controllers.layout.regions.td);
+        this.controllers.winners.show(this.controllers.layout.regions.winners);
 
         messageBus.command('navbar:changeMenu', require('./navbar/collection'));
       };
