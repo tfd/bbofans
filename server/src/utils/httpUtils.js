@@ -19,18 +19,18 @@ module.exports = {
    */
   handleHttpResponse: function (callback) {
     return function (response) {
-      var str = '';
+      var data = [];
 
       response.setEncoding('utf8');
 
       // another chunk of data has been received, so append it to `str`
       response.on('data', function (chunk) {
-        str += chunk;
+        data.push(chunk);
       });
 
       // the whole response has been received, so we can process it
       response.on('end', function () {
-        callback(str);
+        callback(data.join(''));
       });
     };
   }

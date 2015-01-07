@@ -174,7 +174,7 @@ module.exports = function () {
   }
 
   function createTournaments(links, cb) {
-    async.map(links, createTournament, cb);
+    async.mapSeries(links, createTournament, cb);
   }
 
   return {
@@ -187,7 +187,7 @@ module.exports = function () {
       ], function (err, tournaments) {
         if (err) {
           console.log('update', err);
-          return res.json({error: err});
+          return res.status(500).json({error: err});
         }
 
         var numRbd = 0;
@@ -205,13 +205,18 @@ module.exports = function () {
         }, function (err) {
           if (err) { console.error('updater.update', err); }
 
-          res.json({
-            numTournaments: numTournaments,
-            numRock       : numRock,
-            numRbd        : numRbd,
-            numPairs      : numPairs,
-            numPlayers    : numPlayers
-          });
+          try {
+            res.json({
+              numTournaments: numTournaments,
+              numRock       : numRock,
+              numRbd        : numRbd,
+              numPairs      : numPairs,
+              numPlayers    : numPlayers
+            });
+          }
+          catch (e) {
+            console.error('Unable to send response', e);
+          }
         });
       });
     }
