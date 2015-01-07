@@ -1,4 +1,4 @@
- check process node with pidfile /var/run/bbofans.pid
+ check process bbofans with pidfile /var/run/bbofans.pid
    start program = "/sbin/start bbofans"
    stop  program = "/sbin/stop bbofans"
    if failed port 3000 protocol HTTP
