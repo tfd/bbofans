@@ -1,0 +1,8 @@
+ check process mongod with pidfile /data/bbofans.db/mongod.lock
+   start program = "/usr/sbin/service mongod start"
+   stop  program = "/usr/sbin/service mongod stop"
+   if failed port 28017 protocol HTTP
+        request /
+        with timeout 10 seconds
+        then start
+   if 5 restarts within 5 cycles then timeout

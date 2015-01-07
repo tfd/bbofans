@@ -1,0 +1,8 @@
+ check process node with pidfile /var/run/bbofans.pid
+   start program = "/sbin/start bbofans"
+   stop  program = "/sbin/stop bbofans"
+   if failed port 3000 protocol HTTP
+        request /
+        with timeout 10 seconds
+        then start
+   if 5 restarts within 5 cycles then timeout
