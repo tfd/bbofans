@@ -82,9 +82,9 @@ module.exports = function () {
         _.each(tr, function (row) {
           var date = moment().year().toString() + ' ' + row.td[0]['#'].substring(4);
           links.push({
-            date : moment(date, 'YYYY MMM DD hh:mm A').toDate(),
-            title: row.td[5].a['@'].title,
-            href : row.td[5].a['@'].href
+            date: moment(date, 'YYYY MMM DD hh:mm A').toDate(),
+            name: row.td[5].a['@'].title.trim(),
+            href: row.td[5].a['@'].href.trim()
           });
         });
         cb(null, links);
@@ -168,13 +168,27 @@ module.exports = function () {
       },
       getTournamentResults,
       sortByScore,
-      setTournamentType(link.date, link.title),
+      setTournamentType(link.date, link.name),
       calculateAwards
     ], cb);
   }
 
+  function checkIfTournamentAlreadyAdded(link, cb) {
+    Tournament.findOne({name: link.name}, function (err, t) {
+      if (err) {
+        console.error('checkIfTournamentAlreadyAdded', err);
+      }
+
+      // Only download tournaments which don't exist.
+      cb(t === null || t === undefined);
+    });
+  }
+
   function createTournaments(links, cb) {
-    async.mapSeries(links, createTournament, cb);
+    async.filter(links, checkIfTournamentAlreadyAdded, function (newLinks) {
+      // Ok add all tournaments that haven't already been processed.
+      async.map(newLinks, createTournament, cb);
+    });
   }
 
   return {
