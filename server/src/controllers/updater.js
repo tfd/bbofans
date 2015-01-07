@@ -170,7 +170,14 @@ module.exports = function () {
       sortByScore,
       setTournamentType(link.date, link.name),
       calculateAwards
-    ], cb);
+    ], function (err, tournament) {
+      if (err) {
+        console.error('Error in createTournament', link, err);
+        // Ignore error, so other tournaments will be handled anyway.
+      }
+
+      cb (null, tournament);
+    });
   }
 
   function checkIfTournamentAlreadyAdded(link, cb) {
@@ -211,11 +218,19 @@ module.exports = function () {
         var numTournaments = tournaments.length;
 
         async.eachSeries(tournaments, function (tournament, cb) {
+          if (! tournament) { return cb(); }
+
           if (tournament.isRbd) { numRbd++; }
           else { numRock++; }
           if (tournament.isPairs) { numPairs++; }
           numPlayers += tournament.numPlayers;
-          Tournament.addTournament(tournament, cb);
+          Tournament.addTournament(tournament, function (err, t) {
+            if (err) {
+              console.error('addTournament ' + tournament.name, err);
+              // Ignore error, so other tournaments can still be added.
+            }
+            cb (null, t);
+          });
         }, function (err) {
           if (err) { console.error('updater.update', err); }
 

@@ -142,9 +142,8 @@ TournamentSchema.statics.addTournament = function (tournament, cb) {
     }
     catch (e) {
       console.log('Exception thrown when adding tournament ' + tournament.name, e);
+      cb({error: 'Exception ' + e.message}, null);
     }
-
-    cb();
   });
 };
 
