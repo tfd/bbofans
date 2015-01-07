@@ -1,0 +1,47 @@
+<div class="well">
+  <h1>Members</h1>
+  <div id="filter-bar"></div>
+  <table data-toggle="table"
+         data-url="/admin/members"
+         data-export-url="/admin/members/saveAs"
+         data-cache="false"
+         data-classes="table table-hover"
+         data-sort-name="bboName"
+         data-sort-order="asc"
+         data-pagination="true"
+         data-page-size="10"
+         data-page-list="[10, 25, 50, 100]"
+         data-side-pagination="server"
+         data-search="true"
+         data-show-refresh="true"
+         data-show-columns="true"
+         data-show-column-groups="true"
+         data-show-commands="true"
+         data-show-export="true"
+         data-commands="email, validate, enable, disable, blacklist, whitelist">
+    <thead>
+      <th data-field="select" data-checkbox="true" data-sortable="false"></th>
+      <th data-field="bboName" data-sortable="true" data-switchable="false">BBO login</th>
+      <th data-field="registeredAt" data-sortable="true" data-formatter="bsTable.formatters.date">Member Since</th>
+      <th data-field="name" data-sortable="true">Name</th>
+      <th data-field="nation" data-sortable="true">Country</th>
+      <th data-field="emails" data-sortable="true">Email</th>
+      <th data-field="telephones" data-sortable="true">Telephone</th>
+      <th data-field="level" data-sortable="true">Level</th>
+      <th data-field="isEnabled" data-sortable="true" data-formatter="bsTable.formatters.boolean">Enabled</th>
+      <th data-field="role" data-sortable="true" data-visible="false">Role</th>
+      <th data-field="isStarPlayer" data-sortable="true" data-visible="false" data-formatter="bsTable.formatters.boolean">Star Player</th>
+      <th data-field="isRbdPlayer" data-sortable="true" data-visible="false" data-formatter="bsTable.formatters.boolean">RBD Player</th>
+      <th data-field="isBlackListed" data-sortable="true" data-visible="false" data-formatter="bsTable.formatters.boolean">Blacklisted</th>
+      <th data-field="isBanned" data-sortable="true" data-visible="false" data-formatter="bsTable.formatters.boolean">Banned</th>
+      <th data-field="rockNumTournaments" data-sortable="true" data-visible="false">Rock n° Tournaments</th>
+      <th data-field="rockLastPlayedAt" data-sortable="true" data-visible="false" data-formatter="bsTable.formatters.date">Rock Last Played</th>
+      <th data-field="rockAverageScore" data-sortable="true" data-visible="false">Rock <span class="average">Match Points</span></th>
+      <th data-field="rockAwards" data-sortable="true" data-visible="false">Rock Awards</th>
+      <th data-field="rbdNumTournaments" data-sortable="true" data-visible="false">RBD n° Tournaments</th>
+      <th data-field="rbdLastPlayedAt" data-sortable="true" data-visible="false" data-formatter="bsTable.formatters.date">RBD Last Played</th>
+      <th data-field="rbdAverageScore" data-sortable="true" data-visible="false">RBD <span class="average">IMPs</span></th>
+      <th data-field="rbdAwards" data-sortable="true" data-visible="false">RBD Awards</th>
+    </thead>
+  </table>
+</div>

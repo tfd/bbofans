@@ -17,3 +17,4 @@ bower_components
 build
 dist
 .sublime-grunt.cache
+.idea

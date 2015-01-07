@@ -1,0 +1,99 @@
+<h1>Edit Tournament Director {{> displayBboName}}</h1>
+
+<form role="form">
+  <div class="form-group col-md-8">
+    <label for="member-bboName" class="control-label">BBO nickname</label>
+    <input id="member-bboName" name="bboName" width="20" type="text" class="form-control" placeHolder="Enter BBO nickname" value="{{bboName}}"/>
+  </div>
+  <div class="clearfix"></div>
+  <div class="form-group col-md-8">
+    <label for="member-name" class="control-label">Name</label>
+    <input id="member-name" name="name" width="20" type="text" class="form-control" placeHolder="Enter name" value="{{name}}"/>
+  </div>
+  <div class="clearfix"></div>
+  <div class="form-group col-md-8">
+    <label for="member-email" class="control-label">Emails</label>
+    {{#each emails}}
+      {{#if @first}}
+        <input id="member-email-{{@index}}" name="email[{{@index}}]" width="20" type="email" class="form-control member-email" placeHolder="Enter Email" value="{{this}}" data-index="{{@index}}"/>
+      {{else}}
+    <div class="input-group">
+      <input id="member-email-{{@index}}" name="email[{{@index}}]" width="20" type="email" class="form-control member-email" placeHolder="Enter Email" value="{{this}}" data-index="{{@index}}"/>
+      <span class="input-group-btn">
+        <button id="member-remove-email-{{@index}}" type="button" class="btn btn-default member-remove-email" aria-label="Left Align" data-index="{{@index}}" title="Remove Email">
+          <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+        </button>
+      </span>
+    </div>
+      {{/if}}
+    {{/each}}
+    <button id="member-add-email" type="button" class="btn btn-default" aria-label="Left Align" title="Add Email">
+      <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+    </button>
+  </div>
+  <div class="clearfix"></div>
+  <div class="form-group col-md-8">
+    <label for="member-telephone" class="control-label">Telephone</label>
+    {{#each telephones}}
+      {{#if @first}}
+        <input id="member-telephone-{{@index}}" name="telephone[{{@index}}]" width="20" type="email" class="form-control member-telephone" placeHolder="Enter Telephone" value="{{this}}" data-index="{{@index}}"/>
+      {{else}}
+    <div class="input-group">
+      <input id="member-telephone-{{@index}}" name="telephone[{{@index}}]" width="20" type="email" class="form-control member-telephone" placeHolder="Enter Telephone" value="{{this}}" data-index="{{@index}}"/>
+      <span class="input-group-btn">
+        <button id="member-remove-telephone-{{@index}}" type="button" class="btn btn-default member-remove-telephone" aria-label="Left Align" data-index="{{@index}}" title="Remove Telephone">
+          <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+        </button>
+      </span>
+    </div>
+      {{/if}}
+    {{/each}}
+    <button id="member-add-telephone" type="button" class="btn btn-default" aria-label="Left Align" title="Add Telephone">
+      <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+    </button>
+  </div>
+  <div class="clearfix"></div>
+  <div class="form-group col-md-3">
+    <label for="member-skill" class="control-label">Skill</label>
+    <select id="member-skill" name="skill" class="form-control">
+      <option>Head TD</option>
+      <option>Tournament TD</option>
+      <option>Co TD</option>
+      <option>BBO TD</option>
+    </select>
+  </div>
+  <div class="clearfix"></div>
+  <div class="form-group col-md-8">
+    <label for="member-h3am" class="checkbox-inline">
+      <input type="checkbox" id="member-h3am" name="h3am" {{#if h3am}}checked{{/if}} /> 3AM
+    </label>
+    <label for="member-h7am" class="checkbox-inline">
+      <input type="checkbox" id="member-h7am" name="h7am" {{#if h7am}}checked{{/if}} /> 7AM
+    </label>
+    <label for="member-h11am" class="checkbox-inline">
+      <input type="checkbox" id="member-h11am" name="h11am" {{#if h11am}}checked{{/if}} /> 11AM
+    </label>
+    <label for="member-h3pm" class="checkbox-inline">
+      <input type="checkbox" id="member-h3pm" name="h3pm" {{#if h3pm}}checked{{/if}} /> 3PM
+    </label>
+    <label for="member-h7pm" class="checkbox-inline">
+      <input type="checkbox" id="member-h7pm" name="h7pm" {{#if h7pm}}checked{{/if}} /> 7PM
+    </label>
+    <label for="member-h11pm" class="checkbox-inline">
+      <input type="checkbox" id="member-h11pm" name="h11pm" {{#if h11pm}}checked{{/if}} /> 11PM
+    </label>
+  </div>
+  <div class="clearfix"></div>
+  <div class="form-group col-md-10">
+    <label for="member-info" class="control-label">Info</label>
+    <textarea id="member-info" class="form-control" name='info' rows="3">{{info}}</textarea>
+  </div>
+  <div class="clearfix"></div>
+
+  <hr />
+  <div class="form-group col-md-12 text-right">
+    <button class="btn form-cancel" data-dismiss="modal">Cancel</button>
+    <button class="btn btn-defaul btn-primary form-submit">Save</button>
+  </div>
+  <div class="clearfix"></div>
+</form>
