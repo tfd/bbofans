@@ -6,10 +6,7 @@ var fileUtils = require('../utils/fileUtils');
 
 module.exports = function (config) {
 
-  var countries;
-  fileUtils.readFileToJson(config.countriesFile, function (data) {
-    countries = data;
-  });
+  var countries = require(config.countriesFile);
 
   return {
     get: function (req, res) {

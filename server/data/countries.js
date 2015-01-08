@@ -1,4 +1,6 @@
-[
+'use strict';
+
+module.exports = [
   "Afghanistan",
   "Åland",
   "Albania",
@@ -249,4 +251,4 @@
   "Yemen",
   "Zambia",
   "Zimbabwe"
-]
+];

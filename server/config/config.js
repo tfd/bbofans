@@ -28,15 +28,16 @@ var rootPath = path.normalize(__dirname + '/../..');
  */
 module.exports = {
   dev : {
-    db           : 'mongodb://localhost/bbofans_dev',
-    root         : rootPath,
-    app          : {
+    db              : 'mongodb://localhost/bbofans_dev',
+    root            : rootPath,
+    app             : {
       name: 'BBOFans Website'
     },
-    keyStoreFile : rootPath + '/server/data/keyStore.json',
-    countriesFile: rootPath + '/server/data/countries.json',
-    omitReCaptcha: false,
-    reCaptcha    : {
+    keyStoreFile    : rootPath + '/server/data/keyStore.json',
+    countriesFile   : rootPath + '/server/data/countries.json',
+    awardSystemsFile: rootPath + '/server/data/awardSystems.json',
+    omitReCaptcha   : false,
+    reCaptcha       : {
       key         : 'reCaptcha',
       httpsOptions: {
         host  : 'www.google.com',
@@ -45,7 +46,7 @@ module.exports = {
         method: 'POST'
       }
     },
-    mail         : {
+    mail            : {
       key            : 'mail',
       from           : '"BBO Fans Admin" <mailer@bbofans.com>',
       replyTo        : '"BBO Fans Admin" <info@bbofans.com>',
@@ -60,7 +61,7 @@ module.exports = {
       },
       confirmationUrl: 'http://local.bbofans.com:3000/register/confirm/:id'
     },
-    bbo          : {
+    bbo             : {
       tournamentListUrl: 'http://webutil.bridgebase.com/v2/tarchive.php?m=h&h=bbo+fans'
     }
   },
@@ -73,15 +74,16 @@ module.exports = {
     omitReCaptcha: true
   },
   prod: {
-    db           : 'mongodb://localhost/bbofans_prod',
-    root         : rootPath,
-    app          : {
+    db              : 'mongodb://localhost/bbofans_prod',
+    root            : rootPath,
+    app             : {
       name: 'BBOFans Website'
     },
-    keyStoreFile : rootPath + '/server/data/keyStore.json',
-    countriesFile: rootPath + '/server/data/countries.json',
-    omitReCaptcha: false,
-    reCaptcha    : {
+    keyStoreFile    : rootPath + '/server/data/keyStore.json',
+    countriesFile   : rootPath + '/server/data/countries.json',
+    awardSystemsFile: rootPath + '/server/data/awardSystems.json',
+    omitReCaptcha   : false,
+    reCaptcha       : {
       key         : 'reCaptcha',
       httpsOptions: {
         host  : 'www.google.com',
@@ -90,7 +92,7 @@ module.exports = {
         method: 'POST'
       }
     },
-    mail         : {
+    mail            : {
       key            : 'mail',
       from           : '"BBO Fans Admin" <mailer@bbofans.com>',
       replyTo        : '"BBO Fans Admin" <info@bbofans.com>',
@@ -105,7 +107,7 @@ module.exports = {
         }
       }
     },
-    bbo          : {
+    bbo             : {
       tournamentListUrl: 'http://webutil.bridgebase.com/v2/tarchive.php?m=h&h=bbo+fans'
     }
   }

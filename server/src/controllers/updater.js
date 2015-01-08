@@ -136,10 +136,17 @@ module.exports = function () {
       };
 
       if (results.length > 0) {
+        // It's a pairs tournament when there are 2 players per result.
         tournament.isPairs = results[0].players.length > 1;
+
+        // Number of players is the number of results in the score table, eventually doubled if it's a pairs tournament.
         var numPlayers = results.length;
         if (tournament.isPairs) { numPlayers *= 2; }
         tournament.numPlayers = numPlayers;
+
+        // RBD tournaments use IMPs score which have a median of 0, so the last score is always < 0.
+        // Rock tournaments use match points which are in percentage, so they are always > 0.
+        // Another way could be to test on 'ROCK's best DANCERS' in the title.
         tournament.isRbd = results[results.length - 1].score < 0;
       }
 
@@ -149,7 +156,7 @@ module.exports = function () {
 
   function calculateAwards(tournament, cb) {
     if (tournament.numPlayers > 0) {
-      var system = awards.getSystem(tournament.numPlayers);
+      var system = awards.getSystem(tournament.isRbd ? 'rbd' : 'rock', tournament.numPlayers);
 
       tournament.results.forEach(function (result, pos) {
         result.awards = awards.getAwardPoints(system, pos);
