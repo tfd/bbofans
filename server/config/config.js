@@ -33,9 +33,7 @@ module.exports = {
     app             : {
       name: 'BBOFans Website'
     },
-    keyStoreFile    : rootPath + '/server/data/keyStore.json',
-    countriesFile   : rootPath + '/server/data/countries.json',
-    awardSystemsFile: rootPath + '/server/data/awardSystems.json',
+    keyStoreFile    : rootPath + '/server/data/keyStore.js',
     omitReCaptcha   : false,
     reCaptcha       : {
       key         : 'reCaptcha',
@@ -52,7 +50,7 @@ module.exports = {
       replyTo        : '"BBO Fans Admin" <info@bbofans.com>',
       bcc            : '"BBO Fans Admin" <info@bbofans.com>',
       smtpOptions    : {
-        host  : 'smtps.aruba.it',
+        host  : 'smtp.gmail.com',
         port  : 465,
         secure: true,
         auth  : {
@@ -79,9 +77,7 @@ module.exports = {
     app             : {
       name: 'BBOFans Website'
     },
-    keyStoreFile    : rootPath + '/server/data/keyStore.json',
-    countriesFile   : rootPath + '/server/data/countries.json',
-    awardSystemsFile: rootPath + '/server/data/awardSystems.json',
+    keyStoreFile    : rootPath + '/server/data/keyStore.js',
     omitReCaptcha   : false,
     reCaptcha       : {
       key         : 'reCaptcha',

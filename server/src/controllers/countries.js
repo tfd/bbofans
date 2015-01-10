@@ -6,7 +6,7 @@ var fileUtils = require('../utils/fileUtils');
 
 module.exports = function (config) {
 
-  var countries = require(config.countriesFile);
+  var countries = require('../../data/countries');
 
   return {
     get: function (req, res) {

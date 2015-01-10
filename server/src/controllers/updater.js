@@ -17,8 +17,49 @@ var httpUtils = require('../utils/httpUtils');
 var _ = require('underscore');
 var moment = require('moment');
 
+/**
+ * Controller for updating tournament scores.
+ *
+ * @class UpdateController
+ * @constructor
+ */
+
 module.exports = function () {
 
+  /**
+   * Tournament information as read from the web page.
+   *
+   * @typedef {Object} TournamentLink
+   * @property {String} name - name of the tournament.
+   * @property {Date} date - date on which the tournament was played.
+   * @property {String} resultsUrl - URL where to retrieve the leader board.
+   * @property {String} boardsUrl - URL where to retrieve the games played.
+   */
+
+  /**
+   * Results of 1 player or a pair in a tournament.
+   *
+   * @typedef {Object} TournamentResult
+   * @property {String[]} players - players thar got this score
+   * @property {Number} score - score, either match points or IMPs.
+   * @property {Number} awards - award points given to these players.
+   */
+
+  /**
+   * @callback GenericCallback
+   * @param {Any} error - error object or null if no error occurred
+   * @param {Any} result - result of the operation
+   */
+
+
+  /**
+   * Download file at given url.
+   *
+   * The download is done with a HTTP POST request with a parameter offset=<current timezone>.
+   *
+   * @param {String} address - URL to download the content from
+   * @param {GenericCallback} cb - function called with the downloaded content as result.
+   */
   function download(address, cb) {
     var now = new Date();
     var offset = 'offset=' + now.getTimezoneOffset().toString();
@@ -42,7 +83,7 @@ module.exports = function () {
       cb(null, response);
     }));
     request.on('error', function (e) {
-      console.log('download', e);
+      console.error('download', e);
       cb(e, null);
     });
 
@@ -50,10 +91,23 @@ module.exports = function () {
     request.end();
   }
 
+  /**
+   * Download the list of tournaments.
+   *
+   * @param {GenericCallback} cb - function called with the downloaded html as result.
+   */
   function downloadTournamentList(cb) {
     download(config.bbo.tournamentListUrl, cb);
   }
 
+  /**
+   * Tidy the HTML.
+   *
+   * Will transform the given html in a well-formed XML document.
+   *
+   * @param {String} html - the html to clean up.
+   * @param {GenericCallback} cb - function called with the XML as result. -
+   */
   function tidyHtml(html, cb) {
     var opts = {
       'doctype'         : 'omit',
@@ -68,6 +122,12 @@ module.exports = function () {
     tidy(html, opts, cb);
   }
 
+  /**
+   * Get links from tournament list html
+   *
+   * @param {String} html - the html
+   * @param {Function} cb - function called with an array of {@link TournamentLink}s as result.
+   */
   function getLinks(html, cb) {
     //<a class="ldr" target="_new2" title="#1869 Free Bingo Race" href="tview.php?t=1869-1419877321">#1869 Free Bingo
     // Race</a>
@@ -82,9 +142,10 @@ module.exports = function () {
         _.each(tr, function (row) {
           var date = moment().year().toString() + ' ' + row.td[0]['#'].substring(4);
           links.push({
-            date: moment(date, 'YYYY MMM DD hh:mm A').toDate(),
-            name: row.td[5].a['@'].title.trim(),
-            href: row.td[5].a['@'].href.trim()
+            date      : moment(date, 'YYYY MMM DD hh:mm A').toDate(),
+            boardsUrl : row.td[4].a['@'].href.trim(),
+            name      : row.td[5].a['@'].title.trim(),
+            resultsUrl: 'http://webutil.bridgebase.com/v2/' + row.td[5].a['@'].href.trim()
           });
         });
         cb(null, links);
@@ -92,6 +153,12 @@ module.exports = function () {
     });
   }
 
+  /**
+   * Extract tournament results from HTML.
+   *
+   * @param {String} html - html to analyze
+   * @param {GenericCallback} cb - function called with an array of {@link TournamentResult} as result.
+   */
   function getTournamentResults(html, cb) {
     tidyHtml(html, function (err, xml) {
       if (err) { return cb(err, null); }
@@ -109,6 +176,12 @@ module.exports = function () {
     });
   }
 
+  /**
+   * Sort array of {@link TournamentResult} by score in descending order (highest score first)
+   *
+   * @param {TournamentResult[]} results - scores to sort
+   * @param {GenericCallback} cb - function called with the sorted array as result.
+   */
   function sortByScore(results, cb) {
     if (results[results.length - 1].score < 0) {
       // IMPs
@@ -124,11 +197,27 @@ module.exports = function () {
     }
   }
 
-  function setTournamentType(date, title) {
+  /**
+   * Initialize a tournament record.
+   *
+   * @function setTournamentType
+   * @param {TournamentResult[]} results - results of the tournament sorted by score.
+   * @param {GenericCallback} cb - function called with the tournament as result.
+   */
+
+  /**
+   * Create a {@link setTournamentType} function that will initialize tournament record.
+   *
+   * @param {TournamentLink} link - tournament data extracted from the html page
+   * @returns {setTournamentType}
+   */
+  function createSetTournamentTypeFunction(link) {
     return function (results, cb) {
       var tournament = {
-        name      : title,
-        date      : date,
+        name      : link.name,
+        date      : link.date,
+        boardsUrl : link.boardsUrl,
+        resultsUrl: link.resultsUrl,
         numPlayers: 0,
         isPairs   : false,
         isRbd     : false,
@@ -154,6 +243,12 @@ module.exports = function () {
     };
   }
 
+  /**
+   * Calculate award points for the players in a tournament.
+   *
+   * @param {Object} tournament
+   * @param {GenericCallback} cb - function called with the tournament filled with awards as result.
+   */
   function calculateAwards(tournament, cb) {
     if (tournament.numPlayers > 0) {
       var system = awards.getSystem(tournament.isRbd ? 'rbd' : 'rock', tournament.numPlayers);
@@ -166,8 +261,15 @@ module.exports = function () {
     cb(null, tournament);
   }
 
+  /**
+   * Create a tournament record complete with award points.
+   *
+   * @param {TournamentLink} link - info about the tournament extracted from the html page.
+   * @param {GenericCallback} cb - function called with the tournament record as result.
+   */
   function createTournament(link, cb) {
-    var url = 'http://webutil.bridgebase.com/v2/' + link.href;
+    var url = link.resultsUrl;
+    console.log('createTournament', link, url);
 
     async.waterfall([
       function (cb) {
@@ -175,7 +277,7 @@ module.exports = function () {
       },
       getTournamentResults,
       sortByScore,
-      setTournamentType(link.date, link.name),
+      createSetTournamentTypeFunction(link),
       calculateAwards
     ], function (err, tournament) {
       if (err) {
@@ -183,14 +285,21 @@ module.exports = function () {
         // Ignore error, so other tournaments will be handled anyway.
       }
 
-      cb (null, tournament);
+      cb(null, tournament);
     });
   }
 
-  function checkIfTournamentAlreadyAdded(link, cb) {
+  /**
+   * Check if a tournament has to be processed.
+   *
+   * @param {TournamentLink} link - information about the tournament
+   * @param {GenericCallback} cb - function called with a value of true for the result if the tournament is to be added,
+   *                               false otherwise.
+   */
+  function isTournamentToBeAdded(link, cb) {
     Tournament.findOne({name: link.name}, function (err, t) {
       if (err) {
-        console.error('checkIfTournamentAlreadyAdded', err);
+        console.error('isTournamentToBeAdded', err);
       }
 
       // Only download tournaments which don't exist.
@@ -198,8 +307,14 @@ module.exports = function () {
     });
   }
 
+  /**
+   * Create tournaments: download the results and create a tournament record.
+   *
+   * @param {TournamentLink[]} links - array of links to create tournaments for
+   * @param {GenericCallback} cb - function called with an array of tournaments as result.
+   */
   function createTournaments(links, cb) {
-    async.filter(links, checkIfTournamentAlreadyAdded, function (newLinks) {
+    async.filter(links, isTournamentToBeAdded, function (newLinks) {
       // Ok add all tournaments that haven't already been processed.
       async.map(newLinks, createTournament, cb);
     });
@@ -207,6 +322,13 @@ module.exports = function () {
 
   return {
 
+    /**
+     * Update tournament results by downloading a list of tournaments from BBO and adding the results of the tournaments
+     * to the players scores.
+     *
+     * @param req
+     * @param res
+     */
     update: function (req, res) {
       async.waterfall([
         downloadTournamentList,
@@ -214,7 +336,7 @@ module.exports = function () {
         createTournaments
       ], function (err, tournaments) {
         if (err) {
-          console.log('update', err);
+          console.error('update', err);
           return res.status(500).json({error: err});
         }
 
@@ -225,7 +347,7 @@ module.exports = function () {
         var numTournaments = tournaments.length;
 
         async.eachSeries(tournaments, function (tournament, cb) {
-          if (! tournament) { return cb(); }
+          if (!tournament) { return cb(); }
 
           if (tournament.isRbd) { numRbd++; }
           else { numRock++; }
@@ -236,7 +358,7 @@ module.exports = function () {
               console.error('addTournament ' + tournament.name, err);
               // Ignore error, so other tournaments can still be added.
             }
-            cb (null, t);
+            cb(null, t);
           });
         }, function (err) {
           if (err) { console.error('updater.update', err); }

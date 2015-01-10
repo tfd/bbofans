@@ -19,6 +19,7 @@ require('bootstrap');
 require('bootstrap-table');
 require('bootstrap-table-en-US');
 require('ie10-viewport-bug-workaround');
+require('bootstrap-material-design');
 require('./common/utils/reCaptcha.js');
 require('tinymce-modern');
 

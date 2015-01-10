@@ -25,6 +25,8 @@
     "bootstrap": "./build/vendor/bootstrap/js/bootstrap.js",
     "bootstrap-dateTimePicker": "./build/vendor/eonasdan-bootstrap-datetimepicker/js/bootstrap-datetimepicker.js",
     "bootstrap-dialog": "./build/vendor/bootstrap-dialog/js/bootstrap-dialog.min.js",
+    "bootstrap-material-design": "./build/vendor/bootstrap-material-design/material.js",
+    "bootstrap-material-design-ripples": "./build/vendor/bootstrap-material-design/ripples.js",
     "bootstrap-table": "./build/vendor/bootstrap-table/bootstrap-table.js",
     "bootstrap-table-en-US": "./build/vendor/bootstrap-table/bootstrap-table-en-US.js",
     "bootstrap-table-filter": "./build/vendor/bootstrap-table-filter/js/bootstrap-table-filter.js",
@@ -58,6 +60,19 @@
       ]
     },
     "bootstrap": {
+      "exports": "",
+      "depends": [
+        "jquery:jQuery"
+      ]
+    },
+    "bootstrap-material-design": {
+      "exports": "",
+      "depends": [
+        "jquery:jQuery",
+        "bootstrap-material-design-ripples:"
+      ]
+    },
+    "bootstrap-material-design-ripples": {
       "exports": "",
       "depends": [
         "jquery:jQuery"

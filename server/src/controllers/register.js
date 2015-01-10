@@ -43,6 +43,10 @@ module.exports = function (config) {
         delete member.repeatPassword;
         delete member['g-recaptcha-response'];
 
+        if (! member.emails || member.emails.length === 0 || ! member.emails[0]) {
+          return res.status(422).json({emails: 'cannot be blank'});
+        }
+
         var newMember = new Member(member);
         newMember.save(function (err, member) {
           if (err) {
@@ -61,7 +65,7 @@ module.exports = function (config) {
           }
           else {
             config.servers.sendMail({
-              to     : member.email,
+              to     : member.emails[0],
               subject: '[BBO Fans] Registration Confirmation',
               text   : getText(member),
               html   : getHtml(member)

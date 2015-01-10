@@ -121,12 +121,13 @@ module.exports = function (grunt) {
           'build/<%= pkg.name %>.css': [
             // 'client/styles/reset.css',
             'build/vendor/bootstrap/less/bootstrap.less',
-            'build/vendor/bootstrap/less/theme.less',
             'build/vendor/bootstrap-dialog/less/bootstrap-dialog.less',
             'client/vendor/bootstrap-datetimepicker/less/bootstrap-datetimepicker.less',
             'client/vendor/typeahead/less/typeahead.less',
             'build/vendor/bootstrap-table/*.css',
             'build/vendor/bootstrap-table-filter/css/*.css',
+            'build/vendor/bootstrap-material-design/ripples.css',
+            'build/vendor/bootstrap-material-design/material.css',
             'client/styles/less/main.less'
           ]
         }
