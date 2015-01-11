@@ -1,8 +1,6 @@
 /* jshint -W097 */
 "use strict";
 
-var env = process.env.NODE_ENV || 'prod';
-var config = require('../../config/config')[env];
 var mongoose = require('mongoose');
 var Member = mongoose.model('Member');
 var Tournament = mongoose.model('Tournament');
@@ -12,7 +10,6 @@ var parser = require('libxml-to-js');
 var tidy = require('htmltidy').tidy;
 var async = require('async');
 var awards = require('../models/awards');
-var tournamentsController = require('../controllers/tournaments');
 var httpUtils = require('../utils/httpUtils');
 var _ = require('underscore');
 var moment = require('moment');
@@ -24,7 +21,7 @@ var moment = require('moment');
  * @constructor
  */
 
-module.exports = function () {
+module.exports = function (config) {
 
   /**
    * Tournament information as read from the web page.
@@ -145,7 +142,7 @@ module.exports = function () {
             date      : moment(date, 'YYYY MMM DD hh:mm A').toDate(),
             boardsUrl : row.td[4].a['@'].href.trim(),
             name      : row.td[5].a['@'].title.trim(),
-            resultsUrl: 'http://webutil.bridgebase.com/v2/' + row.td[5].a['@'].href.trim()
+            resultsUrl: config.bbo.tournamentUrlPrefix + row.td[5].a['@'].href.trim()
           });
         });
         cb(null, links);
@@ -269,7 +266,6 @@ module.exports = function () {
    */
   function createTournament(link, cb) {
     var url = link.resultsUrl;
-    console.log('createTournament', link, url);
 
     async.waterfall([
       function (cb) {

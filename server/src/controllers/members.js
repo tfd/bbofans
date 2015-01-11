@@ -25,11 +25,11 @@ var fields = ['bboName', 'name', 'nation', 'emails', 'telephones', 'level', 'rol
  * nested name from the projected name.
  */
 var field2FlatNames = {
-  'rockLastPlayedAt'  : 'rock.totalScores.lastPlayedAt',
+  'rockLastPlayedAt'  : 'rock.lastPlayedAt',
   'rockNumTournaments': 'rock.totalScores.numTournaments',
   'rockAverageScore'  : 'rock.totalScores.averageScore',
   'rockAwards'        : 'rock.totalScores.awards',
-  'rbdLastPlayedAt'   : 'rbd.totalScores.lastPlayedAt',
+  'rbdLastPlayedAt'   : 'rbd.lastPlayedAt',
   'rbdNumTournaments' : 'rbd.totalScores.numTournaments',
   'rbdAverageScore'   : 'rbd.totalScores.averageScore',
   'rbdAwards'         : 'rbd.totalScores.awards'

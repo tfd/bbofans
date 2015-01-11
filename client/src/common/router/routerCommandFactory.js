@@ -4,7 +4,7 @@
 var Backbone = require('backbone');
 var _ = require('underscore');
 var messageBus = require('./messageBus');
-var Path = require('./path');
+var Path = require('./../utils/path');
 var routerHistory = require('./routerHistory');
 
 function routerCommandFactory(app, routes) {

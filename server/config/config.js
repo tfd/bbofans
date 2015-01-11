@@ -26,85 +26,53 @@ var rootPath = path.normalize(__dirname + '/../..');
  *  <dd>Whether to use Google Recaptcha or not. If true the Recaptcha codes aren't checked</dd>
  * </dl>
  */
-module.exports = {
-  dev : {
-    db              : 'mongodb://localhost/bbofans_dev',
-    root            : rootPath,
-    app             : {
-      name: 'BBOFans Website'
-    },
-    keyStoreFile    : rootPath + '/server/data/keyStore.js',
-    omitReCaptcha   : false,
-    reCaptcha       : {
-      key         : 'reCaptcha',
-      httpsOptions: {
-        host  : 'www.google.com',
-        port  : 443,
-        path  : '/recaptcha/api/siteverify',
-        method: 'POST'
-      }
-    },
-    mail            : {
-      key            : 'mail',
-      from           : '"BBO Fans Admin" <mailer@bbofans.com>',
-      replyTo        : '"BBO Fans Admin" <info@bbofans.com>',
-      bcc            : '"BBO Fans Admin" <info@bbofans.com>',
-      smtpOptions    : {
-        host  : 'smtp.gmail.com',
-        port  : 465,
-        secure: true,
-        auth  : {
-          user: 'mailer@bbofans.com'
-        }
-      },
-      confirmationUrl: 'http://www.bbofans.com/register/confirm/:id'
-    },
-    bbo             : {
-      tournamentListUrl: 'http://webutil.bridgebase.com/v2/tarchive.php?m=h&h=bbo+fans'
+
+var config = {dev: {}, test: {}, prod: {}};
+
+['dev', 'prod', 'test'].forEach( function(type) {
+  config[type].db = 'mongodb://localhost/bbofans_prod';
+  config[type].root = rootPath;
+  config[type].app = {
+    name: 'BBOFans Website'
+  };
+  config[type].keyStoreFile = rootPath + '/server/data/keyStore.js';
+  config[type].omitReCaptcha = false;
+  config[type].reCaptcha = {
+    key         : 'reCaptcha',
+    httpsOptions: {
+      host  : 'www.google.com',
+      port  : 443,
+      path  : '/recaptcha/api/siteverify',
+      method: 'POST'
     }
-  },
-  test: {
-    db           : 'mongodb://localhost/bbofans_test',
-    root         : rootPath,
-    app          : {
-      name: 'BBOFans Website'
-    },
-    omitReCaptcha: true
-  },
-  prod: {
-    db              : 'mongodb://localhost/bbofans_prod',
-    root            : rootPath,
-    app             : {
-      name: 'BBOFans Website'
-    },
-    keyStoreFile    : rootPath + '/server/data/keyStore.js',
-    omitReCaptcha   : false,
-    reCaptcha       : {
-      key         : 'reCaptcha',
-      httpsOptions: {
-        host  : 'www.google.com',
-        port  : 443,
-        path  : '/recaptcha/api/siteverify',
-        method: 'POST'
+  };
+  config[type].mail = {
+    key            : 'mail',
+    from           : '"BBO Fans Admin" <mailer@bbofans.com>',
+    replyTo        : '"BBO Fans Admin" <info@bbofans.com>',
+    bcc            : '"BBO Fans Admin" <info@bbofans.com>',
+    smtpOptions    : {
+      host  : 'smtp.gmail.com',
+      port  : 465,
+      secure: true,
+      auth  : {
+        user: 'mailer@bbofans.com'
       }
     },
-    mail            : {
-      key            : 'mail',
-      from           : '"BBO Fans Admin" <mailer@bbofans.com>',
-      replyTo        : '"BBO Fans Admin" <info@bbofans.com>',
-      bcc            : '"BBO Fans Admin" <info@bbofans.com>',
-      confirmationUrl: 'http://www.bbofans.com/register/confirm/:id',
-      smtpOptions    : {
-        host  : 'smtps.aruba.it',
-        port  : 465,
-        secure: true,
-        auth  : {
-          user: 'mailer@bbofans.com'
-        }
-      }
-    },
-    bbo             : {
-      tournamentListUrl: 'http://webutil.bridgebase.com/v2/tarchive.php?m=h&h=bbo+fans'
-    }
-  }
-};
+    confirmationUrl: 'http://www.bbofans.com/register/confirm/:id'
+  };
+  config[type].bbo = {
+    tournamentListUrl: 'http://webutil.bridgebase.com/v2/tarchive.php?m=h&h=bbo+fans',
+    tournamentUrlPrefix: 'http://webutil.bridgebase.com/v2/'
+  };
+});
+
+config.dev.db = 'mongodb://localhost/bbofans_dev';
+config.dev.mail.replyTo = '"BBO Fans Admin" <ronald@bbofans.com>';
+config.dev.mail.bcc = '"BBO Fans Admin" <ronald@bbofans.com>';
+config.dev.mail.confirmationUrl = 'http://local.bbofans.com:3000/register/confirm/:id';
+
+config.test.db = 'mongodb://localhost/bbofans_test';
+config.test.omitReCaptcha = true;
+
+module.exports = config;

@@ -4,7 +4,7 @@
 var Marionette = require('backbone.marionette');
 var NewBlacklistView = require('./view');
 var DurationEntry = require('../../models/blacklistDurationEntry');
-var messageBus = require('../../common/utils/messageBus');
+var messageBus = require('../../common/router/messageBus');
 var moment = require('moment');
 
 var NewEntryController = Marionette.Controller.extend({

@@ -4,7 +4,7 @@
 var Marionette = require('backbone.marionette');
 var NavbarView = require('./view');
 var MenuItems = require('./model');
-var messageBus = require('../common/utils/messageBus');
+var messageBus = require('../common/router/messageBus');
 
 var NavbarController = Marionette.Controller.extend({
   initialize: function (options) {

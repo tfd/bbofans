@@ -64,7 +64,7 @@ function addScoreToMember(tournament, callback) {
 function processPlayer(tournament) {
   var Member = mongoose.model('Member');
   return function (bboName, callback) {
-    var re = new RegExp(bboName, 'i');
+    var re = new RegExp('^' + bboName + '$', 'i');
     Member.findOne({bboName: re}, addScoreToMember(tournament, callback));
   };
 }
@@ -126,7 +126,7 @@ TournamentSchema.statics.addTournament = function (tournament, cb) {
     }
 
     if (t) {
-      // tournament already added., just skip
+      // tournament already added, just skip
       console.log('Tournament.addTournament', 'Tournament "' + t.name + '" already added');
       return cb(null, t);
     }

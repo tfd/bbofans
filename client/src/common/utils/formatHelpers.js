@@ -14,8 +14,11 @@ window.bsTable.formatters = window.bsTable.formatters || {
   },
 
   date: function (value) {
-    var d = moment.utc(value);
-    return d.isValid() ? d.format('L') : '';
+    if (value) {
+      var d = moment.utc(value);
+      return d.isValid() ? d.format('DD/MM/YYYY') : '';
+    }
+    return '';
   },
 
   percentage: function (value) {

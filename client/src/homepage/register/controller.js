@@ -2,7 +2,7 @@
 "use strict";
 
 var Marionette = require('backbone.marionette');
-var messageBus = require('../../common/utils/messageBus');
+var messageBus = require('../../common/router/messageBus');
 
 var HomepageRegisterView = require('./view');
 var HomepageSuccessView = require('./successView');

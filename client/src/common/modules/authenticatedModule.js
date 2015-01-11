@@ -2,7 +2,7 @@
 "use strict";
 
 var BaseModule = require('./baseModule');
-var messageBus = require('../utils/messageBus');
+var messageBus = require('../router/messageBus');
 var authentication = require('../../authentication/controller');
 var _ = require('underscore');
 

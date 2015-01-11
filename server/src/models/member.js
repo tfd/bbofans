@@ -272,6 +272,9 @@ MemberSchema.methods = {
       league.monthlyScores.push(newMonthlyScore);
     }
 
+    if (! league.lastPlayedAt || league.lastPlayedAt < tournament.date) {
+      league.lastPlayedAt = tournament.date;
+    }
     league.playedInTournaments.push(tournament);
   }
 };

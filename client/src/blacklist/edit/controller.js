@@ -4,7 +4,7 @@
 var Backbone = require('backbone');
 var Marionette = require('backbone.marionette');
 var moment = require('moment');
-var messageBus = require('../../common/utils/messageBus');
+var messageBus = require('../../common/router/messageBus');
 
 var Layout = require('./layout');
 var View = require('../details/view');
@@ -12,7 +12,7 @@ var Form = require('../add/view');
 var Blacklist = require('../../models/blacklist');
 var DurationEntry = require('../../models/blacklistDurationEntry');
 var authentication = require('../../authentication/controller');
-var routerHistory = require('../../common/utils/routerHistory');
+var routerHistory = require('../../common/router/routerHistory');
 
 var BlacklistEditImpl = function (options) {
   var self = this;

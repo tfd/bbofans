@@ -1,7 +1,7 @@
 /* jshint -W097 */
 "use strict";
 
-var messageBus = require('../common/utils/messageBus');
+var messageBus = require('../common/router/messageBus');
 var Handlebars = require("hbsfy/runtime");
 var $ = require('jquery');
 var _ = require('underscore');

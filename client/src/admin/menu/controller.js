@@ -3,7 +3,7 @@
 
 var Marionette = require('backbone.marionette');
 var AdminMenuView = require('./view');
-var messageBus = require('../../common/utils/messageBus');
+var messageBus = require('../../common/router/messageBus');
 var authentication = require('../../authentication/controller');
 
 var AdminMenuController = Marionette.Controller.extend({

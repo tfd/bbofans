@@ -2,7 +2,7 @@
 "use strict";
 
 var AuthenticatedModule = require('../common/modules/authenticatedModule');
-var messageBus = require('../common/utils/messageBus');
+var messageBus = require('../common/router/messageBus');
 var authentication = require('../authentication/controller');
 var _ = require('underscore');
 

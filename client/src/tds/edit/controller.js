@@ -3,9 +3,9 @@
 
 var Backbone = require('backbone');
 var Marionette = require('backbone.marionette');
-var messageBus = require('../../common/utils/messageBus');
+var messageBus = require('../../common/router/messageBus');
 var _ = require('underscore');
-var routerHistory = require('../../common/utils/routerHistory');
+var routerHistory = require('../../common/router/routerHistory');
 
 var TdEditView = require('./view');
 var Member = require('../../models/member');

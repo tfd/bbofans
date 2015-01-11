@@ -2,7 +2,7 @@
 "use strict";
 
 var Marionette = require('backbone.marionette');
-var messageBus = require('../../common/utils/messageBus');
+var messageBus = require('../../common/router/messageBus');
 
 var homepageServerErrorTemplate = require('./serverError.hbs');
 var homepagePageNotFoundTemplate = require('./pageNotFound.hbs');

@@ -5,7 +5,7 @@ var Marionette = require('backbone.marionette');
 var BlacklistListView = require('./view');
 var NewBlacklistController = require('../new/controller');
 var Member = require('../../models/member');
-var messageBus = require('../../common/utils/messageBus');
+var messageBus = require('../../common/router/messageBus');
 var _ = require('underscore');
 
 var MembersController = Marionette.Controller.extend({

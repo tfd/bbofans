@@ -6,7 +6,7 @@ var Backbone = require('backbone');
 var $ = require('jquery');
 Backbone.$ = $;
 var Marionette = require('backbone.marionette');
-var messageBus = require('./common/utils/messageBus');
+var messageBus = require('./common/router/messageBus');
 // Add radio shim to Marionette, as version 2.1 still uses wreqr instead of radio
 require('./common/utils/radioShim');
 var User = require('./models/user');

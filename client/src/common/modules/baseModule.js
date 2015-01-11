@@ -2,8 +2,8 @@
 "use strict";
 
 var Marionette = require('backbone.marionette');
-var routerFactory = require('../utils/routerCommandFactory');
-var messageBus = require('../utils/messageBus');
+var routerFactory = require('../router/routerCommandFactory');
+var messageBus = require('../router/messageBus');
 var _ = require('underscore');
 
 /**

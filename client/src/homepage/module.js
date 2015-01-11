@@ -2,7 +2,7 @@
 "use strict";
 
 var BaseModule = require('../common/modules/baseModule');
-var messageBus = require('../common/utils/messageBus');
+var messageBus = require('../common/router/messageBus');
 var _ = require('underscore');
 
 module.exports = function (app, parentModuleName) {
