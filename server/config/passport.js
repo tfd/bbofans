@@ -24,6 +24,7 @@ module.exports = function (passport) {
         }
 
         role.userId = id;
+        role.username = member.bboName;
         done(null, role);
       });
     });

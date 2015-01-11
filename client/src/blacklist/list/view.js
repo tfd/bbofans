@@ -10,10 +10,10 @@ require('../../common/utils/formatHelpers');
 
 var BlacklistView = Marionette.ItemView.extend({
   template: require('./template.hbs'),
+  className: 'well',
 
   ui: {
     table: 'table',
-    filter: '#filter-bar',
     new: '.form-new'
   },
 
@@ -33,6 +33,7 @@ var BlacklistView = Marionette.ItemView.extend({
         res.rows.forEach( function (member, i) {
           if (member.entries.length > 0) {
             var last = member.entries[member.entries.length - 1];
+            member.lastTd = last.td;
             member.lastFrom = last.from;
             member.lastTo =last.to;
             member.lastReason = last.reason;

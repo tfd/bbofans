@@ -8,6 +8,7 @@ require('../../common/utils/formatHelpers');
 
 var TdsView = Marionette.ItemView.extend({
   template: require('./template.hbs'),
+  className: 'well',
 
   ui: {
     table: "table"

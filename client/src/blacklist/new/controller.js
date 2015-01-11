@@ -30,7 +30,6 @@ var NewEntryController = Marionette.Controller.extend({
       var xhr = durationEntry.save(data);
 
       if (xhr === false) {
-        messageBus.command('log', "fail", xhr);
         popupView.triggerMethod("form:data:invalid", durationEntry.validationError);
       }
       else {

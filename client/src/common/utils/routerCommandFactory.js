@@ -5,8 +5,9 @@ var Backbone = require('backbone');
 var _ = require('underscore');
 var messageBus = require('./messageBus');
 var Path = require('./path');
+var routerHistory = require('./routerHistory');
 
-module.exports = function (app, routes) {
+function routerCommandFactory(app, routes) {
   var router = {
     routes: {}
   };
@@ -16,13 +17,11 @@ module.exports = function (app, routes) {
     var functionName = route.replace(/\/:?(\w)/g, function (match, name) {
       return name.toUpperCase();
     });
-    console.log(path, route, functionName);
     var pathObj = new Path(path);
     var moduleName = pathObj.getFullModuleName();
 
     // Route internally
     messageBus.comply('route:' + route, function () {
-      messageBus.command('log', 'route', route, path);
       // Replace :xxx parameters in route for the navigation.
       var n = 0;
       var args = _.toArray(arguments);
@@ -32,6 +31,7 @@ module.exports = function (app, routes) {
         return n < args.length ? '/' + args[n++] : '/';
       });
 
+      routerHistory.add(navRoute);
       app.setModule(moduleName);
       app.navigate(navRoute);
       _.callMethod(app.render, app, [new Path(path), args]);
@@ -40,7 +40,7 @@ module.exports = function (app, routes) {
     // Route via history.
     router.routes[route] = functionName;
     router[functionName] = function () {
-      messageBus.command('log', 'history', route, path);
+      routerHistory.add(route);
       var args = _.toArray(arguments);
       app.setModule(moduleName);
       _.callMethod(app.render, app, [new Path(path), args]);
@@ -48,4 +48,6 @@ module.exports = function (app, routes) {
   });
 
   return Backbone.Router.extend(router);
-};
+}
+
+module.exports = routerCommandFactory;

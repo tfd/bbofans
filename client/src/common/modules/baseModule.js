@@ -128,7 +128,6 @@ var BaseModule = Marionette.Module.extend({
   },
 
   render: function (path, region) {
-    messageBus.command('log', 'render', path.getFullModuleName(), region);
     var args = _.toArray(arguments);
     args = _.rest(args, 2);
 
@@ -162,7 +161,6 @@ var BaseModule = Marionette.Module.extend({
   },
 
   renderController: function (controllerName, methodName) {
-    messageBus.command('log', 'renderController', controllerName, methodName);
     if (this.existsControllerMethod(controllerName, methodName)) {
       var controller = this.controllers[controllerName];
       var args = _.toArray(arguments);

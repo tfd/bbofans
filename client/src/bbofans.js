@@ -53,7 +53,6 @@ var BboFansApp = Marionette.Application.extend({
   },
 
   navigate: function (route, options) {
-    messageBus.command('log', 'navigate', route);
     Backbone.history.navigate(route, options || {});
   },
 

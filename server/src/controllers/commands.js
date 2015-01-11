@@ -100,7 +100,7 @@ module.exports = function (config) {
     var cmd = req.body;
 
     async.map(cmd.rows, function (row, cb) {
-      Blacklist.addEntry(row.bboName, cmd.from, cmd.for, cmd.reason, cb);
+      Blacklist.addEntry(row.bboName, cmd.td, cmd.from, cmd.for, cmd.reason, cb);
     }, function (err, blacklisted) {
       if (err) {
         console.error('commands.blacklist', err);

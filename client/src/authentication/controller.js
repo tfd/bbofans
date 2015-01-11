@@ -76,11 +76,8 @@ var authentication = {
  * {{/authentication}}
  */
 Handlebars.registerHelper('authentication', function(options) {
-console.log('authentication', options);
   var data = Handlebars.createFrame(options.data || {});
   data.user = authentication.getUser().toJSON();
-
-  console.log('data', data);
   return options.fn(this, { data: data });
 });
 

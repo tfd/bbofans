@@ -121,7 +121,6 @@ var CommandsController = Marionette.Controller.extend({
       }
 
       if (xhr === false) {
-        console.log("fail", xhr);
         if (data.command === 'email' || data.command === 'blacklist' || data.command === 'whitelist') {
           popupView.triggerMethod("form:data:invalid", model.validationError);
         }

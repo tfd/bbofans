@@ -172,13 +172,17 @@ module.exports = function () {
     },
 
     addEntry: function (req, res) {
-      Blacklist.addEntry(req.body.bboName, req.body.from, req.body.for, req.body.reason, function (err, blacklist) {
+      Blacklist.addEntry(req.body.bboName, req.body.td, req.body.from, req.body.for, req.body.reason, function (err, blacklist) {
         if (err) {
+          if (err.validationError) {
+            return res.status(422).json(err.validationError);
+          }
+
           console.error('blacklist.addEntry', err);
           return res.status(500).json({error: err});
         }
 
-        if (!blacklist) {
+        if (! blacklist) {
           return res.status(404).json({bboName: 'Blacklist not found.'});
         }
 

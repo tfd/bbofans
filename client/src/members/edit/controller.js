@@ -5,6 +5,7 @@ var Backbone = require('backbone');
 var Marionette = require('backbone.marionette');
 var moment = require('moment');
 var messageBus = require('../../common/utils/messageBus');
+var routerHistory = require('../../common/utils/routerHistory');
 
 var MemberEditLayout = require('./layout');
 var MemberEditView = require('./view');
@@ -33,13 +34,6 @@ var MemberEditImpl = function(options) {
     }
   }
 
-  function back() {
-    var fragment = Backbone.history.fragment;
-    var parts = fragment.split('/');
-    var route = parts.slice(0, parts.length - 1).join('/');
-    messageBus.command('route:' + route);
-  }
-
   function save(member, data) {
     var xhr = member.save(data);
     if (xhr === false) {
@@ -47,7 +41,7 @@ var MemberEditImpl = function(options) {
     }
     else {
       xhr.done(function (data) {
-        back();
+        routerHistory.back();
         messageBus.trigger('members:changed', data);
       }).fail(function (xhr) {
         messageBus.command('log', "fail", xhr.responseJSON);
@@ -76,7 +70,7 @@ var MemberEditImpl = function(options) {
     });
 
     memberView.on('form:cancel', function () {
-      back();
+      routerHistory.back();
     });
 
     region.show(self.layout);

@@ -5,6 +5,7 @@ var Backbone = require('backbone');
 var Marionette = require('backbone.marionette');
 var $ = require('jquery');
 var messageBus = require('../../common/utils/messageBus');
+var authentication = require('../../authentication/controller');
 
 var TdListView = require('./view');
 var Member = require('../../models/member');
@@ -20,7 +21,12 @@ var TdListControllerImpl = function (options) {
    * @param id {String} unique id of the member to edit.
    */
   function editMember(id) {
-    messageBus.command('route:admin/tds/:id', id);
+    if (authentication.getUser().get('isMemberManager')) {
+      messageBus.command('route:admin/members/:id', id);
+    }
+    else {
+      messageBus.command('route:admin/tds/:id', id);
+    }
   }
 
   /*

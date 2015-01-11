@@ -48,10 +48,8 @@ var AdminAccountEditController = Marionette.Controller.extend({
         }
         else {
           xhr.done(function (data) {
-            messageBus.command('log', "done", data);
             messageBus.command("route:admin/account/:id", account.get("_id"));
           }).fail(function (xhr) {
-            messageBus.command('log', "fail", xhr.responseJSON);
             editView.triggerMethod("form:data:invalid", xhr.responseJSON);
           });
         }

@@ -29,6 +29,7 @@ module.exports = new LocalStrategy({
         member.getRole(function (err, role) {
           if (err) { return done (err, null); }
           role.userId = member._id;
+          role.bboName = member.bboName;
           done(null, role);
         });
       });

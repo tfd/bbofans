@@ -534,18 +534,14 @@ module.exports = {
                    },
                    {
                      position: 4,
-                     points  : 6
+                     points  : 3
+                   },
+                   {
+                     position: 5,
+                     points  : 2
                    },
                    {
                      position: 6,
-                     points  : 5
-                   },
-                   {
-                     position: 8,
-                     points  : 4
-                   },
-                   {
-                     position: 40,
                      points  : 0
                    }]
     },
@@ -565,22 +561,14 @@ module.exports = {
                    },
                    {
                      position: 4,
-                     points  : 6
-                   },
-                   {
-                     position: 6,
-                     points  : 5
-                   },
-                   {
-                     position: 8,
                      points  : 4
                    },
                    {
-                     position: 11,
+                     position: 5,
                      points  : 3
                    },
                    {
-                     position: 60,
+                     position: 6,
                      points  : 0
                    }]
     },
@@ -600,26 +588,18 @@ module.exports = {
                    },
                    {
                      position: 4,
-                     points  : 7
-                   },
-                   {
-                     position: 6,
-                     points  : 6
-                   },
-                   {
-                     position: 8,
-                     points  : 5
-                   },
-                   {
-                     position: 11,
                      points  : 4
                    },
                    {
-                     position: 16,
+                     position: 5,
                      points  : 3
                    },
                    {
-                     position: 80,
+                     position: 6,
+                     points  : 2
+                   },
+                   {
+                     position: 7,
                      points  : 0
                    }]
     },
@@ -639,30 +619,18 @@ module.exports = {
                    },
                    {
                      position: 4,
-                     points  : 7
-                   },
-                   {
-                     position: 6,
-                     points  : 6
-                   },
-                   {
-                     position: 8,
                      points  : 5
                    },
                    {
-                     position: 11,
+                     position: 5,
                      points  : 4
                    },
                    {
-                     position: 16,
+                     position: 6,
                      points  : 3
                    },
                    {
-                     position: 21,
-                     points  : 2
-                   },
-                   {
-                     position: 100,
+                     position: 7,
                      points  : 0
                    }]
     },
@@ -682,34 +650,22 @@ module.exports = {
                    },
                    {
                      position: 4,
-                     points  : 8
-                   },
-                   {
-                     position: 6,
-                     points  : 7
-                   },
-                   {
-                     position: 8,
-                     points  : 6
-                   },
-                   {
-                     position: 11,
                      points  : 5
                    },
                    {
-                     position: 16,
+                     position: 5,
                      points  : 4
                    },
                    {
-                     position: 21,
+                     position: 6,
                      points  : 3
                    },
                    {
-                     position: 31,
+                     position: 7,
                      points  : 2
                    },
                    {
-                     position: 120,
+                     position: 8,
                      points  : 0
                    }]
     },
@@ -729,38 +685,22 @@ module.exports = {
                    },
                    {
                      position: 4,
-                     points  : 9
-                   },
-                   {
-                     position: 6,
-                     points  : 8
-                   },
-                   {
-                     position: 8,
-                     points  : 7
-                   },
-                   {
-                     position: 11,
                      points  : 6
                    },
                    {
-                     position: 16,
+                     position: 5,
                      points  : 5
                    },
                    {
-                     position: 21,
+                     position: 6,
                      points  : 4
                    },
                    {
-                     position: 31,
+                     position: 7,
                      points  : 3
                    },
                    {
-                     position: 41,
-                     points  : 2
-                   },
-                   {
-                     position: 160,
+                     position: 8,
                      points  : 0
                    }]
     },
@@ -780,38 +720,26 @@ module.exports = {
                    },
                    {
                      position: 4,
-                     points  : 9
-                   },
-                   {
-                     position: 6,
-                     points  : 8
-                   },
-                   {
-                     position: 8,
-                     points  : 7
-                   },
-                   {
-                     position: 11,
                      points  : 6
                    },
                    {
-                     position: 16,
+                     position: 5,
                      points  : 5
                    },
                    {
-                     position: 21,
+                     position: 6,
                      points  : 4
                    },
                    {
-                     position: 31,
+                     position: 7,
                      points  : 3
                    },
                    {
-                     position: 41,
+                     position: 8,
                      points  : 2
                    },
                    {
-                     position: 200,
+                     position: 9,
                      points  : 0
                    }]
     },
@@ -831,42 +759,26 @@ module.exports = {
                    },
                    {
                      position: 4,
-                     points  : 9
-                   },
-                   {
-                     position: 6,
-                     points  : 8
-                   },
-                   {
-                     position: 8,
                      points  : 7
                    },
                    {
-                     position: 11,
+                     position: 5,
                      points  : 6
                    },
                    {
-                     position: 16,
+                     position: 6,
                      points  : 5
                    },
                    {
-                     position: 21,
+                     position: 7,
                      points  : 4
                    },
                    {
-                     position: 31,
+                     position: 8,
                      points  : 3
                    },
                    {
-                     position: 41,
-                     points  : 2
-                   },
-                   {
-                     position: 51,
-                     points  : 1
-                   },
-                   {
-                     position: 200,
+                     position: 9,
                      points  : 0
                    }]
     },
@@ -886,42 +798,30 @@ module.exports = {
                    },
                    {
                      position: 4,
-                     points  : 10
-                   },
-                   {
-                     position: 6,
-                     points  : 9
-                   },
-                   {
-                     position: 8,
-                     points  : 8
-                   },
-                   {
-                     position: 11,
                      points  : 7
                    },
                    {
-                     position: 16,
+                     position: 5,
                      points  : 6
                    },
                    {
-                     position: 21,
+                     position: 6,
+                     points  : 5
+                   },
+                   {
+                     position: 7,
                      points  : 4
                    },
                    {
-                     position: 31,
+                     position: 8,
                      points  : 3
                    },
                    {
-                     position: 41,
+                     position: 9,
                      points  : 2
                    },
                    {
-                     position: 51,
-                     points  : 1
-                   },
-                   {
-                     position: 200,
+                     position: 10,
                      points  : 0
                    }]
     },
@@ -941,42 +841,30 @@ module.exports = {
                    },
                    {
                      position: 4,
-                     points  : 10
-                   },
-                   {
-                     position: 6,
-                     points  : 9
-                   },
-                   {
-                     position: 8,
                      points  : 8
                    },
                    {
-                     position: 11,
+                     position: 5,
                      points  : 7
                    },
                    {
-                     position: 16,
+                     position: 6,
                      points  : 6
                    },
                    {
-                     position: 21,
+                     position: 7,
                      points  : 5
                    },
                    {
-                     position: 31,
+                     position: 8,
                      points  : 4
                    },
                    {
-                     position: 41,
+                     position: 9,
                      points  : 3
                    },
                    {
-                     position: 51,
-                     points  : 2
-                   },
-                   {
-                     position: 200,
+                     position: 10,
                      points  : 0
                    }]
     },
@@ -996,44 +884,36 @@ module.exports = {
                    },
                    {
                      position: 4,
-                     points  : 10
-                   },
-                   {
-                     position: 6,
-                     points  : 9
-                   },
-                   {
-                     position: 8,
                      points  : 8
                    },
                    {
-                     position: 11,
+                     position: 5,
                      points  : 7
                    },
                    {
-                     position: 16,
+                     position: 6,
                      points  : 6
                    },
                    {
-                     position: 21,
+                     position: 7,
                      points  : 5
                    },
                    {
-                     position: 31,
+                     position: 8,
                      points  : 4
                    },
                    {
-                     position: 41,
+                     position: 9,
                      points  : 3
                    },
                    {
-                     position: 51,
+                     position: 10,
                      points  : 2
                    },
                    {
-                     position: 99999,
+                     position: 11,
                      points  : 0
                    }]
-    }
+  }
   ]
 };

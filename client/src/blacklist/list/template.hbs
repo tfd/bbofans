@@ -1,30 +1,28 @@
-<div class="well">
-  <h1>Blacklist</h1>
-  {{#authentication}}
-    {{#if @user.isBlacklistManager}}
-  <button type="button" class="btn btn-primary form-new">Add new blacklist member</button>
-    {{/if}}
-  {{/authentication}}
-  <div id="filter-bar"></div>
-  <table data-toggle="table"
-         data-url="/admin/blacklist"
-         data-export-url="/admin/blacklist/saveAs"
-         data-cache="false"
-         data-classes="table table-hover"
-         data-sort-name="bboName"
-         data-sort-order="asc"
-         data-pagination="true"
-         data-page-size="10"
-         data-page-list="[10, 25, 50, 100]"
-         data-side-pagination="server"
-         data-search="true"
-         data-show-refresh="true"
-         data-show-export="true">
-    <thead>
-      <th data-field="bboName" data-sortable="true" data-switchable="false">BBO login</th>
-      <th data-field="lastFrom" data-sortable="false" data-formatter="bsTable.formatters.date">From</th>
-      <th data-field="lastTo" data-sortable="false" data-formatter="bsTable.formatters.date">To</th>
-      <th data-field="lastReason" data-sortable="false">Reason</th>
-    </thead>
-  </table>
-</div>
+<h1>Blacklist</h1>
+{{#authentication}}
+  {{#if @user.isBlacklistManager}}
+<button type="button" class="btn btn-primary form-new">Add new blacklist member</button>
+  {{/if}}
+{{/authentication}}
+<table data-toggle="table"
+       data-url="/admin/blacklist"
+       data-export-url="/admin/blacklist/saveAs"
+       data-cache="false"
+       data-classes="table table-hover"
+       data-sort-name="bboName"
+       data-sort-order="asc"
+       data-pagination="true"
+       data-page-size="10"
+       data-page-list="[10, 25, 50, 100]"
+       data-side-pagination="server"
+       data-search="true"
+       data-show-refresh="true"
+       data-show-export="true">
+  <thead>
+    <th data-field="bboName" data-sortable="true" data-switchable="false">BBO login</th>
+    <th data-field="lastTd" data-sortable="true">Td</th>
+    <th data-field="lastFrom" data-sortable="false" data-formatter="bsTable.formatters.date">From</th>
+    <th data-field="lastTo" data-sortable="false" data-formatter="bsTable.formatters.date">To</th>
+    <th data-field="lastReason" data-sortable="false">Reason</th>
+  </thead>
+</table>

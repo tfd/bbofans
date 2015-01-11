@@ -12,16 +12,10 @@ var Form = require('../add/view');
 var Blacklist = require('../../models/blacklist');
 var DurationEntry = require('../../models/blacklistDurationEntry');
 var authentication = require('../../authentication/controller');
+var routerHistory = require('../../common/utils/routerHistory');
 
 var BlacklistEditImpl = function (options) {
   var self = this;
-
-  function back() {
-    var fragment = Backbone.history.fragment;
-    var parts = fragment.split('/');
-    var route = parts.slice(0, parts.length - 1).join('/');
-    messageBus.command('route:' + route);
-  }
 
   function save(entry, data) {
     var xhr = entry.save(data);
@@ -30,10 +24,10 @@ var BlacklistEditImpl = function (options) {
     }
     else {
       xhr.done(function (data) {
-        back();
+        routerHistory.back();
         messageBus.trigger('blacklist:entry:changed', data);
       }).fail(function (xhr) {
-        console.log("fail", xhr.responseJSON);
+        messageBus.command('log', 'fail', xhr.responseJSON);
         self.form.triggerMethod("form:data:invalid", xhr.responseJSON);
       });
     }
@@ -43,8 +37,10 @@ var BlacklistEditImpl = function (options) {
     var blacklist = new Blacklist(model);
     var durationEntry = new DurationEntry({
       bboName: blacklist.get('bboName'),
+      td: authentication.getUser().get('username'),
       'from': moment.utc().toDate(),
-      'for': '1w'
+      'for': '1w',
+      reason: ''
     });
 
     self.layout = new Layout();
@@ -60,11 +56,11 @@ var BlacklistEditImpl = function (options) {
     });
 
     self.form.on('form:cancel', function () {
-      back();
+      routerHistory.back();
     });
 
     self.view.on('form:close', function () {
-      back();
+      routerHistory.back();
     });
 
     region.show(self.layout);
