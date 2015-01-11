@@ -72,10 +72,6 @@ var HomepageTdCarouselController = Marionette.Controller.extend({
                src    : '/img/tds/0carboncanada.jpg',
                alt    : '0 carbon',
                caption: '<h5>0 carbon</h5>Canada'
-             }, {
-               src    : '/img/tds/karacayli9.jpg',
-               alt    : 'Karacayli9',
-               caption: '<h5>Karacayli9</h5>Turkey'
              }]);
 
     return tds;
