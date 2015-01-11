@@ -57,7 +57,7 @@ module.exports = {
           user: 'mailer@bbofans.com'
         }
       },
-      confirmationUrl: 'http://local.bbofans.com:3000/register/confirm/:id'
+      confirmationUrl: 'http://www.bbofans.com/register/confirm/:id'
     },
     bbo             : {
       tournamentListUrl: 'http://webutil.bridgebase.com/v2/tarchive.php?m=h&h=bbo+fans'
