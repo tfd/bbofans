@@ -4,20 +4,20 @@
 var Backbone = require('backbone');
 var messageBus = require('./messageBus');
 
-var history = [];
+var routerHistory = [];
 
 module.exports = {
 
   add: function (route) {
-    history.push(route);
-    if (history.length > 100) {
-      history.shift();
+    routerHistory.push(route);
+    if (routerHistory.length > 100) {
+      routerHistory.shift();
     }
   },
 
   get: function () {
-    if (history.length > 0) {
-      return history.pop();
+    if (routerHistory.length > 0) {
+      return routerHistory.pop();
     }
     return null;
   },
