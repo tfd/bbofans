@@ -19,7 +19,7 @@ var serveFavicon = require('serve-favicon');
 var serveStatic = require('serve-static');
 var exphbs = require('express-handlebars');
 var flash = require('express-flash');
-var env = process.env.NODE_ENV || 'dev';
+var env = process.env.NODE_ENV || 'prod';
 
 module.exports = function (app, config, passport) {
 

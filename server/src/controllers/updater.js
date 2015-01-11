@@ -1,7 +1,7 @@
 /* jshint -W097 */
 "use strict";
 
-var env = process.env.NODE_ENV || 'dev';
+var env = process.env.NODE_ENV || 'prod';
 var config = require('../../config/config')[env];
 var mongoose = require('mongoose');
 var Member = mongoose.model('Member');

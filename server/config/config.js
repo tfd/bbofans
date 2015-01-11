@@ -9,7 +9,7 @@ var rootPath = path.normalize(__dirname + '/../..');
  * Configurations for different environments. Acces your configuration in this way:
  *
  * <code>
- * var env = process.env.NODE_ENV || 'dev';
+ * var env = process.env.NODE_ENV || 'prod';
  * var config = require('<path to config')[env];
  * </code>
  *
