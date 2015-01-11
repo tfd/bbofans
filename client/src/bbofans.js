@@ -129,11 +129,14 @@ var BboFansApp = Marionette.Application.extend({
 
     messageBus.comply('navigate', this.navigate, this);
     messageBus.comply('log', function () {
+      /* global console */
       var args = _.flatten([
         moment().format(),
         Array.prototype.slice.call(arguments)
       ]);
-      console.log.apply(console, args);
+      if (console) {
+        console.log.apply(console, args);
+      }
     });
 
     this.mainLayout.show();

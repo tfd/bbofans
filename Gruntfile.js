@@ -177,10 +177,10 @@ module.exports = function (grunt) {
       },
       prod     : {
         files: [{
-                  src : 'dist/<%= pkg.name %>.js',
+                  src : 'dist/js/<%= pkg.name %>.js',
                   dest: 'public/js/<%= pkg.name %>.js'
                 }, {
-                  src : 'dist/<%= pkg.name %>.css',
+                  src : 'dist/css/<%= pkg.name %>.css',
                   dest: 'public/css/<%= pkg.name %>.css'
                 }, {
                   src : ['client/img/**/*'],
@@ -213,19 +213,27 @@ module.exports = function (grunt) {
 
     // for changes to the front-end code
     watch      : {
-      scripts: {
+      devScripts: {
         files: ['client/src/**/*.hbs', 'client/src/**/*.js'],
         tasks: ['clean:dev:js', 'browserify:dev', 'copy:dev']
       },
-      less   : {
+      devLess   : {
         files: ['client/styles/**/*.less'],
         tasks: ['clean:dev:css', 'less:transpile', 'copy:dev']
       },
-      test   : {
+      prodScripts: {
+        files: ['client/src/**/*.hbs', 'client/src/**/*.js'],
+        tasks: ['clean:prod:js', 'browserify:prod', 'uglify', 'copy:prod']
+      },
+      prodLess   : {
+        files: ['client/styles/**/*.less'],
+        tasks: ['clean:prod:css', 'less:transpile', 'cssmin', 'copy:prod']
+      },
+      test : {
         files: ['build/client.js', 'client/test/**/*.test.js'],
         tasks: ['browserify:test']
       },
-      karma  : {
+      karma: {
         files: ['build/tests.js'],
         tasks: ['jshint:test', 'karma:watcher:run']
       }
@@ -233,16 +241,29 @@ module.exports = function (grunt) {
 
     // for changes to the node code
     nodemon    : {
-      dev: {
+      dev : {
         script : 'server/server.js',
         options: {
           nodeArgs: ['--debug'],
           ignore  : ['bower_components/**', 'build/**', 'client/**', 'node_modules/**', 'public/**'],
           watch   : ['server/src', 'server/config'],
           env     : {
-            PORT: '3000'
+            PORT    : '3000',
+            NODE_ENV: 'dev'
           },
           ext     : 'js,hbs'
+        }
+      },
+      prod: {
+        script : 'server/server.js',
+        options: {
+          ignore: ['bower_components/**', 'build/**', 'client/**', 'node_modules/**', 'public/**'],
+          watch : ['server/src', 'server/config'],
+          env   : {
+            PORT    : '3000',
+            NODE_ENV: 'prod'
+          },
+          ext   : 'js,hbs'
         }
       }
     },
@@ -274,7 +295,7 @@ module.exports = function (grunt) {
 
     concurrent: {
       dev : {
-        tasks  : ['nodemon:dev', 'shell:mongo', 'watch:scripts', 'watch:less', 'watch:test'],
+        tasks  : ['nodemon:dev', 'shell:mongo', 'watch:devScripts', 'watch:devLess', 'watch:test'],
         options: {
           logConcurrentOutput: true,
           limit              : 5
@@ -285,7 +306,14 @@ module.exports = function (grunt) {
         options: {
           logConcurrentOutput: true
         }
-      }
+      },
+      prod: {
+        tasks  : ['nodemon:prod', 'shell:mongo', 'watch:prodScripts', 'watch:prodLess'],
+        options: {
+          logConcurrentOutput: true,
+          limit              : 5
+        }
+      },
     },
 
     // for front-end tdd
@@ -345,12 +373,10 @@ module.exports = function (grunt) {
                                    'copy:tinymce',
                                    'copy:dev']);
   grunt.registerTask('build:prod', ['clean:prod',
-                                    'concat',
                                     'browserify:prod',
                                     'jshint:clientProd',
                                     'jshint:server',
                                     'less:transpile',
-                                    'concat',
                                     'cssmin',
                                     'uglify',
                                     'copy:bootstrap',
@@ -362,7 +388,7 @@ module.exports = function (grunt) {
   grunt.registerTask('heroku', ['env:dev', 'init:dev', 'build:dev']);
 
   grunt.registerTask('server:dev', ['env:dev', 'build:dev', 'concurrent:dev']);
-  grunt.registerTask('server:prod', ['env:prod', 'build:prod', 'concurrent:dev']);
+  grunt.registerTask('server:prod', ['env:prod', 'build:prod', 'concurrent:prod']);
   grunt.registerTask('test:server', ['env:test', 'jshint:server', 'simplemocha:server']);
 
   grunt.registerTask('test:client', ['env:test', 'jshint:client', 'karma:test']);
