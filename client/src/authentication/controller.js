@@ -77,7 +77,14 @@ var authentication = {
  */
 Handlebars.registerHelper('authentication', function(options) {
   var data = Handlebars.createFrame(options.data || {});
-  data.user = authentication.getUser().toJSON();
+  if (authentication.getUser) {
+    data.isAuthenticated = true;
+    data.user = authentication.getUser().toJSON();
+  }
+  else {
+    data.isAuthenticated = false;
+    data.user = null;
+  }
   return options.fn(this, { data: data });
 });
 

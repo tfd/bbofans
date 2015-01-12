@@ -14,6 +14,11 @@ var NavbarController = Marionette.Controller.extend({
     this.view = new NavbarView({ collection: this.collection });
 
     this.view.on('navigate', function (route) {
+      var params = route.split(',');
+      if (params.length > 0) {
+        params[0] = 'route:' + params[0];
+        return messageBus.command.apply(messageBus, params);
+      }
       messageBus.command('route:' + route);
     });
 
