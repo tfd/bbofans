@@ -50,7 +50,6 @@ var config = {dev: {}, test: {}, prod: {}};
     key            : 'mail',
     from           : '"BBO Fans Admin" <mailer@bbofans.com>',
     replyTo        : '"BBO Fans Admin" <info@bbofans.com>',
-    bcc            : '"BBO Fans Admin" <info@bbofans.com>',
     smtpOptions    : {
       host  : 'smtp.gmail.com',
       port  : 465,
