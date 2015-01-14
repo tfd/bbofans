@@ -1,5 +1,16 @@
+// Import boostrap variables including default color palette and fonts
+@import "../../../build/vendor/bootstrap/less/variables.less";
+
 body {
   padding-top: 70px;
+  background-image: url(/img/alice.png);
+  background-repeat: no-repeat;
+  background-position: right 10px;
+  background-attachment: fixed;
+}
+
+.white-background-opacity-70 {
+  background-color: rgba(255, 255, 255, 0.7);
 }
 
 .navbar-brand h1 {
@@ -62,4 +73,20 @@ td.remember-td-text {
 
 .average {
   text-decoration: overline;
+}
+
+.home-window {
+  min-width: 100%;
+  min-height: 100%;
+}
+
+.participant{
+  background: @gray-light;
+  display: inline-block;
+  width: 100px;
+  height: 100px;
+}
+
+.participant i {
+  font-size: 50px;
 }
