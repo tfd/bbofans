@@ -63,7 +63,7 @@ module.exports = function (config) {
     var date = moment.utc().toDate();
 
     async.map(cmd.rows, function (row, cb) {
-      Member.findByIdAndUpdate(row._id, {$set: {validatedAt: date}}, {new: false}).exec(cb);
+      Member.findByIdAndUpdate(row._id, {$set: {validatedAt: date, isEnabled: true}}, {new: false}).exec(cb);
     }, function (err, results) {
       if (err) {
         console.error('commands.validate', err);
