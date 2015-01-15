@@ -2,6 +2,7 @@
 "use strict";
 
 var Marionette = require('backbone.marionette');
+var $ = require('jquery');
 require('bootstrap-table-filter');
 require('../../common/table/bootstrap-table-colgroups');
 require('../../common/table/bootstrap-table-commands');
@@ -12,15 +13,26 @@ var MembersView = Marionette.ItemView.extend({
   template: require('./template.hbs'),
 
   ui: {
-    table: "table",
-    filter: "#filter-bar"
+    table   : "table",
+    filter  : "#filter-bar",
+    all     : '.form-all',
+    rock    : '.form-rock',
+    rbd     : '.form-rbd',
+    validate: '.form-validate'
+  },
+
+  events: {
+    'click @ui.all'     : 'onAllClicked',
+    'click @ui.rock'    : 'onRockClicked',
+    'click @ui.rbd'     : 'onRbdClicked',
+    'click @ui.validate': 'onValidateClicked'
   },
 
   reloadTable: function () {
     this.$el.find(this.ui.table).bootstrapTable('refresh');
   },
 
-  onRender: function() {
+  onRender: function () {
     var self = this;
     this.filterData = undefined;
 
@@ -31,20 +43,20 @@ var MembersView = Marionette.ItemView.extend({
         }
         return params;
       },
-      rowStyle: function (item, i) {
+      rowStyle   : function (item, i) {
         if (item.isBanned) {
-          return { classes: 'bg-danger' };
+          return {classes: 'bg-danger'};
         }
         if (item.isBlackListed) {
-          return { classes: 'bg-warning'};
+          return {classes: 'bg-warning'};
         }
         if (item.registeredAt === null || item.registeredAt === undefined) {
-          return { classes: 'bg-info'};
+          return {classes: 'bg-info'};
         }
         if (item.validatedAt === null || item.validatedAt === undefined) {
-          return { classes: 'bg-success'};
+          return {classes: 'bg-success'};
         }
-        
+
         return {};
       }
     }).on('click-row.bs.table', function (e, row, $el) {
@@ -54,29 +66,29 @@ var MembersView = Marionette.ItemView.extend({
       var rows = self.ui.table.bootstrapTable('getSelections');
       self.trigger('members:command', command, rows);
     });
-    
+
     this.ui.filter.bootstrapTableFilter({
-      filters:[
+      filters : [
         {
-          field: 'bboName',
-          label: 'BBO Name',
-          type: 'ajaxSelect',
+          field : 'bboName',
+          label : 'BBO Name',
+          type  : 'ajaxSelect',
           source: '/admin/members/bboName'
         },
         {
           field: 'name',
           label: 'Name',
-          type: 'search'
+          type : 'search'
         },
         {
           field: 'email',
           label: 'EMail',
-          type: 'search'
+          type : 'search'
         },
         {
-          field: 'level',
-          label: 'Level',
-          type: 'select',
+          field : 'level',
+          label : 'Level',
+          type  : 'select',
           values: [
             {id: 'Beginner', label: 'Beginner'},
             {id: 'Intermediate', label: 'Intermediate'},
@@ -87,18 +99,18 @@ var MembersView = Marionette.ItemView.extend({
           ]
         },
         {
-          field: 'validatedAt',
-          label: 'To validate',
-          type: 'select',
+          field : 'validatedAt',
+          label : 'To validate',
+          type  : 'select',
           values: [
             {id: 'true', label: 'Yes'},
             {id: 'false', label: 'No'}
           ]
         },
         {
-          field: 'role',
-          label: 'Role',
-          type: 'select',
+          field : 'role',
+          label : 'Role',
+          type  : 'select',
           values: [
             {id: 'admin', label: 'Admin'},
             {id: 'blacklist manager', label: 'Blacklist Manager'},
@@ -108,93 +120,148 @@ var MembersView = Marionette.ItemView.extend({
           ]
         },
         {
-          field: 'isEnabled',
-          label: 'Enabled',
-          type: 'select',
+          field : 'isEnabled',
+          label : 'Enabled',
+          type  : 'select',
           values: [
             {id: 'true', label: 'Yes'},
             {id: 'false', label: 'No'}
           ]
         },
         {
-          field: 'isStarPlayer',
-          label: 'Star Player',
-          type: 'select',
+          field : 'isStarPlayer',
+          label : 'Star Player',
+          type  : 'select',
           values: [
             {id: 'true', label: 'Yes'},
             {id: 'false', label: 'No'}
           ]
         },
         {
-          field: 'isRbdPlayer',
-          label: 'RBD Player',
-          type: 'select',
+          field : 'isRbdPlayer',
+          label : 'RBD Player',
+          type  : 'select',
           values: [
             {id: 'true', label: 'Yes'},
             {id: 'false', label: 'No'}
           ]
         },
         {
-          field: 'isBlackListed',
-          label: 'Blacklisted',
-          type: 'select',
+          field : 'isBlackListed',
+          label : 'Blacklisted',
+          type  : 'select',
           values: [
             {id: 'true', label: 'Yes'},
             {id: 'false', label: 'No'}
           ]
         },
         {
-          field: 'isBanned',
-          label: 'Banned',
-          type: 'select',
+          field : 'isBanned',
+          label : 'Banned',
+          type  : 'select',
           values: [
             {id: 'true', label: 'Yes'},
             {id: 'false', label: 'No'}
           ]
         },
         {
-          field: 'nation',
-          label: 'Country',
-          type: 'ajaxSelect',
+          field : 'nation',
+          label : 'Country',
+          type  : 'ajaxSelect',
           source: '/countries'
         },
         {
           field: 'rockNumTournaments',
           label: 'Rock n° Tournaments',
-          type: 'range'
+          type : 'range'
         },
         {
           field: 'rockAverageScore',
           label: 'Rock Average Match Points',
-          type: 'range'
+          type : 'range'
         },
         {
           field: 'rockAwards',
           label: 'Rock Awards',
-          type: 'range'
+          type : 'range'
         },
         {
           field: 'rbdNumTournaments',
           label: 'RBD n° Tournaments',
-          type: 'range'
+          type : 'range'
         },
         {
           field: 'rbdAverageScore',
           label: 'RBD Average IMPs',
-          type: 'range'
+          type : 'range'
         },
         {
           field: 'rbdAwards',
           label: 'RBD Awards',
-          type: 'range'
+          type : 'range'
         }
       ],
-      onSubmit: function() {
+      onSubmit: function () {
         self.filterData = self.ui.filter.bootstrapTableFilter('getData');
         self.ui.table.bootstrapTable('refresh');
       }
     });
+  },
+
+  onShow: function () {
+    var filter = this.ui.filter;
+    $(this.ui.table).one('load-success.bs.table', function () {
+      // Wait for first table load before setting the filter, because refreshing the table while it is still loading
+      // produces a race condition.
+      filter.bootstrapTableFilter('setupFilter', 'isEnabled', {_values: ['true']});
+      filter.find('.btn-refresh').click();
+    });
+  },
+
+  onAllClicked: function () {
+    var filter = this.ui.filter;
+    filter.bootstrapTableFilter('disableFilters');
+    filter.bootstrapTableFilter('unselectFilterOption', 'isEnabled', 'false');
+    filter.bootstrapTableFilter('setupFilter', 'isEnabled', {_values: ['true']});
+    filter.find('.btn-refresh').click();
+  },
+
+  onRockClicked: function () {
+    var filter = this.ui.filter;
+    filter.bootstrapTableFilter('disableFilters');
+    filter.bootstrapTableFilter('unselectFilterOption', 'isEnabled', 'false');
+    filter.bootstrapTableFilter('unselectFilterOption', 'isBlackListed', 'true');
+    filter.bootstrapTableFilter('unselectFilterOption', 'isBanned', 'true');
+    filter.bootstrapTableFilter('unselectFilterOption', 'isRbdPlayer', 'true');
+    filter.bootstrapTableFilter('setupFilter', 'isEnabled', {_values: ['true']});
+    filter.bootstrapTableFilter('setupFilter', 'isBlackListed', {_values: ['false']});
+    filter.bootstrapTableFilter('setupFilter', 'isBanned', {_values: ['false']});
+    filter.bootstrapTableFilter('setupFilter', 'isRbdPlayer', {_values: ['false']});
+    filter.find('.btn-refresh').click();
+  },
+
+  onRbdClicked: function () {
+    var filter = this.ui.filter;
+    filter.bootstrapTableFilter('disableFilters');
+    filter.bootstrapTableFilter('unselectFilterOption', 'isEnabled', 'false');
+    filter.bootstrapTableFilter('unselectFilterOption', 'isBlackListed', 'true');
+    filter.bootstrapTableFilter('unselectFilterOption', 'isBanned', 'true');
+    filter.bootstrapTableFilter('unselectFilterOption', 'isRbdPlayer', 'false');
+    filter.bootstrapTableFilter('setupFilter', 'isEnabled', {_values: ['true']});
+    filter.bootstrapTableFilter('setupFilter', 'isBlackListed', {_values: ['false']});
+    filter.bootstrapTableFilter('setupFilter', 'isBanned', {_values: ['false']});
+    filter.bootstrapTableFilter('setupFilter', 'isRbdPlayer', {_values: ['true']});
+    filter.find('.btn-refresh').click();
+  },
+
+  onValidateClicked: function () {
+    var filter = this.ui.filter;
+    filter.bootstrapTableFilter('disableFilters');
+    filter.bootstrapTableFilter('unselectFilterOption', 'validatedAt', 'false');
+    filter.bootstrapTableFilter('setupFilter', 'validatedAt', {_values: ['true']});
+    filter.find('.btn-refresh').click();
   }
+
 });
 
 module.exports = MembersView;
