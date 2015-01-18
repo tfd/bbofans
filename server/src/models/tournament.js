@@ -18,11 +18,7 @@ var TournamentSchema = new Schema({
   date      : {type: Date, default: Date.now},
   resultsUrl: {type: String, default: ''},
   boardsUrl : {type: String, default: ''},
-  numPlayers: {
-    type    : Number,
-    required: 'Number of players cannot be blank',
-    min     : [4, 'Number of players must be at least {MIN}']
-  },
+  numPlayers: {type: Number, required: 'Number of players cannot be blank', min: [4, 'Number of players must be at least {MIN}']},
   isPair    : {type: Boolean, default: false},
   isRbd     : {type: Boolean, default: false},
   results   : [{

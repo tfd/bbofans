@@ -3,11 +3,23 @@
 
 var Marionette = require('backbone.marionette');
 var $ = require('jquery');
+var _ = require('underscore');
+
 require('bootstrap-table-filter');
 require('../../common/table/bootstrap-table-colgroups');
 require('../../common/table/bootstrap-table-commands');
 require('../../common/table/bootstrap-table-remote-export');
 require('../../common/utils/formatHelpers');
+
+function setFilter(filter, options) {
+  filter.bootstrapTableFilter('disableFilters');
+  _.each(options, function (value, key) {
+    filter.bootstrapTableFilter('unselectFilterOption', key, 'false');
+    filter.bootstrapTableFilter('unselectFilterOption', key, 'true');
+    filter.bootstrapTableFilter('setupFilter', key, value);
+  });
+  filter.find('.btn-refresh').click();
+}
 
 var MembersView = Marionette.ItemView.extend({
   template: require('./template.hbs'),
@@ -15,14 +27,14 @@ var MembersView = Marionette.ItemView.extend({
   ui: {
     table   : "table",
     filter  : "#filter-bar",
-    all     : '.form-all',
+    enabled : '.form-enabled',
     rock    : '.form-rock',
     rbd     : '.form-rbd',
     validate: '.form-validate'
   },
 
   events: {
-    'click @ui.all'     : 'onAllClicked',
+    'click @ui.enabled' : 'onEnabledClicked',
     'click @ui.rock'    : 'onRockClicked',
     'click @ui.rbd'     : 'onRbdClicked',
     'click @ui.validate': 'onValidateClicked'
@@ -218,48 +230,34 @@ var MembersView = Marionette.ItemView.extend({
     });
   },
 
-  onAllClicked: function () {
-    var filter = this.ui.filter;
-    filter.bootstrapTableFilter('disableFilters');
-    filter.bootstrapTableFilter('unselectFilterOption', 'isEnabled', 'false');
-    filter.bootstrapTableFilter('setupFilter', 'isEnabled', {_values: ['true']});
-    filter.find('.btn-refresh').click();
+  onEnabledClicked: function () {
+    setFilter(this.ui.filter, {
+      isEnabled: {_values: ['true']}
+    });
   },
 
   onRockClicked: function () {
-    var filter = this.ui.filter;
-    filter.bootstrapTableFilter('disableFilters');
-    filter.bootstrapTableFilter('unselectFilterOption', 'isEnabled', 'false');
-    filter.bootstrapTableFilter('unselectFilterOption', 'isBlackListed', 'true');
-    filter.bootstrapTableFilter('unselectFilterOption', 'isBanned', 'true');
-    filter.bootstrapTableFilter('unselectFilterOption', 'isRbdPlayer', 'true');
-    filter.bootstrapTableFilter('setupFilter', 'isEnabled', {_values: ['true']});
-    filter.bootstrapTableFilter('setupFilter', 'isBlackListed', {_values: ['false']});
-    filter.bootstrapTableFilter('setupFilter', 'isBanned', {_values: ['false']});
-    filter.bootstrapTableFilter('setupFilter', 'isRbdPlayer', {_values: ['false']});
-    filter.find('.btn-refresh').click();
+    setFilter(this.ui.filter, {
+      isEnabled    : {_values: ['true']},
+      isBlackListed: {_values: ['false']},
+      isBanned     : {_values: ['false']},
+      isRbdPlayer  : {_values: ['false']}
+    });
   },
 
   onRbdClicked: function () {
-    var filter = this.ui.filter;
-    filter.bootstrapTableFilter('disableFilters');
-    filter.bootstrapTableFilter('unselectFilterOption', 'isEnabled', 'false');
-    filter.bootstrapTableFilter('unselectFilterOption', 'isBlackListed', 'true');
-    filter.bootstrapTableFilter('unselectFilterOption', 'isBanned', 'true');
-    filter.bootstrapTableFilter('unselectFilterOption', 'isRbdPlayer', 'false');
-    filter.bootstrapTableFilter('setupFilter', 'isEnabled', {_values: ['true']});
-    filter.bootstrapTableFilter('setupFilter', 'isBlackListed', {_values: ['false']});
-    filter.bootstrapTableFilter('setupFilter', 'isBanned', {_values: ['false']});
-    filter.bootstrapTableFilter('setupFilter', 'isRbdPlayer', {_values: ['true']});
-    filter.find('.btn-refresh').click();
+    setFilter(this.ui.filter, {
+      isEnabled    : {_values: ['true']},
+      isBlackListed: {_values: ['false']},
+      isBanned     : {_values: ['false']},
+      isRbdPlayer  : {_values: ['true']}
+    });
   },
 
   onValidateClicked: function () {
-    var filter = this.ui.filter;
-    filter.bootstrapTableFilter('disableFilters');
-    filter.bootstrapTableFilter('unselectFilterOption', 'validatedAt', 'false');
-    filter.bootstrapTableFilter('setupFilter', 'validatedAt', {_values: ['true']});
-    filter.find('.btn-refresh').click();
+    setFilter(this.ui.filter, {
+      validatedAt: {_values: ['true']}
+    });
   }
 
 });

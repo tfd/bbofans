@@ -43,6 +43,7 @@ module.exports = function (app, config, passport) {
   var commands = require('../src/controllers/commands')(config);
   var blacklists = require('../src/controllers/blacklists')(config);
   var tds = require('../src/controllers/tds')(config);
+  var tournaments = require('../src/controllers/tournaments')(config);
   var updater = require('../src/controllers/updater')(config);
 
 
@@ -90,6 +91,7 @@ module.exports = function (app, config, passport) {
   app.get('/admin/tds/saveAs/:type', tdManagerAuth, tds.saveAs);
   app.put('/admin/tds/:id', tdManagerAuth, tds.update);
   app.get('/admin/tds/:id', tdManagerAuth, tds.getById);
+  app.get('/admin/torunaments', tdManagerAuth, tournaments.getAll);
   app.get('/admin/logout', admin.logout);
   app.get('/*', index.index);
 };

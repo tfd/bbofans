@@ -73,8 +73,10 @@ module.exports = function () {
         return [];
       }
 
+
       if (toValidate) {
-        return [{$or: [{validatedAt: {$exists: false}}, {validatedAt: {$type: 10}}]}];
+        return [{registeredAt: {$exists: true}}, {registeredAt: {$not: {$type: 10}}},
+                {$or: [{validatedAt: {$exists: false}}, {validatedAt: {$type: 10}}]}];
       }
 
       return [{validatedAt: {$exists: true}}, {validatedAt: {$not: {$type: 10}}}];
@@ -119,17 +121,6 @@ module.exports = function () {
 
   return {
 
-    index: function (req, res) {
-      Member.find({}, function (err, data) {
-        if (err) {
-          console.error('members.index', err);
-          return res.status(500).json({error: err});
-        }
-
-        res.json(data);
-      });
-    },
-
     getRock: function (req, res) {
       var limit = listQueryParameters.getLimit(req);
       var skip = listQueryParameters.getSkip(req);
@@ -141,8 +132,7 @@ module.exports = function () {
           isBlackListed: false,
           isBanned     : false
         },
-        doFilter        : false,
-        restrictedSearch: true
+        doFilter        : false
       });
       Member.find(filter).count(function (err, count) {
         if (err) {
@@ -188,7 +178,8 @@ module.exports = function () {
           isBlackListed: false,
           isBanned     : false,
           isRbdPlayer  : true
-        }, doFilter: false, restrictedSearch: true
+        },
+        doFilter: false
       });
       Member.find(filter).count(function (err, count) {
         if (err) {
@@ -255,7 +246,9 @@ module.exports = function () {
       var limit = listQueryParameters.getLimit(req);
       var skip = listQueryParameters.getSkip(req);
       var sort = listQueryParameters.getSort(req, fields);
-      var filter = listQueryParameters.getFindCriteria(req);
+      var filter = listQueryParameters.getFindCriteria(req, {
+        searchFields: ['bboName', 'emails', 'name']
+      });
       Member.find(filter).count(function (err, count) {
             if (err) {
               console.error('members.getAll', err);

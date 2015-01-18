@@ -7,18 +7,60 @@ var async = require('async');
 var Tournament = mongoose.model('Tournament');
 var Member = mongoose.model('Member');
 
+/**
+ * All field names in the table.
+ *
+ * @type {string[]}
+ */
+var fields = ['name', 'date', 'resultsUrl', 'boardsUrl', 'isPair', 'isRbd', 'numPlayers', 'results'];
+
+/**
+ * Hashmap of field names to flat names.
+ *
+ * The bootstrap-table isn't able to interpret nested JSON objects so I use
+ * $project to rename nested fields. This hashmap reconstructs the correct
+ * nested name from the projected name.
+ */
+var field2FlatNames = {};
+var fieldDefinitions = require('../utils/fieldDefinitions')(Member, fields, field2FlatNames);
+var listQueryParameters = require('../utils/listQueryParameters')(fieldDefinitions);
+
 module.exports = function () {
 
   return {
-    index: function (req, res) {
-      Tournament.find({}, function (err, tournament) {
+
+    getAll: function (req, res) {
+      var limit = listQueryParameters.getLimit(req);
+      var skip = listQueryParameters.getSkip(req);
+      var sort = listQueryParameters.getSort(req, ['name', 'date', 'isPair', 'isRbd', 'numPlayers']);
+      var filter = listQueryParameters.getFindCriteria(req, {
+        searchFields: ['name']
+      });
+      Tournament.find(filter).count(function (err, count) {
         if (err) {
           console.error('tournaments.index', err);
-          res.json({error: 'No tournament found.'});
+          return res.json({error: 'No tournament found.'});
         }
-        else {
-          res.json(tournament);
-        }
+
+        Tournament
+            .find(filter)
+            .order(sort)
+            .skip(skip)
+            .limit(limit)
+            .exec(function (err, tournaments) {
+              if (err) {
+                console.error('tournaments.index', err);
+                return res.json({error: 'No tournament found.'});
+              }
+
+              res.json({
+                skip : skip,
+                limit: limit,
+                sort : sort,
+                total: count,
+                rows : tournaments
+              });
+            });
       });
     },
 

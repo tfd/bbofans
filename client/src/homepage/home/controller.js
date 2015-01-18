@@ -3,12 +3,15 @@
 
 var Marionette = require('backbone.marionette');
 var HomepageHomeView = require('./view');
+var messageBus = require('../../common/router/messageBus');
 
 var HomepageHomeController = Marionette.Controller.extend({
   initialize: function (options) {
     this.app = options.app;
     this.module = options.module;
-    this.view = new HomepageHomeView();
+    this.view = new HomepageHomeView({
+      collection: messageBus.request('tournaments:tail:10')
+    });
   },
 
   show: function (region) {

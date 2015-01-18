@@ -223,6 +223,7 @@ module.exports = function (fieldDefinitions) {
    * @param {Object} req The http request.
    * @param {Object} options
    * @param {Boolean} [options.doSearch] - whether to include the search field in the criteria
+   * @param {String[]} [options.searchFields=['bboName']] - the fields to search for
    * @returns {Array} array of criteria to be applied in $and.
    */
   function getSearchCriteria(req, options) {
@@ -234,18 +235,15 @@ module.exports = function (fieldDefinitions) {
       return [];
     }
 
-    var name = sanitizeFunctions.bboName(req.query.search);
+    var fields = options.searchFields || ['bboName'];
     var criteria = [];
 
-    criteria.push({bboName: new RegExp(name, 'i')});
-    if (options.restrictedSearch !== true) {
-      if (fieldDefinitions.isValidFieldName('name')) {
-        criteria.push({name: new RegExp(name, 'i')});
-      }
-      if (fieldDefinitions.isValidFieldName('emails')) {
-        criteria.push({emails: new RegExp(name, 'i')});
-      }
-    }
+    _.each(fields, function (field) {
+      var name = sanitizeFunctions[field](req.query.search);
+      var c = {};
+      c[field] = new RegExp(name, 'i');
+      criteria.push(c);
+    });
 
     return [{$or: criteria}];
   }
@@ -355,6 +353,7 @@ module.exports = function (fieldDefinitions) {
      * @param {Object} [options.criteria] - initial criteria to include
      * @param {Boolean} [options.doSearch] - whether to include the search field in the criteria
      * @param {Boolean} [options.doFilter] - whether to include the filter field in the criteria
+     * @param {String[]} [options.searchFields=['bboName']] - the fields to search for
      * @returns {Object} an object that can be passed to mongo db find().
      */
     getFindCriteria: function (req, options) {
