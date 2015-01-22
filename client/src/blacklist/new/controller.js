@@ -6,6 +6,7 @@ var NewBlacklistView = require('./view');
 var DurationEntry = require('../../models/blacklistDurationEntry');
 var messageBus = require('../../common/router/messageBus');
 var moment = require('moment');
+var authentication = require('../../authentication/controller');
 
 var NewEntryController = Marionette.Controller.extend({
   initialize: function (options) {
@@ -16,6 +17,7 @@ var NewEntryController = Marionette.Controller.extend({
   show: function (region) {
     var self = this;
     var durationEntry = new DurationEntry({
+      td: authentication.getUser().get('username'),
       bboName: '',
       from: moment.utc(),
       for: '1w',

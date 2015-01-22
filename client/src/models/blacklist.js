@@ -6,11 +6,12 @@ var BlacklistEntryCollection = require('./blacklistEntryCollection');
 var $ = require('jquery');
 
 var Blacklist = Backbone.Model.extend({
-  urlRoot: "admin/blacklist",
-  idAttribute: "_id",
+  urlRoot: 'admin/blacklist',
+  idAttribute: '_id',
   
   defaults: {
-    bboName: "",
+    td: '',
+    bboName: '',
     entries: new BlacklistEntryCollection()
   },
 

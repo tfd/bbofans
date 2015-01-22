@@ -32,6 +32,13 @@ var Member = Backbone.Model.extend({
     if( ! _.isEmpty(errors)){
       return errors;
     }
+  },
+
+  set: function(attributes, options) {
+    if (attributes.bboName) {
+      attributes.bboName = attributes.bboName.toLowerCase();
+    }
+    return Backbone.Model.prototype.set.call(this, attributes, options);
   }
 });
 

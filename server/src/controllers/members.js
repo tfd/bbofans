@@ -38,6 +38,10 @@ var fieldDefinitions = require('../utils/fieldDefinitions')(Member, fields, fiel
 var listQueryParameters = require('../utils/listQueryParameters')(fieldDefinitions);
 var exportToFile = require('../utils/exportToFile')('members', 'member', fieldDefinitions);
 
+function isValidUpdateKey(key) {
+  return fields.indexOf(key) >= 0 && !field2FlatNames[key];
+}
+
 module.exports = function () {
 
   /**
@@ -127,18 +131,20 @@ module.exports = function () {
       var sort = listQueryParameters.getSort(req,
           ['bboName', 'nation', 'level', 'awards', 'averageScore', 'numTournaments']);
       var filter = listQueryParameters.getFindCriteria(req, {
-        criteria        : {
+        criteria: {
           isEnabled    : true,
           isBlackListed: false,
           isBanned     : false
         },
-        doFilter        : false
+        doFilter: false
       });
       Member.find(filter).count(function (err, count) {
         if (err) {
           console.error('members.getRock', err);
           return res.status(500).json({error: err});
         }
+
+        console.log('sort', sort);
 
         var aggr = [];
         aggr.push({$match: filter});
@@ -173,7 +179,7 @@ module.exports = function () {
       var sort = listQueryParameters.getSort(req,
           ['bboName', 'nation', 'level', 'awards', 'averageScore', 'numTournaments']);
       var filter = listQueryParameters.getFindCriteria(req, {
-        criteria   : {
+        criteria: {
           isEnabled    : true,
           isBlackListed: false,
           isBanned     : false,
@@ -471,6 +477,10 @@ module.exports = function () {
         this.update(req, res);
       }
       else {
+        if (req.body.bboName) {
+          req.body.bboName = req.body.bboName.toLowerCase();
+        }
+
         // New member, save it.
         var memberToSave = new Member(req.body);
         memberToSave.save(function (err, member) {
@@ -497,19 +507,40 @@ module.exports = function () {
 
     update: function (req, res) {
       var member = req.body;
+      if (member.bboName) {
+        member.bboName = member.bboName.toLowerCase();
+      }
+
       var id = member._id;
       delete member._id;
-      Member.findByIdAndUpdate(id, {$set: member}, function (err, updated) {
+      Member.findById(id, function (err, originalMember) {
         if (err) {
           console.error('members.update', err);
           return res.status(500).json({error: err});
         }
 
-        if (!updated) {
+        if (!originalMember) {
           return res.status(404).json({_id: 'Member not found'});
         }
 
-        res.json(updated);
+        _.each(member, function (value, key) {
+          if (isValidUpdateKey(key)) {
+            originalMember[key] = value;
+          }
+        });
+
+        originalMember.save(function (err, updated) {
+          if (err) {
+            console.error('members.update', err);
+            return res.status(500).json({error: err});
+          }
+
+          if (!updated) {
+            return res.status(404).json({_id: 'Member not found'});
+          }
+
+          res.json(updated);
+        });
       });
     },
 

@@ -116,6 +116,11 @@ function handleError(msg, cb) {
   }
 }
 
+MemberSchema.pre('save', function (next) {
+  this.bboName = this.bboName.toLowerCase();
+  next();
+});
+
 /**
  * Make salt
  *

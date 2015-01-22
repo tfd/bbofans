@@ -43,6 +43,11 @@ function handleError(msg, cb) {
   }
 }
 
+BlacklistSchema.pre('save', function (next) {
+  this.bboName = this.bboName.toLowerCase();
+  next();
+});
+
 /*
  * Methods
  */

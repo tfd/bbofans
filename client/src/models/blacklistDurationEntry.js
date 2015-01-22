@@ -10,7 +10,8 @@ var BlacklistDurationEntry = Backbone.Model.extend({
   idAttribute: "_id",
   
   defaults: {
-    bboName: "",
+    td: '',
+    bboName: '',
     'from': moment().toDate(),
     'for': '6d',
     reason: ''
@@ -39,7 +40,7 @@ var BlacklistDurationEntry = Backbone.Model.extend({
 
   set: function(attributes, options) {
     if (attributes.from) {
-      attributes.from = moment.utc(attributes.from).toISOString();
+      attributes.from = moment.utc(attributes.from, "DD/MM/YYYY").toISOString();
     }
     return Backbone.Model.prototype.set.call(this, attributes, options);
   }

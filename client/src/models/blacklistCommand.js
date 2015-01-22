@@ -46,8 +46,14 @@ var Password = Backbone.Model.extend({
     if( ! _.isEmpty(errors)){
       return errors;
     }
-  }
+  },
 
+  set: function(attributes, options) {
+    if (attributes.from) {
+      attributes.from = moment.utc(attributes.from, "DD/MM/YYYY").toISOString();
+    }
+    return Backbone.Model.prototype.set.call(this, attributes, options);
+  }
 });
 
 module.exports = Password;
