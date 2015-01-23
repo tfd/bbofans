@@ -52,7 +52,8 @@ module.exports = function (app, config, passport) {
    */
 
   // home route
-  app.get('/update', updater.update);
+  app.get('/tournaments/update', updater.update);
+  app.get('/blacklist/update', blacklists.updateMembers);
   app.get('/members/rock', members.getRock);
   app.get('/members/rbd', members.getRbd);
   app.get('/winners/rock', members.getRockWinners);
@@ -92,7 +93,7 @@ module.exports = function (app, config, passport) {
   app.get('/admin/tds/saveAs/:type', tdManagerAuth, tds.saveAs);
   app.put('/admin/tds/:id', tdManagerAuth, tds.update);
   app.get('/admin/tds/:id', tdManagerAuth, tds.getById);
-  app.get('/admin/torunaments', tdManagerAuth, tournaments.getAll);
+  app.get('/tournaments', tournaments.getAll);
   app.get('/admin/logout', admin.logout);
   app.get('/*', index.index);
 };
