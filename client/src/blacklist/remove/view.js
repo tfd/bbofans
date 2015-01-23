@@ -9,7 +9,7 @@ require('bootstrap-dateTimePicker');
 
 var Blacklist = require('../../models/blacklist');
 
-var BlacklistNewView = Marionette.LayoutView.extend({
+var BlacklistRemoveView = Marionette.LayoutView.extend({
   template: require('./template.hbs'),
 
   regions: {
@@ -19,14 +19,14 @@ var BlacklistNewView = Marionette.LayoutView.extend({
   onRender: function () {
     var self = this;
 
-    this.model.set('blacklisting', 'blacklisting');
-    this.model.set('createLabel', 'Add to blacklist');
+    this.model.set('blacklisting', 'whitelisting');
+    this.model.set('createLabel', 'remove from blacklist');
     this.formView = new Form({model: this.model});
     this.form.show(this.formView);
 
     var engine = new Bloodhound({
-      name          : 'members',
-      remote        : '/admin/members/bboNames?bloodhound=true&q=%QUERY',
+      name          : 'blacklist',
+      remote        : '/admin/blacklist/bboNames?bloodhound=true&q=%QUERY',
       datumTokenizer: function (d) {
         return d.val ? [d.val] : [];
       },
@@ -59,4 +59,4 @@ var BlacklistNewView = Marionette.LayoutView.extend({
 
 });
 
-module.exports = BlacklistNewView;
+module.exports = BlacklistRemoveView;

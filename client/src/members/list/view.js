@@ -85,7 +85,7 @@ var MembersView = Marionette.ItemView.extend({
           field : 'bboName',
           label : 'BBO Name',
           type  : 'ajaxSelect',
-          source: '/admin/members/bboName'
+          source: '/admin/members/bboNames'
         },
         {
           field: 'name',

@@ -8,7 +8,7 @@ var messageBus = require('../../common/router/messageBus');
 var moment = require('moment');
 var authentication = require('../../authentication/controller');
 
-var NewEntryControllerImpl = function (options) {
+var RemoveEntryControllerImpl = function (options) {
   var self = this;
 
   function save(model) {
@@ -31,11 +31,12 @@ var NewEntryControllerImpl = function (options) {
   this.show = function (region) {
     var durationEntry = new DurationEntry({
       bboName: '',
-      from: moment.utc(),
-      for: '1w',
+      from: moment.utc().add(-2, 'd'),
+      for: '1d',
       reason: '',
       isNew: true
     });
+
     this.popupView = new NewBlacklistView({model: durationEntry});
     region.show(this.popupView);
     this.app.showPopup();
@@ -48,9 +49,9 @@ var NewEntryControllerImpl = function (options) {
   this.module = options.module;
 };
 
-var NewEntryController = Marionette.Controller.extend({
+var RemoveEntryController = Marionette.Controller.extend({
   initialize: function (options) {
-    this.impl = new NewEntryControllerImpl(options);
+    this.impl = new RemoveEntryControllerImpl(options);
   },
 
   show: function (region) {
@@ -58,5 +59,5 @@ var NewEntryController = Marionette.Controller.extend({
   }
 });
 
-module.exports = NewEntryController;
+module.exports = RemoveEntryController;
 

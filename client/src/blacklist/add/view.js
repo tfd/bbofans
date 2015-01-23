@@ -1,31 +1,39 @@
 /* jshint -W097 */
 "use strict";
 
-var Backbone = require('backbone');
-var FormWithErrorHandling = require('../../common/views/formWithErrorHandling');
-var moment = require('moment');
-require('bootstrap-dateTimePicker');
+var Marionette = require('backbone.marionette');
+var Form = require('../form/view');
 
-var Blacklist = require('../../models/blacklist');
-
-var BlacklistAddView = FormWithErrorHandling.extend({
+var BlacklistAddLayoutView = Marionette.LayoutView.extend({
   template: require('./template.hbs'),
-  idPrefix: 'blacklist',
-  
-  ui: FormWithErrorHandling.extendUi({
-    'from': '#blacklist-from',
-    'for': '#blacklist-for'
-  }),
+
+  regions: {
+    'form': '#blacklist-form'
+  },
 
   onRender: function () {
-    this.ui.from.datetimepicker({
-      pickTime: false
+    var self = this;
+
+    this.model.set('blacklisting', 'blacklisting');
+    this.model.set('createLabel', 'Add to blacklist');
+    this.formView = new Form({
+      model: this.model
     });
-    this.ui.from.data("DateTimePicker").setDate(moment.utc());
 
-    this.ui.for.val(this.model.get('for'));
+    this.formView.on('form:submit', function (data) {
+      self.triggerMethod('form:submit', data);
+    });
+
+    this.formView.on('form:cancel', function () {
+      self.triggerMethod('form:cancel');
+    });
+
+    this.formView.on('form:close', function () {
+      self.triggerMethod('form:close');
+    });
+
+    this.form.show(this.formView);
   }
-
 });
 
-module.exports = BlacklistAddView;
+module.exports = BlacklistAddLayoutView;

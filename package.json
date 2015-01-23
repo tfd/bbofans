@@ -114,6 +114,7 @@
     "typeAhead": {
       "exports": "Bloodhound",
       "depends": [
+        "jquery:$",
         "underscore:_"
       ]
     },

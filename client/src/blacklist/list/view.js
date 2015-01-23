@@ -9,33 +9,35 @@ require('../../common/table/bootstrap-table-remote-export');
 require('../../common/utils/formatHelpers');
 
 var BlacklistView = Marionette.ItemView.extend({
-  template: require('./template.hbs'),
+  template : require('./template.hbs'),
   className: 'well',
 
   ui: {
-    table: 'table',
-    new: '.form-new'
+    table : 'table',
+    new   : '.form-new',
+    remove: '.form-remove'
   },
 
   triggers: {
-    'click @ui.new': 'blacklist:new'
+    'click @ui.new'   : 'blacklist:new',
+    'click @ui.remove': 'blacklist:remove'
   },
 
   reloadTable: function () {
     this.$el.find(this.ui.table).bootstrapTable('refresh');
   },
 
-  onRender: function() {
+  onRender: function () {
     var self = this;
 
     this.ui.table.bootstrapTable({
       responseHandler: function (res) {
-        res.rows.forEach( function (member, i) {
+        res.rows.forEach(function (member, i) {
           if (member.entries.length > 0) {
             var last = member.entries[member.entries.length - 1];
             member.lastTd = last.td;
             member.lastFrom = last.from;
-            member.lastTo =last.to;
+            member.lastTo = last.to;
             member.lastReason = last.reason;
           }
         });

@@ -141,6 +141,46 @@ module.exports = function () {
       });
     },
 
+    getBboNames: function (req, res) {
+      var now = moment.utc();
+      var q = req.query.q || '';
+      var filter = _.isEmpty(q) ? {} : {bboName: {$regex: new RegExp(q, 'i')}};
+
+      var aggr = [];
+      aggr.push({$match: filter});
+      aggr.push({$project: {_id: {_id: '$_id', bboName: '$bboName', entries: '$entries'}, entries: '$entries'}});
+      aggr.push({$unwind: '$entries'});
+      aggr.push({$group: {_id: '$_id', entries: {$last: '$entries'}}});
+      aggr.push({$match: {'entries.from': {$lte: now.toDate()}, 'entries.to': {$gte: now.toDate()}}});
+      aggr.push({$project: {bboName: '$_id.bboName'}});
+      aggr.push({$sort: {bboName: -1}});
+
+      Blacklist.find(filter).count(function (err, count) {
+        if (err) {
+          console.err('blacklist.getBboNames', err);
+          return res.status(500).json({error: err});
+        }
+
+        Blacklist.aggregate(aggr, function (err, data) {
+          if (err) {
+            console.error('blacklists.getBboNames', err);
+            return res.status(500).json({error: err});
+          }
+
+          if (req.query.bloodhound) {
+            res.json(data);
+          }
+          else {
+            var arr = [];
+            _.each(data, function (blacklist) {
+              arr.push(blacklist.bboName);
+            });
+            res.json(arr);
+          }
+        });
+      });
+    },
+
     getById: function (req, res) {
       Blacklist.findOne({_id: req.params.id}, function (err, blacklist) {
         if (err) {

@@ -6,15 +6,14 @@ var Marionette = require('backbone.marionette');
 var moment = require('moment');
 var messageBus = require('../../common/router/messageBus');
 
-var Layout = require('./layout');
-var View = require('../details/view');
+var View = require('./view');
 var Form = require('../form/view');
 var Blacklist = require('../../models/blacklist');
 var DurationEntry = require('../../models/blacklistDurationEntry');
 var authentication = require('../../authentication/controller');
 var routerHistory = require('../../common/router/routerHistory');
 
-var BlacklistEditImpl = function (options) {
+var BlacklistAddImpl = function (options) {
   var self = this;
 
   function save(entry, data) {
@@ -39,36 +38,20 @@ var BlacklistEditImpl = function (options) {
       bboName: blacklist.get('bboName'),
       'from': moment.utc().toDate(),
       'for': '1w',
-      reason: '',
-      blacklisting: 'blacklisting',
-      createLabel: 'Add to blacklist'
+      reason: ''
     });
 
-    self.layout = new Layout();
-    self.view = new View({
-      model: blacklist
-    });
-    self.form = new Form({
-      model: durationEntry
-    });
+    self.View = new View({model: durationEntry});
 
-    self.form.on('form:submit', function (data) {
+    self.View.on('form:submit', function (data) {
       save(durationEntry, data);
     });
 
-    self.form.on('form:cancel', function () {
+    self.View.on('form:cancel form:close', function () {
       routerHistory.back();
     });
 
-    self.view.on('form:close', function () {
-      routerHistory.back();
-    });
-
-    region.show(self.layout);
-    self.layout.view.show(self.view);
-    if (authentication.getUser() && authentication.getUser().get('isBlacklistManager')) {
-      self.layout.form.show(self.form);
-    }
+    region.show(self.View);
   }
 
   this.show = function (region, id) {
@@ -82,9 +65,9 @@ var BlacklistEditImpl = function (options) {
   this.model = options.model;
 };
 
-var BlacklistEditController = Marionette.Controller.extend({
+var BlacklistAddController = Marionette.Controller.extend({
   initialize: function (options) {
-    this.impl = new BlacklistEditImpl(options);
+    this.impl = new BlacklistAddImpl(options);
   },
 
   show: function (region, id) {
@@ -92,4 +75,4 @@ var BlacklistEditController = Marionette.Controller.extend({
   }
 });
 
-module.exports = BlacklistEditController;
+module.exports = BlacklistAddController;

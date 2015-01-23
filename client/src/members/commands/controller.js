@@ -114,7 +114,13 @@ var CommandsController = Marionette.Controller.extend({
       }
       else if (data.command === 'blacklist' || data.command === 'whitelist') {
         model = new BlacklistCommand();
-        xhr = model.save({rows: data.rows, td: authentication.getUser().get('username'), from: data.from, for: data.for, reason: data.reason});
+        xhr = model.save({
+          rows: data.rows,
+          td: authentication.getUser().get('username'),
+          from: data.from,
+          for: data.for,
+          reason: data.reason
+        });
       }
       else {
         model = new FlagCommands[data.command]();

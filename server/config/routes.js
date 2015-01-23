@@ -67,7 +67,7 @@ module.exports = function (app, config, passport) {
   app.put('/admin/account/:id', memberAuth, members.update);
   app.put('/admin/account/password/:id', memberAuth, members.changePassword);
   app.get('/admin/members', memberManagerAuth, members.getAll);
-  app.get('/admin/members/bboName', loginAuth, members.getBboNames);
+  app.get('/admin/members/bboNames', loginAuth, members.getBboNames);
   app.post('/admin/members', memberManagerAuth, members.add);
   app.get('/admin/members/saveAs', memberManagerAuth, members.saveAs);
   app.get('/admin/members/saveAs/:type', memberManagerAuth, members.saveAs);
@@ -82,6 +82,7 @@ module.exports = function (app, config, passport) {
   app.get('/admin/blacklist', tdAuth, blacklists.getList);
   app.post('/admin/blacklist/entry', blacklistManagerAuth, blacklists.addEntry);
   app.get('/admin/blacklist/bboName', blacklistManagerAuth, blacklists.getByBboName);
+  app.get('/admin/blacklist/bboNames', blacklistManagerAuth, blacklists.getBboNames);
   app.get('/admin/blacklist/saveAs', blacklistManagerAuth, blacklists.saveAs);
   app.get('/admin/blacklist/saveAs/:type', blacklistManagerAuth, blacklists.saveAs);
   app.get('/admin/blacklist/:id', tdAuth, blacklists.getById);
