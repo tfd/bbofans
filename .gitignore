@@ -21,3 +21,8 @@ dist
 
 update.json
 update.log
+update-tournaments.json
+update-tournaments.log
+update-blacklist.json
+update-blacklist.log
+
