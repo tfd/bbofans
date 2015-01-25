@@ -13,8 +13,9 @@ module.exports = function (app, parentModuleName) {
     moduleClass: BaseModule,
 
     routes: {
-      'admin/members'    : '[' + moduleName + ']list:show',
-      'admin/members/:id': '[' + moduleName + ']edit:show'
+      'admin/members'       : '[' + moduleName + ']list:show',
+      'admin/members/create': '[' + moduleName + ']edit:create',
+      'admin/members/:id'   : '[' + moduleName + ']edit:show'
     },
 
     controllers: {

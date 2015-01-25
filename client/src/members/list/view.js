@@ -27,6 +27,7 @@ var MembersView = Marionette.ItemView.extend({
   ui: {
     table   : "table",
     filter  : "#filter-bar",
+    create  : '.form-create',
     enabled : '.form-enabled',
     rock    : '.form-rock',
     rbd     : '.form-rbd',
@@ -34,10 +35,15 @@ var MembersView = Marionette.ItemView.extend({
   },
 
   events: {
+    'click @ui.create'  : 'onCreateClicked',
     'click @ui.enabled' : 'onEnabledClicked',
     'click @ui.rock'    : 'onRockClicked',
     'click @ui.rbd'     : 'onRbdClicked',
     'click @ui.validate': 'onValidateClicked'
+  },
+
+  triggers: {
+    'click @ui.create': 'members:create'
   },
 
   reloadTable: function () {

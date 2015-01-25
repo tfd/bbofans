@@ -33,6 +33,15 @@ var MemberListControllerImpl = function (options) {
   }
 
   /*
+   * User wants to create a new member.
+   *
+   * This is done by navigating to a route.
+   */
+  function createMember() {
+    messageBus.command('route:admin/members/create');
+  }
+
+  /*
    * Public methods.
    */
 
@@ -46,6 +55,7 @@ var MemberListControllerImpl = function (options) {
       model: member
     });
     this.view.on('members:edit', editMember);
+    this.view.on('members:create', createMember);
     this.view.on('members:command', executeCommand);
 
     messageBus.on('members:changed', function  () {

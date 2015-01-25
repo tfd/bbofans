@@ -12,49 +12,93 @@ var listQueryParameters = require('../utils/listQueryParameters')(fieldDefinitio
 var exportToFile = require('../utils/exportToFile')('blacklist', 'member', fieldDefinitions);
 var _ = require('underscore');
 
+exportToFile.setCsvHeaderWriter(function (fields, res) {
+  res.write('bboName,from,to,reason');
+});
+
+exportToFile.setCsvDocWriter(function (doc, res) {
+  var lastEntry = doc.entries[doc.entries.length - 1];
+  res.write('"' + exportToFile.csvEscape(doc.bboName) + '",');
+  res.write(moment(lastEntry.from).utc().format() + ',');
+  res.write(moment(lastEntry.to).utc().format() + ',');
+  res.write('"' + exportToFile.csvEscape(lastEntry.reason) + '"');
+});
+
+exportToFile.setXmlCollectionPreparer(function (blacklist) {
+  blacklist.forEach(function (member) {
+    var entry = member.entries;
+    member.entries = {entry: entry};
+  });
+  return blacklist;
+});
+
+function getFilter(blacklisted) {
+  var now = moment.utc();
+  if (blacklisted) {
+    return {'entries.from': {$lte: now.toDate()}, 'entries.to': {$gte: now.toDate()}};
+  }
+  return {$or: [{'entries.from': {$gt: now.toDate()}}, {'entries.to': {$lt: now.toDate()}}]};
+}
+
+function getAggregate(blacklisted, aggregate) {
+  if (!aggregate) {
+    aggregate = Blacklist.aggregate();
+  }
+
+  return aggregate.project({_id: {_id: '$_id', bboName: '$bboName', entries: '$entries'}, entries: '$entries'})
+      .unwind('entries')
+      .group({_id: '$_id', entries: {$last: '$entries'}})
+      .match(getFilter(blacklisted ? true : false))
+      .project({_id: '$_id._id', bboName: '$_id.bboName', entries: '$_id.entries'});
+}
+
+function updateMembers(blacklisted, counter) {
+  return function (list, done) {
+    counter.num = 0;
+
+    async.each(list, function (member, cb) {
+      Member.update(
+          {bboName: member.bboName, isBlackListed: !blacklisted},
+          {$set: {isBanned: false, isBlackListed: blacklisted}},
+          function (err, numberAffected) {
+            if (err) { return cb(err); }
+            counter.num += numberAffected;
+            cb();
+          });
+    }, done);
+  };
+}
+
+function getBlacklistMembers(blacklisted) {
+  return function (numberAffected, done) {
+    if (_.isFunction(numberAffected)) {
+      done = numberAffected;
+    }
+
+    getAggregate(blacklisted)
+        .project({bboName: '$bboName', _id: 0})
+        .exec(done);
+  };
+}
+
 module.exports = function () {
-
-  exportToFile.setCsvHeaderWriter(function (fields, res) {
-    res.write('bboName,from,to,reason');
-  });
-
-  exportToFile.setCsvDocWriter(function (doc, res) {
-    var lastEntry = doc.entries[doc.entries.length - 1];
-    res.write('"' + exportToFile.csvEscape(doc.bboName) + '",');
-    res.write(moment(lastEntry.from).utc().format() + ',');
-    res.write(moment(lastEntry.to).utc().format() + ',');
-    res.write('"' + exportToFile.csvEscape(lastEntry.reason) + '"');
-  });
-
-  exportToFile.setXmlCollectionPreparer(function (blacklist) {
-    blacklist.forEach(function (member) {
-      var entry = member.entries;
-      member.entries = {entry: entry};
-    });
-    return blacklist;
-  });
 
   return {
 
     getList: function (req, res) {
-      var now = moment.utc();
       var limit = listQueryParameters.getLimit(req);
       var skip = listQueryParameters.getSkip(req);
       var sort = listQueryParameters.getSort(req, ['bboName']);
       var filter = listQueryParameters.getFindCriteria(req, {doFilter: false});
 
-      var aggr = [];
+      var aggregate = Blacklist.aggregate();
       if (!_.isEmpty(filter)) {
-        aggr.push({$match: filter});
+        aggregate.match(filter);
       }
-      aggr.push({$project: {_id: {_id: '$_id', bboName: '$bboName', entries: '$entries'}, entries: '$entries'}});
-      aggr.push({$unwind: '$entries'});
-      aggr.push({$group: {_id: '$_id', entries: {$last: '$entries'}}});
-      aggr.push({$match: {'entries.from': {$lte: now.toDate()}, 'entries.to': {$gte: now.toDate()}}});
-      aggr.push({$project: {_id: '$_id._id', bboName: '$_id.bboName', entries: '$_id.entries'}});
-      aggr.push({$sort: sort});
-      aggr.push({$skip: skip});
-      aggr.push({$limit: limit});
+      aggregate = getAggregate(true, aggregate)
+          .sort(sort)
+          .skip(skip)
+          .limit(limit);
 
       Blacklist.find(filter).count(function (err, count) {
         if (err) {
@@ -62,7 +106,7 @@ module.exports = function () {
           return res.status(500).json({error: err});
         }
 
-        Blacklist.aggregate(aggr, function (err, data) {
+        aggregate.exec(function (err, data) {
           if (err) {
             console.error('blacklists.getList', err);
             return res.status(500).json({error: err});
@@ -80,43 +124,32 @@ module.exports = function () {
     },
 
     getBboNames: function (req, res) {
-      var now = moment.utc();
       var q = req.query.q || '';
-      var filter = _.isEmpty(q) ? {} : {bboName: {$regex: new RegExp(q, 'i')}};
 
-      var aggr = [];
-      aggr.push({$match: filter});
-      aggr.push({$project: {_id: {_id: '$_id', bboName: '$bboName', entries: '$entries'}, entries: '$entries'}});
-      aggr.push({$unwind: '$entries'});
-      aggr.push({$group: {_id: '$_id', entries: {$last: '$entries'}}});
-      aggr.push({$match: {'entries.from': {$lte: now.toDate()}, 'entries.to': {$gte: now.toDate()}}});
-      aggr.push({$project: {bboName: '$_id.bboName'}});
-      aggr.push({$sort: {bboName: -1}});
+      var aggregate = Blacklist.aggregate();
+      if (!_.isEmpty(q)) {
+        aggregate.match({bboName: {$regex: new RegExp(q, 'i')}});
+      }
+      getAggregate(true, aggregate)
+          .project({bboName: '$bboName', _id: 0})
+          .sort({bboName: -1})
+          .exec(function (err, data) {
+            if (err) {
+              console.error('blacklists.getBboNames', err);
+              return res.status(500).json({error: err});
+            }
 
-      Blacklist.find(filter).count(function (err, count) {
-        if (err) {
-          console.err('blacklist.getBboNames', err);
-          return res.status(500).json({error: err});
-        }
-
-        Blacklist.aggregate(aggr, function (err, data) {
-          if (err) {
-            console.error('blacklists.getBboNames', err);
-            return res.status(500).json({error: err});
-          }
-
-          if (req.query.bloodhound) {
-            res.json(data);
-          }
-          else {
-            var arr = [];
-            _.each(data, function (blacklist) {
-              arr.push(blacklist.bboName);
-            });
-            res.json(arr);
-          }
-        });
-      });
+            if (req.query.bloodhound) {
+              res.json(data);
+            }
+            else {
+              var arr = [];
+              _.each(data, function (blacklist) {
+                arr.push(blacklist.bboName);
+              });
+              res.json(arr);
+            }
+          });
     },
 
     getById: function (req, res) {
@@ -209,71 +242,49 @@ module.exports = function () {
     },
 
     saveAs: function (req, res) {
-      var now = moment.utc();
       var sort = listQueryParameters.getSort(req, fields);
       var filter = listQueryParameters.getFindCriteria(req, {doFilter: false});
 
-      var aggr = [];
+      var aggregate = Blacklist.aggregate();
       if (!_.isEmpty(filter)) {
-        aggr.push({$match: filter});
+        aggregate.match(filter);
       }
-      aggr.push({$project: {_id: {bboName: '$bboName', entries: '$entries'}, entries: '$entries'}});
-      aggr.push({$unwind: '$entries'});
-      aggr.push({$group: {_id: '$_id', entries: {$last: '$entries'}}});
-      aggr.push({$match: {'entries.from': {$lte: now.toDate()}, 'entries.to': {$gte: now.toDate()}}});
-      aggr.push({$project: {_id: 0, bboName: '$_id.bboName', entries: '$_id.entries'}});
-      aggr.push({$sort: sort});
+      getAggregate(true, aggregate)
+          .sort(sort)
+          .exec(function (err, blacklisted) {
+            if (err) {
+              console.error('blacklist.saveAs', err);
+              return res.status(500).json({error: err});
+            }
 
-      Blacklist.aggregate(aggr, function (err, blacklisted) {
-        if (err) {
-          console.error('blacklist.saveAs', err);
-          return res.status(500).json({error: err});
-        }
+            // Remove _id from entries, as it's not needed.
+            blacklisted.forEach(function (blacklist) {
+              blacklist.entries.forEach(function (entry) {
+                delete entry._id;
+              });
+            });
 
-        // Remove _id from entries, as it's not needed.
-        blacklisted.forEach(function (blacklist) {
-          blacklist.entries.forEach(function (entry) {
-            delete entry._id;
+            var type = req.params.type ? req.params.type.toLowerCase() : 'text';
+            exportToFile.saveAs(type, blacklisted, res);
           });
-        });
-
-        var type = req.params.type ? req.params.type.toLowerCase() : 'text';
-        exportToFile.saveAs(type, blacklisted, res);
-      });
     },
 
     updateMembers: function (req, res) {
-      async.waterfall([
-          function (cb) {
-            var now = moment.utc();
-            var aggr = [];
-            aggr.push({$project: {_id: {bboName: '$bboName', entries: '$entries'}, entries: '$entries'}});
-            aggr.push({$unwind: '$entries'});
-            aggr.push({$group: {_id: '$_id', entries: {$last: '$entries'}}});
-            aggr.push({$match: {$or: [{'entries.from': {$gt: now.toDate()}}, {'entries.to': {$lt: now.toDate()}}]}});
-            aggr.push({$project: {bboName: '$_id.bboName'}});
+      var blackListedMembers = {num: 0};
+      var whiteListedMembers = {num: 0};
 
-            Blacklist.aggregate(aggr, cb);
-          },
-          function (whitelisted, done) {
-            async.each(whitelisted, function (whitelist, cb) {
-              Member.update(
-                  {bboName: whitelist.bboName},
-                  {$set: {isBanned: false, isBlackListed: false}},
-                  cb);
-            }, done);
-          }
-      ], function (err, members) {
+      async.waterfall([
+        getBlacklistMembers(false),
+        updateMembers(false, whiteListedMembers),
+        getBlacklistMembers(true),
+        updateMembers(true, blackListedMembers)
+      ], function (err) {
         if (err) {
           console.error('blacklist.updateMembers', err);
           return res.status(500).json({error: err});
         }
 
-        if (_.isEmpty(members)) {
-          return res.json({message: 'No members removed from blacklist'});
-        }
-
-        res.json(members);
+        res.json({added: blackListedMembers.num, removed: whiteListedMembers.num});
       });
     }
 

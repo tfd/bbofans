@@ -94,6 +94,16 @@ var MemberEditImpl = function(options) {
       show(region, model);
     });
   };
+
+  this.create = function (region) {
+    show(region, {
+      role: 'member',
+      isEnabled: true,
+      registeredDate: moment.utc(),
+      validatedDate: moment.utc()
+    });
+  };
+
   this.app = options.app;
   this.module = options.module;
 
@@ -106,6 +116,10 @@ var MemberEditController = Marionette.Controller.extend({
 
   show: function (region, id) {
     this.impl.show(region, id);
+  },
+
+  create: function (region) {
+    this.impl.create(region);
   }
 });
 
