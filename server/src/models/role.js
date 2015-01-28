@@ -5,6 +5,7 @@
  * Module dependencies.
  */
 
+var _ = require('underscore');
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
@@ -20,5 +21,13 @@ var RoleSchema = new Schema({
   isTdManager       : {type: Boolean, default: false},
   createdAt         : {type: Date, default: Date.now}
 });
+
+RoleSchema.statics = {
+
+  getRoleNames: function () {
+    return ['member', 'td', 'td manager', 'blacklist manager', 'admin'];
+  }
+
+};
 
 module.exports = mongoose.model('Role', RoleSchema);

@@ -5,6 +5,7 @@
  * Module dependencies.
  */
 
+require('./role.js');
 var mongoose = require('mongoose');
 var validate = require('mongoose-validator');
 var crypto = require('crypto');
@@ -12,6 +13,9 @@ var Schema = mongoose.Schema;
 var mongooseTypes = require("nifty-mongoose-types");
 mongooseTypes.loadTypes(mongoose);
 var Email = mongoose.SchemaTypes.Email;
+var roles = mongoose.model('Role').getRoleNames();
+var skills = require('./skills.js');
+var levels = require('./levels.js');
 
 /*
  * Member Schema
@@ -28,28 +32,42 @@ var emailValidator = [validate({
                       })
 ];
 
+var bboNameValidator = [validate({
+  validator: 'isLength',
+  arguments: [2, 10],
+  message  : 'bboName should be between 2 and 10 characters'
+})
+];
+
 var MemberSchema = new Schema({
-  bboName        : {type: String, required: 'BBO name cannot be blank', unique: true, trim: true},
+  bboName        : {
+    type    : String,
+    required: 'BBO name cannot be blank',
+    unique  : true,
+    trim    : true,
+    validate: bboNameValidator
+  },
   name           : {type: String, required: 'Name cannot be blank', trim: true},
   nation         : {type: String, required: 'Nation cannot be blank', trim: true},
-  emails         : [{type     : Email,
+  emails         : [{
+                      type    : Email,
                       required: 'Email cannot be blank',
                       unique  : true,
                       trim    : true,
                       validate: emailValidator
                     }],
   telephones     : [{type: String, trim: true}],
-  level          : {type: String, default: 'Beginner', trim: true},
+  level          : {type: String, default: 'Beginner', trim: true, enum: levels},
   hashed_password: {type: String, required: 'Password cannot be blank', trim: true},
   salt           : {type: String},
-  role           : {type: String, default: 'member', required: 'Role cannot be blank', trim: true},
+  role           : {type: String, default: 'member', required: 'Role cannot be blank', trim: true, enum: roles},
   isStarPlayer   : {type: Boolean, default: false},
   isRbdPlayer    : {type: Boolean, default: false},
   isEnabled      : {type: Boolean, default: false},
   isBlackListed  : {type: Boolean, default: false},
   isBanned       : {type: Boolean, default: false},
   notes          : {type: String, default: '', trim: true},
-  skill          : {type: String, default: 'Tournament TD', trim: true},
+  skill          : {type: String, default: 'Tournament TD', trim: true, enum: skills},
   h3am           : {type: Boolean, default: false},
   h7am           : {type: Boolean, default: false},
   h11am          : {type: Boolean, default: false},
@@ -211,7 +229,7 @@ MemberSchema.methods = {
    * Did player play in specified tournament?
    *
    * @param {Object} tournament
-   * @return true if the player played in the tournament, false otherwise.
+   * @return {Boolean} true if the player played in the tournament, false otherwise.
    */
   playedInTournament: function (league, tournament) {
     var arr = league.populated('playedInTournaments') || league.playedInTournaments;
@@ -277,7 +295,7 @@ MemberSchema.methods = {
       league.monthlyScores.push(newMonthlyScore);
     }
 
-    if (! league.lastPlayedAt || league.lastPlayedAt < tournament.date) {
+    if (!league.lastPlayedAt || league.lastPlayedAt < tournament.date) {
       league.lastPlayedAt = tournament.date;
     }
     league.playedInTournaments.push(tournament);
