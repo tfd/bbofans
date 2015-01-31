@@ -31,7 +31,7 @@ module.exports = function (app, config, passport) {
   // should be placed before express.static
   app.use(compression({
     filter: function (req, res) {
-      return /json|text|javascript|css/.test(res.getHeader('Content-Type'))
+      return (/json|text|javascript|css/).test(res.getHeader('Content-Type'));
     },
     level: 9,
     threshold: 512

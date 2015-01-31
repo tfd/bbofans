@@ -13,7 +13,8 @@ module.exports = function (grunt) {
         NODE_ENV: 'test'
       },
       dev : {
-        NODE_ENV: 'dev'
+        NODE_ENV: 'dev',
+        PORT: 4000
       },
       prod: {
         NODE_ENV: 'prod'
