@@ -14,7 +14,7 @@ module.exports = function (grunt) {
       },
       dev : {
         NODE_ENV: 'dev',
-        PORT: 4000
+        PORT    : 4000
       },
       prod: {
         NODE_ENV: 'prod'
@@ -214,11 +214,11 @@ module.exports = function (grunt) {
 
     // for changes to the front-end code
     watch      : {
-      devScripts: {
+      devScripts : {
         files: ['client/src/**/*.hbs', 'client/src/**/*.js'],
         tasks: ['clean:dev:js', 'browserify:dev', 'copy:dev']
       },
-      devLess   : {
+      devLess    : {
         files: ['client/styles/**/*.less'],
         tasks: ['clean:dev:css', 'less:transpile', 'copy:dev']
       },
@@ -230,11 +230,11 @@ module.exports = function (grunt) {
         files: ['client/styles/**/*.less'],
         tasks: ['clean:prod:css', 'less:transpile', 'cssmin', 'copy:prod']
       },
-      test : {
+      test       : {
         files: ['build/client.js', 'client/test/**/*.test.js'],
         tasks: ['browserify:test']
       },
-      karma: {
+      karma      : {
         files: ['build/tests.js'],
         tasks: ['jshint:test', 'karma:watcher:run']
       }
@@ -314,7 +314,7 @@ module.exports = function (grunt) {
           logConcurrentOutput: true,
           limit              : 5
         }
-      },
+      }
     },
 
     // for front-end tdd
