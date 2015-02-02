@@ -23,7 +23,7 @@ var AdminHomeController = Marionette.Controller.extend({
 
   logout: function () {
     authentication.logout(function () {
-      messageBus.command('route:admin/login');
+      messageBus.command('route:login');
     });
   },
 

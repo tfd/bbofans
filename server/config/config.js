@@ -58,7 +58,8 @@ var config = {dev: {}, test: {}, prod: {}};
         user: 'mailer@bbofans.com'
       }
     },
-    confirmationUrl: 'http://www.bbofans.com/register/confirm/:id'
+    confirmationUrl: 'http://www.bbofans.com/register/confirm/:id',
+    resetPasswordUrl: 'http://www.bbofans.com/admin/account/reset/:id/:password'
   };
   config[type].bbo = {
     tournamentListUrl: 'http://webutil.bridgebase.com/v2/tarchive.php?m=h&h=bbo+fans',
@@ -70,6 +71,7 @@ config.dev.db = 'mongodb://localhost/bbofans_dev';
 config.dev.mail.replyTo = '"BBO Fans Admin" <ronald@bbofans.com>';
 config.dev.mail.bcc = '"BBO Fans Admin" <ronald@bbofans.com>';
 config.dev.mail.confirmationUrl = 'http://local.bbofans.com:3000/register/confirm/:id';
+config.dev.mail.resetPasswordUrl = 'http://local.bbofans.com:3000/admin/account/reset/:id/:password';
 
 config.test.db = 'mongodb://localhost/bbofans_test';
 config.test.omitReCaptcha = true;

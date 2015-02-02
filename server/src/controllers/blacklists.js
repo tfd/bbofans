@@ -81,7 +81,25 @@ function getBlacklistMembers(blacklisted) {
   };
 }
 
-module.exports = function () {
+module.exports = function (config) {
+
+  function getText(member) {
+    var url = config.mail.confirmationUrl.replace(':id', member._id);
+    return 'Welcome ' + (member.name || member.bboName) + ',\n\n' +
+           'Thank you for your registration to the BBO Fans.\n' +
+           'To complete the procedure, please click on the following link.\n' + url + '\n' +
+           'If you are unable to click on the link just cut&amp;paste it in the browser bar and press enter.\n\n' +
+           'Thanks,\n\nBBO Fans Admin';
+  }
+
+  function getHtml(member) {
+    var url = config.mail.confirmationUrl.replace(':id', member._id);
+    return '<h1>Welcome ' + (member.name || member.bboName) + ',</h1>' +
+           '<p>Thank you for your registration to the BBO Fans.<br/>To complete the procedure, please click on the following link.</p>' +
+           '<p><a href="' + url + '">' + url + '</a></p>' +
+           '<p>If you are unable to click on the link just cut&amp;paste it in the browser bar and press enter.</p>' +
+           '<p>Thanks.<br/><br/>BBO Fans Admin</p>';
+  }
 
   return {
 
@@ -198,7 +216,18 @@ module.exports = function () {
               return res.status(404).json({bboName: 'Blacklist not found.'});
             }
 
-            res.json(blacklist);
+            Member.findOne({bboName: req.body.bboName}, function (err, member) {
+              if (!err && member) {
+                config.servers.sendMail({
+                  to     : blacklist.emails[0],
+                  subject: '[BBO Fans] Blacklist',
+                  text   : getText(member),
+                  html   : getHtml(member)
+                });
+              }
+
+              return res.json(blacklist);
+            });
           });
     },
 

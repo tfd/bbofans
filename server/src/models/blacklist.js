@@ -78,8 +78,8 @@ BlacklistSchema.statics = {
             blacklist = bl;
             Member.findOne({bboName: td}, cb);
           },
-          function (member, cb) {
-            if (member === null) {
+          function (tdMember, cb) {
+            if (tdMember === null) {
               return cb({validationError: {'td': '"' + td + '" is not a member of BBO fans'}});
             }
 

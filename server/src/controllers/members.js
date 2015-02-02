@@ -544,40 +544,6 @@ module.exports = function () {
       });
     },
 
-    changePassword: function (req, res) {
-      var password = req.body;
-      var id = password._id;
-      delete password._id;
-      Member.findById(id, function (err, member) {
-        if (err) {
-          console.error('members.changePassword', err);
-          return res.status(500).json({error: err});
-        }
-
-        if (!member) {
-          return res.status(404).json({_id: 'Member not found'});
-        }
-
-        if (!member.authenticate(password.currentPassword)) {
-          return res.status(422).json({currentPassword: 'Incorrect password'});
-        }
-
-        if (password.newPassword !== password.repeatPassword) {
-          return res.status(422).json({repeatPassword: "doesn't match"});
-        }
-
-        member.password = password.newPassword;
-        member.save(function (err) {
-          if (err) {
-            console.error('members.changePassword', err);
-            return res.status(500).json({error: 'Error changing password.'});
-          }
-
-          res.json(member);
-        });
-      });
-    },
-
     remove: function (req, res) {
       Member.findOne({_id: req.params.id}, function (err, member) {
         if (err) {

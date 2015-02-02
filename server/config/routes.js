@@ -37,7 +37,7 @@ module.exports = function (app, config, passport) {
 
   var index = require('../src/controllers/index')(config);
   var countries = require('../src/controllers/countries')(config);
-  var register = require('../src/controllers/register')(config);
+  var accounts = require('../src/controllers/accounts')(config);
   var admin = require('../src/controllers/admin')(config);
   var members = require('../src/controllers/members')(config);
   var commands = require('../src/controllers/commands')(config);
@@ -58,15 +58,19 @@ module.exports = function (app, config, passport) {
   app.get('/members/rbd', members.getRbd);
   app.get('/winners/rock', members.getRockWinners);
   app.get('/winners/rbd', members.getRbdWinners);
-  app.post('/register', register.register);
-  app.get('/register/:id', register.getRegistrant);
-  app.get('/register/confirm/:id', register.confirmEmail);
+  app.post('/register', accounts.register);
+  app.get('/register/:id', accounts.getRegistrant);
+  app.get('/register/confirm/:id', accounts.confirmEmail);
   app.get('/countries', countries.get);
   app.get('/admin/session', admin.getUser);
   app.post('/admin/session', login(app, config, passport));
   app.get('/admin/account/:id', memberAuth, members.getById);
   app.put('/admin/account/:id', memberAuth, members.update);
-  app.put('/admin/account/password/:id', memberAuth, members.changePassword);
+  app.put('/admin/account/password/:id', memberAuth, accounts.changePassword);
+  app.post('/admin/account/forgot', accounts.forgotPassword);
+  app.put('/admin/account/forgot', accounts.forgotPassword);
+  app.get('/admin/account/reset/:id/:password', accounts.resetPassword);
+  app.put('/admin/account/confirm/:id', accounts.changePassword);
   app.get('/admin/members', memberManagerAuth, members.getAll);
   app.get('/admin/members/bboNames', loginAuth, members.getBboNames);
   app.post('/admin/members', memberManagerAuth, members.add);

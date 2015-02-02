@@ -31,12 +31,13 @@ var BboFansApp = Marionette.Application.extend({
       el: options.container || '#bbofans-app-container'
     });
     this.navbarModule = require('./navbar/module')(this);
-    require('./homepage/module.js')(this);
-    require('./admin/module.js')(this);
-    require('./members/module.js')(this, 'admin');
-    require('./blacklist/module.js')(this, 'admin');
-    require('./tds/module.js')(this, 'admin');
-    require('./account/module.js')(this, 'admin');
+    require('./homepage/module')(this);
+    require('./admin/module')(this);
+    require('./password/module')(this);
+    require('./members/module')(this, 'admin');
+    require('./blacklist/module')(this, 'admin');
+    require('./tds/module')(this, 'admin');
+    require('./account/module')(this, 'admin');
   },
 
   getPopupRegion: function () {

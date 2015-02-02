@@ -12,6 +12,7 @@ var homepageAwardsTemplate = require('./awards.hbs');
 var homepageMathPointsTemplate = require('./matchpoints.hbs');
 var homepageBboLinksTemplate = require('./bbolinks.hbs');
 var homepageConfirmRegistrationTemplate = require('./confirmRegistration.hbs');
+var homepagePasswordResetTemplate = require('./passwordReset.hbs');
 var createStaticView = require('../../common/views/staticContent');
 
 var HomepagePageController = Marionette.Controller.extend({
@@ -64,6 +65,12 @@ var HomepagePageController = Marionette.Controller.extend({
 
   showConfirmRegistration: function (region) {
     region.show(createStaticView(homepageConfirmRegistrationTemplate));
+
+    messageBus.command('show:winners:rock');
+  },
+
+  showPasswordReset: function (region) {
+    region.show(createStaticView(homepagePasswordResetTemplate));
 
     messageBus.command('show:winners:rock');
   }

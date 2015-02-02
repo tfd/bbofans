@@ -34,6 +34,10 @@ var HomepageLoginController = Marionette.Controller.extend({
           }
         });
       });
+      loginView.on('forgot:password', function () {
+        messageBus.command('route:password/forgot');
+      });
+
       region.show(loginView);
     });
 
