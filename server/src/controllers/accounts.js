@@ -57,7 +57,7 @@ module.exports = function (config) {
       if (!member) {
         var error = {};
         error[field] = 'not found';
-        return res.json(error);
+        return res.status(404).json(error);
       }
 
       var password = new Generator().exactly(3).uppercase
@@ -210,7 +210,7 @@ module.exports = function (config) {
         Account.findOne({bboName: req.body.bboName}, forgotPassword('bboName', res));
       }
       else {
-        res.json({bboName: "can't be blank", email: "can't be blank"});
+        res.status(422).json({bboName: "can't be blank", email: "can't be blank"});
       }
     },
 
