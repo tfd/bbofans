@@ -56,7 +56,7 @@ var HomepageRegisterController = Marionette.Controller.extend({
 
     region.show(registerView);
 
-    messageBus.command('show:winners:rock');
+    messageBus.command('hide:winners');
   },
 
   success: function (region, id) {

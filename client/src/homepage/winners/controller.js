@@ -29,6 +29,13 @@ var WinnersController = Marionette.Controller.extend({
       self.rockController.stop();
       self.rbdController.show(self.region);
     });
+
+    messageBus.comply('hide:winners', function () {
+      self.rbd = false;
+      self.rockController.stop();
+      self.rbdController.stop();
+      self.region.empty();
+    });
   },
 
   show: function (region) {

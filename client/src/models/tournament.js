@@ -4,10 +4,8 @@
 var Backbone = require('backbone');
 var _ = require('underscore');
 var moment = require('moment');
-var messageBus = require('../common/router/messageBus');
 
 var Tournament = Backbone.Model.extend({
-  urlRoot: "admin/tournaments",
   idAttribute: "_id",
 
   defaults: {
@@ -33,12 +31,6 @@ var Tournament = Backbone.Model.extend({
       return errors;
     }
   }
-});
-
-messageBus.reply('tournaments:tail:10', function () {
-  var tournaments = new Backbone.Collection({model: Tournament});
-  tournaments.fetch({data: {offset: 0, limit: 10, order: 'date', sort: 'desc'}, reset: true});
-  return tournaments;
 });
 
 module.exports = Tournament;

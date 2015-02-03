@@ -15,7 +15,7 @@ module.exports = function (app, parentModuleName) {
     routes: {
       "serverError"                : '[' + moduleName + ']pages:showServerError',
       "pageNotFound"               : '[' + moduleName + ']pages:showPageNotFound',
-      "home"                       : '[' + moduleName + ']pages:showHome',
+      "home"                       : '[' + moduleName + ']home:show',
       "register"                   : '[' + moduleName + ']register:show',
       "register/confirmed"         : '[' + moduleName + ']pages:showConfirmRegistration',
       "register/:id"               : '[' + moduleName + ']register:success',
@@ -31,6 +31,7 @@ module.exports = function (app, parentModuleName) {
 
     controllers: {
       layout        : require('./layout/controller'),
+      home          : require('./home/controller'),
       pages         : require('./pages/controller'),
       register      : require('./register/controller'),
       carousel      : require('./td_carousel/controller'),

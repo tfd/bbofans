@@ -5,8 +5,6 @@
     <div id="home-winners-rock" class="col-md-5 col-sm-6"></div>
     <div id="home-winners-rbd" class="col-md-5 col-md-offset-1 col-sm-6"></div>
   </div>
-
-  <span class="participant img-circle"><i class="fa fa-user" data-original-title="" title=""></i></span>
 </div>
 
 <div class="home-tournaments home-window">
@@ -16,7 +14,11 @@
     <table class="table">
       <tbody>
         {{#each items}}
-          <tr><td><a href="{{resultsUrl}}" title="{{name}}">{{name}}</a></td></tr>
+          <tr>
+            <td>{{name}}</td>
+            <td><a href="{{resultsUrl}}" target="_blank">results</a></td>
+            <td><a href="{{boardsUrl}}" target="_blank">boards</a></td>
+          </tr>
         {{/each}}
       </tbody>
     </table>

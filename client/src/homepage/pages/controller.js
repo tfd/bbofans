@@ -24,55 +24,55 @@ var HomepagePageController = Marionette.Controller.extend({
   showServerError: function (region) {
     region.show(createStaticView(homepageServerErrorTemplate));
 
-    messageBus.command('show:winners:rock');
+    messageBus.command('hide:winners');
   },
 
   showPageNotFound: function (region) {
     region.show(createStaticView(homepagePageNotFoundTemplate));
 
-    messageBus.command('show:winners:rock');
+    messageBus.command('hide:winners');
   },
 
   showHome: function (region) {
     region.show(createStaticView(homepageHomeTemplate));
 
-    messageBus.command('show:winners:rock');
+    messageBus.command('hide:winners');
   },
 
   showRules: function (region) {
     region.show(createStaticView(homepageRulesTemplate));
 
-    messageBus.command('show:winners:rock');
+    messageBus.command('hide:winners');
   },
 
   showAwards: function (region) {
     region.show(createStaticView(homepageAwardsTemplate));
 
-    messageBus.command('show:winners:rock');
+    messageBus.command('hide:winners');
   },
 
   showMatchPoints: function (region) {
     region.show(createStaticView(homepageMathPointsTemplate));
 
-    messageBus.command('show:winners:rock');
+    messageBus.command('hide:winners');
   },
 
   showBboLinks: function (region) {
     region.show(createStaticView(homepageBboLinksTemplate));
 
-    messageBus.command('show:winners:rock');
+    messageBus.command('hide:winners');
   },
 
   showConfirmRegistration: function (region) {
     region.show(createStaticView(homepageConfirmRegistrationTemplate));
 
-    messageBus.command('show:winners:rock');
+    messageBus.command('hide:winners');
   },
 
   showPasswordReset: function (region) {
     region.show(createStaticView(homepagePasswordResetTemplate));
 
-    messageBus.command('show:winners:rock');
+    messageBus.command('hide:winners');
   }
 });
 

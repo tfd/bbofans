@@ -50,13 +50,7 @@ function getTournaments(req, criteria, cb) {
             return cb({error: 'No tournament found.'});
           }
 
-          cb(null, {
-            skip : skip,
-            limit: limit,
-            sort : sort,
-            total: count,
-            tournaments : tournaments
-          });
+          cb(null, tournaments);
         });
   });
 }

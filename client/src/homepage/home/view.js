@@ -2,6 +2,7 @@
 "use strict";
 
 var Marionette = require('backbone.marionette');
+var $ = require('jquery');
 
 var HomepageHomeView = Marionette.LayoutView.extend({
   template: require('./template.hbs'),
@@ -15,6 +16,14 @@ var HomepageHomeView = Marionette.LayoutView.extend({
   regions: {
     'rock': '@ui.rock',
     'rbd' : '@ui.rbd'
+  },
+
+  initialize: function() {
+    this.listenTo(this.collection, "change reset add", this.collectionChanged);
+  },
+
+  collectionChanged: function () {
+    this.render();
   }
 });
 
