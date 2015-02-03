@@ -98,8 +98,10 @@ module.exports = function () {
    * @param {string} field - field to use for sorting. One of averageScore or awards.
    * @param {function} cb - function called with the result
    */
-  function getWinners(type, month, year, field, cb) {
-    var sortField = type + '.monthlyScores.' + field;
+  function getWinners(type, req, cb) {
+    var month = req.query.month ? parseInt(req.query.month, 10) : moment().month();
+    var year = req.query.year ? parseInt(req.query.year, 10) : moment().year();
+    var sortField = type + '.monthlyScores.' + (req.query.score && req.query.score !== 'no' ? 'averageScore' : 'awards');
     var sort = {};
     sort[sortField] = -1;
 
@@ -221,10 +223,7 @@ module.exports = function () {
     },
 
     getRockWinners: function (req, res) {
-      var month = req.query.month ? parseInt(req.query.month, 10) : moment().month();
-      var year = req.query.year ? parseInt(req.query.year, 10) : moment().year();
-      var sortField = (req.query.score && req.query.score !== 'no' ? 'averageScore' : 'awards');
-      getWinners('rock', month, year, sortField, function (err, result) {
+      getWinners('rock', req, function (err, result) {
         if (err) {
           console.error('members.getRockWinners', err);
           return res.status(500).json({error: err});
@@ -235,10 +234,7 @@ module.exports = function () {
     },
 
     getRbdWinners: function (req, res) {
-      var month = req.query.month ? parseInt(req.query.month, 10) : moment().month();
-      var year = req.query.year ? parseInt(req.query.year, 10) : moment().year();
-      var sortField = (req.query.score && req.query.score !== 'no' ? 'averageScore' : 'awards');
-      getWinners('rbd', month, year, sortField, function (err, result) {
+      getWinners('rbd', req, function (err, result) {
         if (err) {
           console.error('members.getRockWinners', err);
           return res.status(500).json({error: err});

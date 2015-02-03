@@ -2,7 +2,6 @@
 "use strict";
 
 var Marionette = require('backbone.marionette');
-
 var LeagueController = require('./leagueController');
 
 var RbdController = LeagueController.extend({

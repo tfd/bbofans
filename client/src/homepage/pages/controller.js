@@ -6,7 +6,7 @@ var messageBus = require('../../common/router/messageBus');
 
 var homepageServerErrorTemplate = require('./serverError.hbs');
 var homepagePageNotFoundTemplate = require('./pageNotFound.hbs');
-var homepageHomeTemplate = require('./home.hbs');
+var homepageAboutTemplate = require('./about.hbs');
 var homepageRulesTemplate = require('./rules.hbs');
 var homepageAwardsTemplate = require('./awards.hbs');
 var homepageMathPointsTemplate = require('./matchpoints.hbs');
@@ -33,8 +33,8 @@ var HomepagePageController = Marionette.Controller.extend({
     messageBus.command('hide:winners');
   },
 
-  showHome: function (region) {
-    region.show(createStaticView(homepageHomeTemplate));
+  showAbout: function (region) {
+    region.show(createStaticView(homepageAboutTemplate));
 
     messageBus.command('hide:winners');
   },

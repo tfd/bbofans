@@ -6,6 +6,7 @@ var HomepageHomeView = require('./view');
 var messageBus = require('../../common/router/messageBus');
 var RockController = require('../winners/rockController');
 var RbdController = require('../winners/rbdController');
+var moment = require('moment');
 require('../../models/tournamentCollection');
 
 var HomepageHomeController = Marionette.Controller.extend({
@@ -25,8 +26,15 @@ var HomepageHomeController = Marionette.Controller.extend({
       rbd: this.view.rbd
     };
 
-    this.rockController = new RockController();
-    this.rbdController = new RbdController();
+    var previousMonth = moment().subtract(1, 'M');
+    this.rockController = new RockController({
+      month: previousMonth.month(),
+      year: previousMonth.year()
+    });
+    this.rbdController = new RbdController({
+      month: previousMonth.month(),
+      year: previousMonth.year()
+    });
 
     this.rockController.show(this.view.rock);
     this.rbdController.show(this.view.rbd);
