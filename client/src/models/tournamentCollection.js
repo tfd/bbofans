@@ -10,7 +10,7 @@ var TournamentCollection = Backbone.Collection.extend({
   model: Tournament
 });
 
-messageBus.reply('tournaments.tail', function (num) {
+messageBus.reply('tournaments:tail', function (num) {
   var tournaments = new TournamentCollection();
   tournaments.fetch({data: {offset: 0, limit: num || 10, sort: 'date', order: 'desc'}, reset: true});
   return tournaments;

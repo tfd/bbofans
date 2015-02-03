@@ -37,7 +37,7 @@ var PasswordForgotController = Marionette.Controller.extend({
 
     region.show(passwordForgotView);
 
-    messageBus.command('show:winners:rock');
+    messageBus.command('hide:winners');
   }
 
 });

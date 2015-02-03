@@ -14,7 +14,7 @@ var HomepageTdCarouselController = Marionette.Controller.extend({
 
   show: function (region) {
     this.view = new HomepageCarouselView();
-    this.view.model.set('items', messageBus.request('tds.carousel'));
+    this.view.model.set('items', messageBus.request('tds:carousel'));
     region.show(this.view);
   }
 

@@ -12,7 +12,7 @@ var homepageTdCarousel = new HomepageTdCarousel({
   items     : new TdCollection()
 });
 
-messageBus.reply('tds.carousel', function () {
+messageBus.reply('tds:carousel', function () {
   var tds = new TdCollection();
   tds.add([{
              src    : '/img/tds/pensando3.jpg',

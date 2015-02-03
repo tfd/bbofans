@@ -17,7 +17,7 @@ var HomepageHomeController = Marionette.Controller.extend({
 
   show: function (region) {
     this.view = new HomepageHomeView({
-      collection: messageBus.request('tournaments.tail', 20)
+      collection: messageBus.request('tournaments:tail', 20)
     });
     region.show(this.view);
 
