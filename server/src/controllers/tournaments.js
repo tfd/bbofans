@@ -25,42 +25,73 @@ var field2FlatNames = {};
 var fieldDefinitions = require('../utils/fieldDefinitions')(Member, fields, field2FlatNames);
 var listQueryParameters = require('../utils/listQueryParameters')(fieldDefinitions);
 
+function getTournaments(req, criteria, cb) {
+  var limit = listQueryParameters.getLimit(req);
+  var skip = listQueryParameters.getSkip(req);
+  var sort = listQueryParameters.getSort(req, ['name', 'date', 'isPair', 'isRbd', 'numPlayers']);
+  var filter = listQueryParameters.getFindCriteria(req, {
+    criteria: criteria,
+    searchFields: ['name']
+  });
+  Tournament.find(filter).count(function (err, count) {
+    if (err) {
+      console.error('tournaments.index', err);
+      return cb({error: 'No tournament found.'});
+    }
+
+    Tournament
+        .find(filter)
+        .sort(sort)
+        .skip(skip)
+        .limit(limit)
+        .exec(function (err, tournaments) {
+          if (err) {
+            console.error('tournaments.index', err);
+            return cb({error: 'No tournament found.'});
+          }
+
+          cb(null, {
+            skip : skip,
+            limit: limit,
+            sort : sort,
+            total: count,
+            tournaments : tournaments
+          });
+        });
+  });
+}
+
 module.exports = function () {
 
   return {
 
     getAll: function (req, res) {
-      var limit = listQueryParameters.getLimit(req);
-      var skip = listQueryParameters.getSkip(req);
-      var sort = listQueryParameters.getSort(req, ['name', 'date', 'isPair', 'isRbd', 'numPlayers']);
-      var filter = listQueryParameters.getFindCriteria(req, {
-        searchFields: ['name']
-      });
-      Tournament.find(filter).count(function (err, count) {
+      getTournaments(req, null, function (err, tournaments) {
         if (err) {
-          console.error('tournaments.index', err);
-          return res.json({error: 'No tournament found.'});
+          return res.status(404).json(err);
         }
 
-        Tournament
-            .find(filter)
-            .order(sort)
-            .skip(skip)
-            .limit(limit)
-            .exec(function (err, tournaments) {
-              if (err) {
-                console.error('tournaments.index', err);
-                return res.json({error: 'No tournament found.'});
-              }
+        res.json(tournaments);
+      });
+    },
 
-              res.json({
-                skip : skip,
-                limit: limit,
-                sort : sort,
-                total: count,
-                rows : tournaments
-              });
-            });
+    getRock: function (req, res) {
+      getTournaments(req, {isRbd: false}, function (err, tournaments) {
+        if (err) {
+          return res.status(404).json(err);
+        }
+
+        res.json(tournaments);
+      });
+    },
+
+    getRbd: function (req, res) {
+      getTournaments(req, {isRbd: true}, function (err, tournaments) {
+        if (err) {
+          return res.status(404).json(err);
+        }
+
+        res.json(tournaments);
       });
     },
 

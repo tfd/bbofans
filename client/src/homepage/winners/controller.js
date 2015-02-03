@@ -4,10 +4,8 @@
 var Marionette = require('backbone.marionette');
 var messageBus = require('../../common/router/messageBus');
 
-var RockWinners = require('../../models/rockWinners');
-var RbdWinners = require('../../models/rbdWinners');
-var RockView = require('./rockView');
-var RbdView = require('./rbdView');
+var RockController = require('./rockController');
+var RbdController = require('./rbdController');
 
 var WinnersController = Marionette.Controller.extend({
   initialize: function (options) {
@@ -15,57 +13,35 @@ var WinnersController = Marionette.Controller.extend({
 
     this.app = options.app;
     this.module = options.module;
-    this.rbd = false;
 
-    messageBus.comply('show:winners:rbd', function () {
-      self.rbd = true;
-      self.load();
-    });
+    this.rbd = false;
+    this.rockController = new RockController();
+    this.rbdController = new RbdController();
 
     messageBus.comply('show:winners:rock', function () {
       self.rbd = false;
-      self.load();
+      self.rbdController.stop();
+      self.rockController.show(self.region);
     });
-  },
 
-  load: function () {
-    if (this.view) {
-      var self = this;
-      var rbd = this.rbd;
-      var winners = rbd ? new RbdWinners() : new RockWinners();
-      var View = rbd ? RbdView : RockView;
-
-      winners.fetch().done(function () {
-        if (rbd !== self.rbd) {
-          // Somebody changed page in the meantime.
-          self.load();
-        }
-        else {
-          self.view = new View({collection: winners});
-          self.region.show(self.view);
-        }
-      });
-    }
+    messageBus.comply('show:winners:rbd', function () {
+      self.rbd = true;
+      self.rockController.stop();
+      self.rbdController.show(self.region);
+    });
   },
 
   show: function (region) {
     this.region = region;
 
-    var self = this;
-    var rbd = this.rbd;
-    var winners = rbd ? new RbdWinners() : new RockWinners();
-    var View = rbd ? RbdView : RockView;
-
-    winners.fetch().done(function () {
-      if (rbd !== self.rbd) {
-        // Somebody changed page in the meantime.
-        self.show(region);
-      }
-      else {
-        self.view = new View({collection: winners});
-        region.show(self.view);
-      }
-    });
+    if (this.rbd) {
+      this.rockController.stop();
+      this.rbdController.show(region);
+    }
+    else {
+      this.rbdController.stop();
+      this.rockController.show(region);
+    }
   }
 });
 

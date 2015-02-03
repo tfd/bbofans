@@ -98,6 +98,8 @@ module.exports = function (app, config, passport) {
   app.put('/admin/tds/:id', tdManagerAuth, tds.update);
   app.get('/admin/tds/:id', tdManagerAuth, tds.getById);
   app.get('/tournaments', tournaments.getAll);
+  app.get('/tournaments/rock', tournaments.getRock);
+  app.get('/tournaments/rbd', tournaments.getRbd);
   app.get('/admin/logout', admin.logout);
   app.get('/*', index.index);
 };
