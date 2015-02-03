@@ -20,13 +20,17 @@ var Member = Backbone.Model.extend({
 
   validate: function(attrs) {
     var errors = {};
-    if (! attrs.bboName) {
+    var bboName = attrs.bboName.trim();
+    if (! bboName) {
       errors.bboName = "can't be blank";
     }
-    if (attrs.bboName.trim().length > 10) {
+    if (bboName.length > 10) {
       errors.bboName = "can't be longer then 10 characters";
     }
-    if (! attrs.name) {
+    if (/[^A-Za-z0-9_ \-]/.test(bboName)) {
+      errors.bboName = "contains illegal characters";
+    }
+    if (! attrs.name.trim()) {
       errors.name = "can't be blank";
     }
     if (! attrs.emails || attrs.emails.length === 0 || ! attrs.emails[0]) {
