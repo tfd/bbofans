@@ -8,6 +8,7 @@ var messageBus = require('../../common/router/messageBus');
 var MemberListView = require('./view');
 var Member = require('../../models/member');
 var MemberCommandsController = require('../commands/controller');
+var NewMemberController = require('../new/controller');
 
 var MemberListControllerImpl = function (options) {
   var self = this;
@@ -38,7 +39,7 @@ var MemberListControllerImpl = function (options) {
    * This is done by navigating to a route.
    */
   function createMember() {
-    messageBus.command('route:admin/members/create');
+    self.newMemberController.show(self.app.getPopupRegion());
   }
 
   /*
@@ -73,6 +74,11 @@ var MemberListControllerImpl = function (options) {
   this.module = options.module;
 
   this.commandsController = new MemberCommandsController({
+    app: this.app,
+    module: this.module
+  });
+
+  this.newMemberController = new NewMemberController({
     app: this.app,
     module: this.module
   });

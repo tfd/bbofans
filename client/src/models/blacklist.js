@@ -23,7 +23,7 @@ var Blacklist = Backbone.Model.extend({
   },
 
   fetchByBboName: function () { 
-    return this.fetch({ url: 'admin/blacklist/bboName', data : $.param( { bboName : this.get('bboName') }) });
+    return this.fetch({ url: 'admin/blacklist/bboName/' + this.get('bboName') });
   }
 });
 

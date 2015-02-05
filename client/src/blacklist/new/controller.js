@@ -6,7 +6,6 @@ var NewBlacklistView = require('./view');
 var DurationEntry = require('../../models/blacklistDurationEntry');
 var messageBus = require('../../common/router/messageBus');
 var moment = require('moment');
-var authentication = require('../../authentication/controller');
 
 var NewEntryControllerImpl = function (options) {
   var self = this;

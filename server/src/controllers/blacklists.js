@@ -186,7 +186,7 @@ module.exports = function (config) {
     },
 
     getByBboName: function (req, res) {
-      Blacklist.findOne({bboName: req.query.bboName}, function (err, blacklist) {
+      Blacklist.findOne({bboName: req.params.bboName}, function (err, blacklist) {
         if (err) {
           console.error('blacklist.getByBboName', err);
           return res.status(500).json({error: err});

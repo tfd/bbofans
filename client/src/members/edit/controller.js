@@ -95,8 +95,9 @@ var MemberEditImpl = function(options) {
     });
   };
 
-  this.create = function (region) {
+  this.create = function (region, bboName) {
     show(region, {
+      bboName: bboName,
       role: 'member',
       isEnabled: true,
       registeredDate: moment.utc(),
@@ -118,8 +119,8 @@ var MemberEditController = Marionette.Controller.extend({
     this.impl.show(region, id);
   },
 
-  create: function (region) {
-    this.impl.create(region);
+  create: function (region, bboName) {
+    this.impl.create(region, bboName);
   }
 });
 

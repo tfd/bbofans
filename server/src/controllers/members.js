@@ -467,6 +467,21 @@ module.exports = function () {
       });
     },
 
+    getByBboName: function (req, res) {
+      Member.findOne({bboName: req.params.bboName}, function (err, player) {
+        if (err) {
+          console.error('members.getByBboName', err);
+          return res.status(500).json({error: err});
+        }
+
+        if (!player) {
+          return res.status(404).json({bboName: 'Member not found.'});
+        }
+
+        res.json(player);
+      });
+    },
+
     add: function (req, res) {
       if (req.body._id) {
         // Existing member, update!
