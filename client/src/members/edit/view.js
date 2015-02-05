@@ -111,9 +111,9 @@ var MemberEditView = Form.extend({
 
     this.loadCountries();
 
-    self.ui.level.val(self.model.get('level'));
-    self.ui.role.val(self.model.get('role'));
-    self.ui.skill.val(self.model.get('skill'));
+    self.ui.level.val(self.model.get('level') || 'beginner');
+    self.ui.role.val(self.model.get('role') || 'member');
+    self.ui.skill.val(self.model.get('skill') || 'Tournament TD');
 
     showTdBox(self.model.get('role'));
     self.ui.role.on('change', function () {
