@@ -3,6 +3,7 @@
 
 var Backbone = require('backbone');
 var FormWithErrorHandling = require('../../common/views/formWithErrorHandling');
+var Bloodhound = require('typeAhead');
 
 var MemberNewView = FormWithErrorHandling.extend({
   template: require('./template.hbs'),
