@@ -487,16 +487,14 @@ module.exports = function () {
               var fieldValue = error.match(/dup\skey:\s\{\s:\s"(.*)"\s\}/)[1];
               var errors = {};
               errors[fieldName] = 'Value "' + fieldValue + '" already present in database';
-              res.status(409).json(errors);
+              return res.status(409).json(errors);
             }
-            else {
-              console.error('members.add', err);
-              res.status(422).json({bboName: error});
-            }
+
+            console.error('members.add', err);
+            return res.status(422).json({bboName: error});
           }
-          else {
-            res.json(member);
-          }
+
+          res.json(member);
         });
       }
     },
@@ -527,8 +525,17 @@ module.exports = function () {
 
         originalMember.save(function (err, updated) {
           if (err) {
+            var error = err.err.toString();
+            if (error.indexOf('E11000 duplicate key error') === 0) {
+              var fieldName = error.match(/members\.\$(.*)_\d/i)[1];
+              var fieldValue = error.match(/dup\skey:\s\{\s:\s"(.*)"\s\}/)[1];
+              var errors = {};
+              errors[fieldName] = 'Value "' + fieldValue + '" already present in database';
+              return res.status(409).json(errors);
+            }
+
             console.error('members.update', err);
-            return res.status(500).json({error: err});
+            return res.status(422).json({bboName: error});
           }
 
           if (!updated) {

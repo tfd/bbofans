@@ -16,7 +16,7 @@ var AuthenticatedModule = BaseModule.extend({
     authentication.isAuthenticated(function (auth) {
       if (!auth) {
         self.triggerMethod('failed:authentication');
-        _.delay(_.bind(messageBus.command, messageBus), 1, 'route:admin/login');
+        _.delay(_.bind(messageBus.command, messageBus), 1, 'route:login');
       }
       else {
         self.triggerMethod('authenticated');
