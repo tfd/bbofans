@@ -54,27 +54,27 @@ var MemberEditImpl = function(options) {
     var member = new Member(model);
 
     self.layout = new MemberEditLayout();
-    var memberView = new MemberEditView({
+    self.view = new MemberEditView({
       model: member
     });
 
-    memberView.on('form:submit', function (data) {
+    self.view.on('form:submit', function (data) {
       addToArray(data, 'email');
       addToArray(data, 'telephone');
       save(member, data);
     });
 
-    memberView.on('form:validate', function (data) {
+    self.view.on('form:validate', function (data) {
       data.validatedAt = moment.utc().toISOString();
       save(member, data);
     });
 
-    memberView.on('form:cancel', function () {
+    self.view.on('form:cancel', function () {
       routerHistory.back();
     });
 
     region.show(self.layout);
-    self.layout.member.show(memberView);
+    self.layout.member.show(self.view);
 
     var blacklist = new Blacklist({ bboName : member.get('bboName') });
     blacklist.fetchByBboName().done(function (blacklist) {
