@@ -1,3 +1,11 @@
+<div class="well bg-warning">
+  <h2>Registration as new member</h2>
+
+  <p>When you register (by clicking on the green "Free Registration" button) you are only allowed to play in ROCK
+    tourneys NOT in RBD. To become a member of RBD you must have played in ROCK at least 3 months, at least 12 tourneys
+    and scored at least 50% or a medium of 2 awards points.</p>
+</div>
+
 <div class="home-winners home-window">
   <h1>Our winners of the last month</h1>
 
@@ -15,14 +23,14 @@
   <div id="home-tournaments">
     <table class="table">
       <tbody>
-        {{#each items}}
-          <tr>
-            <td>{{formatDate date}}</td>
-            <td>{{name}}</td>
-            <td><a href="{{resultsUrl}}" title="{{name}} results">results</a></td>
-            <td><a href="{{boardsUrl}}" title="{{name}} boards">boards</a></td>
-          </tr>
-        {{/each}}
+      {{#each items}}
+        <tr>
+          <td>{{formatDate date}}</td>
+          <td>{{name}}</td>
+          <td><a href="{{resultsUrl}}" title="{{name}} results">results</a></td>
+          <td><a href="{{boardsUrl}}" title="{{name}} boards">boards</a></td>
+        </tr>
+      {{/each}}
       </tbody>
     </table>
   </div>

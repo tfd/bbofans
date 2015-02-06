@@ -83,22 +83,38 @@ function getBlacklistMembers(blacklisted) {
 
 module.exports = function (config) {
 
-  function getText(member) {
-    var url = config.mail.confirmationUrl.replace(':id', member._id);
-    return 'Welcome ' + (member.name || member.bboName) + ',\n\n' +
-           'Thank you for your registration to the BBO Fans.\n' +
-           'To complete the procedure, please click on the following link.\n' + url + '\n' +
-           'If you are unable to click on the link just cut&amp;paste it in the browser bar and press enter.\n\n' +
-           'Thanks,\n\nBBO Fans Admin';
+  function getText(member, blacklist) {
+    var entry = _.last(blacklist.entries);
+    var date = moment(entry.to).format('MMM Do, YYYY');
+    if (member.isBlackListed) {
+      return 'Dear ' + (member.name || member.bboName) + ',\n\n' +
+             'The TD ' + entry.td + ' has put you on the blacklist until ' + date +
+             ' for the following reason:\n\n' +
+             entry.reason + '\n\n' +
+             'Regards,\n\nBBO Fans Admin';
+    }
+
+    return 'Dear ' + (member.name || member.bboName) + ',\n\n' +
+           'The TD ' + entry.td + ' has removed you from the blacklist for the following reason:\n\n' +
+           entry.reason + '\n\n' +
+           'Regards,\n\nBBO Fans Admin';
   }
 
-  function getHtml(member) {
-    var url = config.mail.confirmationUrl.replace(':id', member._id);
-    return '<h1>Welcome ' + (member.name || member.bboName) + ',</h1>' +
-           '<p>Thank you for your registration to the BBO Fans.<br/>To complete the procedure, please click on the following link.</p>' +
-           '<p><a href="' + url + '">' + url + '</a></p>' +
-           '<p>If you are unable to click on the link just cut&amp;paste it in the browser bar and press enter.</p>' +
-           '<p>Thanks.<br/><br/>BBO Fans Admin</p>';
+  function getHtml(member, blacklist) {
+    var entry = _.last(blacklist.entries);
+    var date = moment(entry.to).format('MMM Do, YYYY');
+    if (member.isBlackListed) {
+      return '<h1>Dear ' + (member.name || member.bboName) + ',</h1>' +
+             '<p>The TD ' + entry.td + ' has put you on the blacklist until ' + date +
+             ' for the following reason:</p>' +
+             '<p>' + entry.reason + '</a></p>' +
+             '<p>Regards,<br/><br/>BBO Fans Admin</p>';
+    }
+
+    return '<h1>Dear ' + (member.name || member.bboName) + ',</h1>' +
+           '<p>The TD ' + entry.td + ' has removed you from the blacklist for the following reason:</p>' +
+           '<p>' + entry.reason + '</a></p>' +
+           '<p>Regards,<br/><br/>BBO Fans Admin</p>';
   }
 
   return {
@@ -218,11 +234,31 @@ module.exports = function (config) {
 
             Member.findOne({bboName: req.body.bboName}, function (err, member) {
               if (!err && member) {
-                config.servers.sendMail({
-                  to     : blacklist.emails[0],
-                  subject: '[BBO Fans] Blacklist',
-                  text   : getText(member),
-                  html   : getHtml(member)
+                Member.find({role: {$in: ['admin', 'blacklist manager']}}, function (err, managers) {
+                  if (err) {
+                    console.error('blacklist.addEntry::find blacklist managers', err);
+                  }
+
+                  if (member.emails && member.emails[0]) {
+                    var bcc = [];
+                    if (managers) {
+                      _.each(managers, function (manager) {
+                        if (manager.emails && manager.emails[0]) {
+                          bcc.push(manager.emails[0]);
+                        }
+                      });
+                    }
+                    bcc.push('ronald.vanuffelen@gmail.com');
+
+                    var email = {
+                      to     : member.emails[0],
+                      bcc    : bcc,
+                      subject: '[BBO Fans] Blacklist',
+                      text   : getText(member, blacklist),
+                      html   : getHtml(member, blacklist)
+                    };
+                    config.servers.sendMail(email);
+                  }
                 });
               }
 

@@ -71,8 +71,12 @@ module.exports = function (config) {
    */
   return function (mailOptions, cb) {
     mailOptions.from = config.mail.from;
-    mailOptions.replyTo = config.mail.replyTo;
-    mailOptions.bcc = config.mail.bcc;
+    if (!mailOptions.replyTo) {
+      mailOptions.replyTo = config.mail.replyTo;
+    }
+    if (!mailOptions.bcc) {
+      mailOptions.bcc = config.mail.bcc;
+    }
     console.log(mailOptions);
     transporter.sendMail(mailOptions, cb);
   };

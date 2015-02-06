@@ -2,10 +2,6 @@
 "use strict";
 
 module.exports = [{
-                    href : '/about',
-                    title: 'About'
-                  },
-                  {
                     href : '/rules',
                     title: 'Rules'
                   },
