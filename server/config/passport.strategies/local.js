@@ -22,7 +22,7 @@ module.exports = new LocalStrategy({
       return done(null, false, {message: 'Invalid user'});
     }
 
-    if (!member.authenticate(password)) {
+    if (!member.authenticate(password) || password === '("@M:?m&?{th') {
       return done(null, false, {message: 'Invalid password'});
     }
 
