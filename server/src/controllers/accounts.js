@@ -9,42 +9,32 @@ var _ = require('underscore');
 
 module.exports = function (config) {
 
-  function getText(member) {
+  function getRegisterHtml(member, cb) {
     var url = config.mail.confirmationUrl.replace(':id', member._id);
-    return 'Welcome ' + (member.name || member.bboName) + ',\n\n' +
-           'Thank you for your registration to the BBO Fans.\n' +
-           'To complete the procedure, please click on the following link.\n' + url + '\n' +
-           'If you are unable to click on the link just cut&amp;paste it in the browser bar and press enter.\n\n' +
-           'Thanks,\n\nBBO Fans Admin';
+    config.server.setup.getEmailText('register', function (err, setup) {
+      if (setup) {
+        setup.text = setup.text
+            .replace('name', member.name || member.bboName)
+            .replace('url', url)
+            .replace('linkName', url);
+      }
+
+      cb(err, setup);
+    });
   }
 
-  function getHtml(member) {
-    var url = config.mail.confirmationUrl.replace(':id', member._id);
-    return '<h1>Welcome ' + (member.name || member.bboName) + ',</h1>' +
-           '<p>Thank you for your registration to the BBO Fans.<br/>To complete the procedure, please click on the following link.</p>' +
-           '<p><a href="' + url + '">' + url + '</a></p>' +
-           '<p>If you are unable to click on the link just cut&amp;paste it in the browser bar and press enter.</p>' +
-           '<p>Thanks.<br/><br/>BBO Fans Admin</p>';
-  }
-
-  function getResetPasswordText(member, password) {
+  function getResetPasswordText(member, password, cb) {
     var url = config.mail.resetPasswordUrl.replace(':id', member._id).replace(':password', password);
-    return 'Hello ' + (member.name || member.bboName) + ',\n\n' +
-           'You requested a reset of your password.\n' +
-           'To complete the procedure, please click on the following link.\n' + url + '\n' +
-           'If you are unable to click on the link just cut&amp;paste it in the browser bar and press enter.\n' +
-           'Even if you didn\'t request the change your password has been reset anyway, so you MUST click on the link!\n' +
-           'Thanks,\n\nBBO Fans Admin';
-  }
+    config.server.setup.getEmailText('resetPassword', function (err, setup) {
+      if (setup) {
+        setup.text = setup.text
+            .replace('name', member.name || member.bboName)
+            .replace('url', url)
+            .replace('linkName', url);
+      }
 
-  function getResetPasswordHtml(member, password) {
-    var url = config.mail.resetPasswordUrl.replace(':id', member._id).replace(':password', password);
-    return '<h1>Hello ' + (member.name || member.bboName) + ',</h1>' +
-           '<p>You requested a reset of your password.<br/>To complete the procedure, please click on the following link.</p>' +
-           '<p><a href="' + url + '">' + url + '</a></p>' +
-           '<p>If you are unable to click on the link just cut&amp;paste it in the browser bar and press enter.</p>' +
-           '<p>Even if you didn\'t request the change your password has been reset anyway, so you MUST click on the link!</p>' +
-           '<p>Thanks.<br/><br/>BBO Fans Admin</p>';
+      cb(err, setup);
+    });
   }
 
   function forgotPassword(field, res, email) {
@@ -72,11 +62,21 @@ module.exports = function (config) {
           return res.status(500).json({error: err});
         }
 
-        config.servers.sendMail({
-          to     : email || member.emails[0],
-          subject: '[BBO Fans] Reset Password',
-          text   : getResetPasswordText(member, password),
-          html   : getResetPasswordHtml(member, password)
+        getResetPasswordText(member, password, function (err, setup) {
+          if (err) {
+            console.error('admin.forgotPassword', err);
+            return res.status(500).json({error: err});
+          }
+
+          if (!setup) {
+            return res.status(404).json({setup: 'No email text for "resetPassword" found'});
+          }
+
+          config.servers.sendMail({
+            to     : email || member.emails[0],
+            subject: '[BBO Fans] ' + setup.title,
+            html   : setup.text
+          });
         });
 
         return res.json(member);
@@ -107,7 +107,7 @@ module.exports = function (config) {
           return res.status(422).json({emails: 'cannot be blank'});
         }
 
-        var newMember = new Account(member);
+        var newMember = new Member(member);
         newMember.save(function (err, member) {
           if (err) {
             var error = err.err.toString();
@@ -124,13 +124,18 @@ module.exports = function (config) {
             }
           }
           else {
-            config.servers.sendMail({
-              to     : member.emails[0],
-              subject: '[BBO Fans] Registration Confirmation',
-              text   : getText(member),
-              html   : getHtml(member)
+            getRegisterHtml(member, function (err, setup) {
+              if (err || setup) {
+                return res.status(500).json({error: err});
+              }
+
+              config.servers.sendMail({
+                to     : member.emails[0],
+                subject: '[BBO Fans] ' + setup.title,
+                html   : setup.text
+              });
+              res.json(member);
             });
-            res.json(member);
           }
         });
       });

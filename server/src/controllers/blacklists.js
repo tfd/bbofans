@@ -83,38 +83,23 @@ function getBlacklistMembers(blacklisted) {
 
 module.exports = function (config) {
 
-  function getText(member, blacklist) {
+  function getHtml(member, blacklist, cb) {
     var entry = _.last(blacklist.entries);
-    var date = moment(entry.to).format('MMM Do, YYYY');
-    if (member.isBlackListed) {
-      return 'Dear ' + (member.name || member.bboName) + ',\n\n' +
-             'The TD ' + entry.td + ' has put you on the blacklist until ' + date +
-             ' for the following reason:\n\n' +
-             entry.reason + '\n\n' +
-             'Regards,\n\nBBO Fans Admin';
-    }
+    var fromDate = moment(entry.from).format('MMM Do, YYYY');
+    var toDate = moment(entry.to).format('MMM Do, YYYY');
+    config.servers.setup.getEmailText(member.isBlackListed ? 'blackList' : 'whiteList',
+        function (err, setup) {
+          if (setup) {
+            setup.text = setup.text
+                .replace('{{name}}', member.name || member.bboName)
+                .replace('{{td}}', entry.td)
+                .replace('{{from}}', fromDate)
+                .replace('{{to}}', toDate)
+                .replace('{{reason}}', entry.reason);
+          }
 
-    return 'Dear ' + (member.name || member.bboName) + ',\n\n' +
-           'The TD ' + entry.td + ' has removed you from the blacklist for the following reason:\n\n' +
-           entry.reason + '\n\n' +
-           'Regards,\n\nBBO Fans Admin';
-  }
-
-  function getHtml(member, blacklist) {
-    var entry = _.last(blacklist.entries);
-    var date = moment(entry.to).format('MMM Do, YYYY');
-    if (member.isBlackListed) {
-      return '<h1>Dear ' + (member.name || member.bboName) + ',</h1>' +
-             '<p>The TD ' + entry.td + ' has put you on the blacklist until ' + date +
-             ' for the following reason:</p>' +
-             '<p>' + entry.reason + '</a></p>' +
-             '<p>Regards,<br/><br/>BBO Fans Admin</p>';
-    }
-
-    return '<h1>Dear ' + (member.name || member.bboName) + ',</h1>' +
-           '<p>The TD ' + entry.td + ' has removed you from the blacklist for the following reason:</p>' +
-           '<p>' + entry.reason + '</a></p>' +
-           '<p>Regards,<br/><br/>BBO Fans Admin</p>';
+          cb(err, setup);
+        });
   }
 
   return {
@@ -250,14 +235,20 @@ module.exports = function (config) {
                     }
                     bcc.push('ronald.vanuffelen@gmail.com');
 
-                    var email = {
-                      to     : member.emails[0],
-                      bcc    : bcc,
-                      subject: '[BBO Fans] Blacklist',
-                      text   : getText(member, blacklist),
-                      html   : getHtml(member, blacklist)
-                    };
-                    config.servers.sendMail(email);
+                    getHtml(member, blacklist, function (err, setup) {
+                      if (err && setup) {
+                        return console.error('blacklist.addEntry::find email blacklist', err);
+                      }
+
+                      var email = {
+                        to     : member.emails[0],
+                        bcc    : bcc,
+                        subject: '[BBO Fans] ' + setup.html,
+                        html   : setup.text
+                      };
+                      config.servers.sendMail(email);
+
+                    });
                   }
                 });
               }

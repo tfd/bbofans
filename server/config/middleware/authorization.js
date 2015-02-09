@@ -62,6 +62,26 @@ module.exports = {
       }
       next();
     }
+  },
+
+  email: {
+    hasAuthorization: function (req, res, next) {
+      if (! req.user.isEmailManager) {
+        req.flash('info', 'You are not authorized');
+        return res.redirect(403, '/admin/home');
+      }
+      next();
+    }
+  },
+
+  setup: {
+    hasAuthorization: function (req, res, next) {
+      if (! req.user.isSetupManager) {
+        req.flash('info', 'You are not authorized');
+        return res.redirect(403, '/admin/home');
+      }
+      next();
+    }
   }
 
 };

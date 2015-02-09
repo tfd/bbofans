@@ -19,6 +19,8 @@ var RoleSchema = new Schema({
   isMemberManager   : {type: Boolean, default: false},
   isBlacklistManager: {type: Boolean, default: false},
   isTdManager       : {type: Boolean, default: false},
+  isEmailManager    : {type: Boolean, default: false},
+  isSetupManager    : {type: Boolean, default: false},
   createdAt         : {type: Date, default: Date.now}
 });
 

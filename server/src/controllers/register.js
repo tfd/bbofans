@@ -7,22 +7,18 @@ var moment = require('moment');
 
 module.exports = function (config) {
 
-  function getText(member) {
+  function getHtml(member, cb) {
     var url = config.mail.confirmationUrl.replace(':id', member._id);
-    return 'Welcome ' + (member.name || member.bboName) + ',\n\n' +
-           'Thank you for your registration to the BBO Fans.\n' +
-           'To complete the procedure, please click on the following link.\n' + url + '\n' +
-           'If you are unable to click on the link just cut&amp;paste it in the browser bar and press enter.\n\n' +
-           'Thanks,\n\nBBO Fans Admin';
-  }
+    config.server.setup.getEmailText('register', function (err, setup) {
+      if (setup) {
+        setup.text = setup.text
+            .replace('name', member.name || member.bboName)
+            .replace('url', url)
+            .replace('linkName', url);
+      }
 
-  function getHtml(member) {
-    var url = config.mail.confirmationUrl.replace(':id', member._id);
-    return '<h1>Welcome ' + (member.name || member.bboName) + ',</h1>' +
-           '<p>Thank you for your registration to the BBO Fans.<br/>To complete the procedure, please click on the following link.</p>' +
-           '<p><a href="' + url + '">' + url + '</a></p>' +
-           '<p>If you are unable to click on the link just cut&amp;paste it in the browser bar and press enter.</p>' +
-           '<p>Thanks.<br/><br/>BBO Fans Admin</p>';
+      cb(err, setup);
+    });
   }
 
   return {
@@ -43,7 +39,7 @@ module.exports = function (config) {
         delete member.repeatPassword;
         delete member['g-recaptcha-response'];
 
-        if (! member.emails || member.emails.length === 0 || ! member.emails[0]) {
+        if (!member.emails || member.emails.length === 0 || !member.emails[0]) {
           return res.status(422).json({emails: 'cannot be blank'});
         }
 
@@ -64,13 +60,18 @@ module.exports = function (config) {
             }
           }
           else {
-            config.servers.sendMail({
-              to     : member.emails[0],
-              subject: '[BBO Fans] Registration Confirmation',
-              text   : getText(member),
-              html   : getHtml(member)
+            getHtml(member, function (err, setup) {
+              if (err || setup) {
+                return res.status(500).json({error: err});
+              }
+
+              config.servers.sendMail({
+                to     : member.emails[0],
+                subject: '[BBO Fans] ' + setup.title,
+                html   : setup.text
+              });
+              res.json(member);
             });
-            res.json(member);
           }
         });
       });

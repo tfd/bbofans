@@ -21,15 +21,8 @@ module.exports = function (app, config, passport) {
   var tdAuth = [auth.requiresLogin, auth.td.hasAuthorization];
   var tdManagerAuth = [auth.requiresLogin, auth.tdManager.hasAuthorization];
   var blacklistManagerAuth = [auth.requiresLogin, auth.blacklist.hasAuthorization];
-
-  /**
-   * Utilities
-   */
-
-  config.servers = {};
-  config.servers.keyStore = require('../src/servers/keyStore')(config);
-  config.servers.sendMail = require('../src/servers/sendMail')(config);
-  config.servers.reCaptcha = require('../src/servers/reCaptcha')(config);
+  var emailAuth = [auth.requiresLogin, auth.email.hasAuthorization];
+  var setupAuth = [auth.requiresLogin, auth.setup.hasAuthorization];
 
   /**
    * Controllers
@@ -45,6 +38,7 @@ module.exports = function (app, config, passport) {
   var tds = require('../src/controllers/tds')(config);
   var tournaments = require('../src/controllers/tournaments')(config);
   var updater = require('../src/controllers/updater')(config);
+  var setup = require('../src/controllers/setup')(config);
 
 
   /**
@@ -98,6 +92,10 @@ module.exports = function (app, config, passport) {
   app.get('/admin/tds/saveAs/:type', tdManagerAuth, tds.saveAs);
   app.put('/admin/tds/:id', tdManagerAuth, tds.update);
   app.get('/admin/tds/:id', tdManagerAuth, tds.getById);
+  app.get('/admin/setup/emails/:type', emailAuth, setup.getEmailText);
+  app.post('/admin/setup/emails', emailAuth, setup.saveEmailText);
+  app.get('/admin/setup/rules', setupAuth, setup.getRules);
+  app.post('/admin/setup/rules', setupAuth, setup.saveRules);
   app.get('/tournaments', tournaments.getAll);
   app.get('/tournaments/rock', tournaments.getRock);
   app.get('/tournaments/rbd', tournaments.getRbd);
