@@ -2,7 +2,7 @@
 "use strict";
 
 var mongoose = require('mongoose');
-var Account = mongoose.model('Member');
+var Member = mongoose.model('Member');
 var Generator = require('password-generator');
 var moment = require('moment');
 var _ = require('underscore');
@@ -11,30 +11,7 @@ module.exports = function (config) {
 
   function getRegisterHtml(member, cb) {
     var url = config.mail.confirmationUrl.replace(':id', member._id);
-    config.server.setup.getEmailText('register', function (err, setup) {
-      if (setup) {
-        setup.text = setup.text
-            .replace('name', member.name || member.bboName)
-            .replace('url', url)
-            .replace('linkName', url);
-      }
-
-      cb(err, setup);
-    });
-  }
-
-  function getResetPasswordText(member, password, cb) {
-    var url = config.mail.resetPasswordUrl.replace(':id', member._id).replace(':password', password);
-    config.server.setup.getEmailText('resetPassword', function (err, setup) {
-      if (setup) {
-        setup.text = setup.text
-            .replace('name', member.name || member.bboName)
-            .replace('url', url)
-            .replace('linkName', url);
-      }
-
-      cb(err, setup);
-    });
+    config.server.setup.getEmailText('register', {member: member, url: url, link: url}, cb);
   }
 
   function forgotPassword(field, res, email) {
@@ -62,7 +39,8 @@ module.exports = function (config) {
           return res.status(500).json({error: err});
         }
 
-        getResetPasswordText(member, password, function (err, setup) {
+        var url = config.mail.resetPasswordUrl.replace(':id', member._id).replace(':password', password);
+        config.server.setup.getEmailText('resetPassword', {member: member, url: url, link: url}, function (err, setup) {
           if (err) {
             console.error('admin.forgotPassword', err);
             return res.status(500).json({error: err});
@@ -124,7 +102,8 @@ module.exports = function (config) {
             }
           }
           else {
-            getRegisterHtml(member, function (err, setup) {
+            var url = config.mail.confirmationUrl.replace(':id', member._id);
+            config.server.setup.getEmailText('register', {member: member, url: url, link: url}, function (err, setup) {
               if (err || setup) {
                 return res.status(500).json({error: err});
               }
@@ -142,7 +121,7 @@ module.exports = function (config) {
     },
 
     getRegistrant: function (req, res) {
-      Account.findById(req.params.id, function (err, registrant) {
+      Member.findById(req.params.id, function (err, registrant) {
         if (err) {
           console.error('members.getById', err);
           return res.status(500).json({error: err});
@@ -159,13 +138,13 @@ module.exports = function (config) {
 
     confirmEmail: function (req, res) {
       var date = moment.utc().toDate();
-      Account.findByIdAndUpdate(req.params.id, {$set: {registeredAt: date}}, {new: false}, function (err, account) {
+      Member.findByIdAndUpdate(req.params.id, {$set: {registeredAt: date}}, {new: false}, function (err, member) {
         if (err) {
           console.error('members.confirmEmail', err);
           return res.status(500).redirect('/#serverError');
         }
 
-        if (account === null) {
+        if (member === null) {
           return res.status(404).redirect('/#pageNotFound');
         }
 
@@ -177,17 +156,17 @@ module.exports = function (config) {
       var password = req.body;
       var id = password._id;
       delete password._id;
-      Account.findById(id, function (err, account) {
+      Member.findById(id, function (err, member) {
         if (err) {
           console.error('members.changePassword', err);
           return res.status(500).json({error: err});
         }
 
-        if (!account) {
+        if (!member) {
           return res.status(404).json({_id: 'Member not found'});
         }
 
-        if (!account.authenticate(password.currentPassword)) {
+        if (!member.authenticate(password.currentPassword)) {
           return res.status(422).json({currentPassword: 'Incorrect password'});
         }
 
@@ -195,24 +174,24 @@ module.exports = function (config) {
           return res.status(422).json({repeatPassword: "doesn't match"});
         }
 
-        account.password = password.newPassword;
-        account.save(function (err) {
+        member.password = password.newPassword;
+        member.save(function (err) {
           if (err) {
             console.error('members.changePassword', err);
             return res.status(500).json({error: 'Error changing password.'});
           }
 
-          res.json(account);
+          res.json(member);
         });
       });
     },
 
     forgotPassword: function (req, res) {
       if (req.body.email) {
-        Account.findOne({emails: req.body.email}, forgotPassword('email', res, req.body.email));
+        Member.findOne({emails: req.body.email}, forgotPassword('email', res, req.body.email));
       }
       else if (req.body.bboName) {
-        Account.findOne({bboName: req.body.bboName}, forgotPassword('bboName', res));
+        Member.findOne({bboName: req.body.bboName}, forgotPassword('bboName', res));
       }
       else {
         res.status(422).json({bboName: "can't be blank", email: "can't be blank"});
@@ -223,7 +202,7 @@ module.exports = function (config) {
       var id = req.params.id;
       var password = req.params.password;
       console.log(id, password);
-      Account.findById(id, function (err, member) {
+      Member.findById(id, function (err, member) {
         if (err) {
           console.error('members.resetPassword', err);
           return res.status(500).json({error: err});

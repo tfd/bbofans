@@ -85,21 +85,16 @@ module.exports = function (config) {
 
   function getHtml(member, blacklist, cb) {
     var entry = _.last(blacklist.entries);
-    var fromDate = moment(entry.from).format('MMM Do, YYYY');
-    var toDate = moment(entry.to).format('MMM Do, YYYY');
-    config.servers.setup.getEmailText(member.isBlackListed ? 'blackList' : 'whiteList',
-        function (err, setup) {
-          if (setup) {
-            setup.text = setup.text
-                .replace('{{name}}', member.name || member.bboName)
-                .replace('{{td}}', entry.td)
-                .replace('{{from}}', fromDate)
-                .replace('{{to}}', toDate)
-                .replace('{{reason}}', entry.reason);
+    config.servers.setup.getEmailText(member.isBlackListed ? 'blackList' : 'whiteList', {
+          member: member,
+          entry : {
+            td    : entry.td,
+            from  : moment.utc(entry.to).format('MMMM Do YYYY'),
+            to    : moment.utc(entry.to).format('MMMM Do YYYY'),
+            reason: entry.reason
           }
-
-          cb(err, setup);
-        });
+        },
+        cb);
   }
 
   return {
@@ -202,7 +197,12 @@ module.exports = function (config) {
     },
 
     addEntry: function (req, res) {
-      Blacklist.addEntry(req.body.bboName, req.body.td, req.body.from, req.body.for, req.body.reason,
+      var bboName = req.body.bboName;
+      var td = req.body.td;
+      var from = req.body.from;
+      var period = req.body.for;
+
+      Blacklist.addEntry(bboName, td, from, period, req.body.reason,
           function (err, blacklist) {
             if (err) {
               if (err.validationError) {
@@ -218,38 +218,47 @@ module.exports = function (config) {
             }
 
             Member.findOne({bboName: req.body.bboName}, function (err, member) {
-              if (!err && member) {
-                Member.find({role: {$in: ['admin', 'blacklist manager']}}, function (err, managers) {
+              if (!err) {
+                Member.find({role: {$in: ['admin', 'blacklist manager', 'td']}}, function (err, managers) {
                   if (err) {
                     console.error('blacklist.addEntry::find blacklist managers', err);
                   }
 
-                  if (member.emails && member.emails[0]) {
-                    var bcc = [];
-                    if (managers) {
-                      _.each(managers, function (manager) {
-                        if (manager.emails && manager.emails[0]) {
-                          bcc.push(manager.emails[0]);
-                        }
-                      });
-                    }
-                    bcc.push('ronald.vanuffelen@gmail.com');
-
-                    getHtml(member, blacklist, function (err, setup) {
-                      if (err && setup) {
-                        return console.error('blacklist.addEntry::find email blacklist', err);
+                  var bcc = [];
+                  if (managers) {
+                    _.each(managers, function (manager) {
+                      if (manager.emails && manager.emails[0]) {
+                        bcc.push(manager.emails[0]);
                       }
-
-                      var email = {
-                        to     : member.emails[0],
-                        bcc    : bcc,
-                        subject: '[BBO Fans] ' + setup.html,
-                        html   : setup.text
-                      };
-                      config.servers.sendMail(email);
-
                     });
                   }
+
+                  if (!member) {
+                    member = {
+                      name: bboName,
+                      bboName: bboName
+                    };
+                  }
+
+                  getHtml(member, blacklist, function (err, setup) {
+                    if (err && setup) {
+                      return console.error('blacklist.addEntry::find email blacklist', err);
+                    }
+
+                    var to = 'info@bbofans.com';
+                    if (member.emails && member.emails[0]) {
+                      to = member.emails[0];
+                    }
+
+                    var email = {
+                      to     : to,
+                      bcc    : bcc,
+                      subject: '[BBO Fans] ' + setup.title,
+                      html   : setup.text
+                    };
+                    config.servers.sendMail(email);
+
+                  });
                 });
               }
 

@@ -4,21 +4,17 @@
 var mongoose = require('mongoose');
 var Member = mongoose.model('Member');
 var moment = require('moment');
+var Handlebars = require('handlebars');
 
 module.exports = function (config) {
 
   function getHtml(member, cb) {
     var url = config.mail.confirmationUrl.replace(':id', member._id);
-    config.server.setup.getEmailText('register', function (err, setup) {
-      if (setup) {
-        setup.text = setup.text
-            .replace('name', member.name || member.bboName)
-            .replace('url', url)
-            .replace('linkName', url);
-      }
-
-      cb(err, setup);
-    });
+    config.server.setup.getEmailText('register', {
+      member  : member,
+      url     : url,
+      linkName: url
+    }, cb);
   }
 
   return {
@@ -60,7 +56,12 @@ module.exports = function (config) {
             }
           }
           else {
-            getHtml(member, function (err, setup) {
+            var url = config.mail.confirmationUrl.replace(':id', member._id);
+            config.server.setup.getEmailText('register', {
+              member  : member,
+              url     : url,
+              linkName: url
+            }, function (err, setup) {
               if (err || setup) {
                 return res.status(500).json({error: err});
               }

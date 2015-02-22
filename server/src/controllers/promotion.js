@@ -10,26 +10,11 @@ var async = require('async');
 module.exports = function (config) {
 
   function getMembersHtml(type, members, cb) {
-    config.servers.setup.getEmailText(type, function (err, setup) {
-      if (setup) {
-        setup.text = setup.text
-            .replace('{{bboNames}}', members.join(', '))
-            .replace('{{count}}', members.length);
-      }
-
-      cb(err, setup);
-    });
+    config.servers.setup.getEmailText(type, {members: members}, cb);
   }
 
   function getHtml(type, member, cb) {
-    config.servers.setup.getEmailText(type, function (err, setup) {
-      if (setup) {
-        setup.text = setup.text
-            .replace('{{name}}', member.name || member.bboName);
-      }
-
-      cb(err, setup);
-    });
+    config.servers.setup.getEmailText(type, {member: member}, cb);
   }
 
   function sendToTds(setup) {
@@ -86,7 +71,7 @@ module.exports = function (config) {
             async.each(promotedMembers, function (member, cb) {
                   members.push(member.bboName);
 
-                  getHtml('promote', function (err, setup) {
+                  config.servers.setup.getEmailText('promote', {member: member}, function (err, setup) {
                     if (err) {
                       cb(err);
                     }
@@ -110,7 +95,7 @@ module.exports = function (config) {
                     return res.status(500).json({error: err});
                   }
 
-                  getMembersHtml('promotedMembers', members, function (err, setup) {
+                  config.servers.setup.getEmailText('promotedMembers', {members: members}, function (err, setup) {
                     if (err) {
                       console.error('promotion.promote', err);
                       return res.status(500).json({error: err});
@@ -158,7 +143,7 @@ module.exports = function (config) {
             async.each(demotedMembers, function (member, cb) {
                   members.push(member.bboName);
 
-                  getHtml('demote', function (err, setup) {
+                  config.servers.setup.getEmailText('demote', {member: member}, function (err, setup) {
                     if (err) {
                       cb(err);
                     }
@@ -182,7 +167,7 @@ module.exports = function (config) {
                     return res.status(500).json({error: err});
                   }
 
-                  getMembersHtml('demotedMembers', members, function (err, setup) {
+                  config.servers.setup.getEmailText('demotedMembers', {members: members}, function (err, setup) {
                     if (err) {
                       console.error('promotion.demote', err);
                       return res.status(500).json({error: err});

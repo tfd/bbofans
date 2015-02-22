@@ -44,6 +44,16 @@ module.exports = {
     }
   },
 
+  tdOrTdManager: {
+    hasAuthorization: function (req, res, next) {
+      if (! req.user.isTd || ! req.user.isTdManager) {
+        req.flash('info', 'You are not authorized');
+        return res.redirect(403, '/admin/home');
+      }
+      next();
+    }
+  },
+
   tdManager: {
     hasAuthorization: function (req, res, next) {
       if (! req.user.isTdManager) {

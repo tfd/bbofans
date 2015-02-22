@@ -20,6 +20,7 @@ module.exports = function (app, config, passport) {
   var memberManagerAuth = [auth.requiresLogin, auth.member.hasAuthorization];
   var tdAuth = [auth.requiresLogin, auth.td.hasAuthorization];
   var tdManagerAuth = [auth.requiresLogin, auth.tdManager.hasAuthorization];
+  var tdOrTdManagerAuth = [auth.requiresLogin, auth.tdOrTdManager.hasAuthorization];
   var blacklistManagerAuth = [auth.requiresLogin, auth.blacklist.hasAuthorization];
   var emailAuth = [auth.requiresLogin, auth.email.hasAuthorization];
   var setupAuth = [auth.requiresLogin, auth.setup.hasAuthorization];
@@ -87,11 +88,11 @@ module.exports = function (app, config, passport) {
   app.get('/admin/blacklist/saveAs/:type', blacklistManagerAuth, blacklists.saveAs);
   app.get('/admin/blacklist/:id', tdAuth, blacklists.getById);
   app.put('/admin/blacklist/:id', blacklistManagerAuth, blacklists.update);
-  app.get('/admin/tds', tdManagerAuth, tds.getAll);
+  app.get('/admin/tds', tdOrTdManagerAuth, tds.getAll);
   app.get('/admin/tds/saveAs', tdManagerAuth, tds.saveAs);
   app.get('/admin/tds/saveAs/:type', tdManagerAuth, tds.saveAs);
   app.put('/admin/tds/:id', tdManagerAuth, tds.update);
-  app.get('/admin/tds/:id', tdManagerAuth, tds.getById);
+  app.get('/admin/tds/:id', tdOrTdManagerAuth, tds.getById);
   app.get('/admin/setup/emails/:type', emailAuth, setup.getEmailText);
   app.post('/admin/setup/emails', emailAuth, setup.saveEmailText);
   app.get('/admin/setup/rules', setupAuth, setup.getRules);
