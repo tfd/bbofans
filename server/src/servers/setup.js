@@ -12,7 +12,6 @@ module.exports = function () {
 
   return {
     getEmailText: function (type, data, cb) {
-      console.log('getEmailtext', type, data);
       Setup.findOne({}, function (err, setup) {
         if (err) {
           cb(err);

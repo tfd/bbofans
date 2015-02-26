@@ -235,7 +235,6 @@ module.exports = function (config) {
 
                   if (!member) {
                     member = {
-                      name: bboName,
                       bboName: bboName
                     };
                   }
@@ -257,7 +256,6 @@ module.exports = function (config) {
                       html   : setup.text
                     };
                     config.servers.sendMail(email);
-
                   });
                 });
               }

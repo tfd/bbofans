@@ -14,7 +14,7 @@ Setup.findOne({}, function (err, setup) {
         {
           type : 'register',
           title: 'Registration Confirmation',
-          text : '<h1>Welcome {{member.name}},</h1>' +
+          text : '<h1>Welcome {{member.name}} ({{member.bboName}}),</h1>' +
                '<p>Thank you for your registration to the BBO Fans.<br/>To complete the procedure, please click on the following link.</p>' +
                '<p><a href="{{url}}">{{link}}</a></p>' +
                '<p>If you are unable to click on the link just cut&amp;paste it in the browser bar and press enter.</p>' +
@@ -24,7 +24,7 @@ Setup.findOne({}, function (err, setup) {
         {
           type : 'resetPassword',
           title: 'Reset Password',
-          text : '<h1>Hello {{member.name}},</h1>' +
+          text : '<h1>Hello {{member.name}} ({{member.bboName}}),</h1>' +
                '<p>You requested a reset of your password.<br/>To complete the procedure, please click on the following link.</p>' +
                '<p><a href="{{url}}">{{link}}</a></p>' +
                '<p>If you are unable to click on the link just cut&amp;paste it in the browser bar and press enter.</p>' +
@@ -34,14 +34,14 @@ Setup.findOne({}, function (err, setup) {
         {
           type : 'promote',
           title: 'Promotion to Rock Best Dancers',
-          text : '<h1>Congratulations {{member.name}},</h1>' +
+          text : '<h1>Congratulations {{member.name}} ({{member.bboName}}),</h1>' +
                '<p>Thanks to you outstanding performance in the last month, you have been promoted to the RBD league!</p>' +
                '<p>Regards,<br/><br/>BBO Fans Admin</p>'
         },
         {
           type : 'demote',
           title: 'Demotion to Rock Best Dancers',
-          text : '<h1>Dear {{member.name}},</h1>' +
+          text : '<h1>Dear {{member.name}} ({{member.bboName}}),</h1>' +
                '<p>Sorry, but your performance in the RBD league was far below average this month, so you have been removed from the RBD league.</p>' +
                '<p>Regards,<br/><br/>BBO Fans Admin</p>'
         },
@@ -50,7 +50,7 @@ Setup.findOne({}, function (err, setup) {
           title: 'Promotions',
           text : '<h1>Hello Td,</h1>' +
                '<p>The following members have been promoted to RBD:</p>' +
-               '<p>{{#each members}}{{bboName}}{{#unless @last}}, {{/unless}}{{/each}}</p>' +
+               '<p>{{#each members}}{{name}} ({{bboName}}){{#unless @last}}, {{/unless}}{{/each}}</p>' +
                '<p>Regards,<br/><br/>BBO Fans Admin</p>'
         },
         {
@@ -58,13 +58,13 @@ Setup.findOne({}, function (err, setup) {
           title: 'Demotion',
           text : '<h1>Hello Td,</h1>' +
                '<p>The following members have been demoted from RBD:</p>' +
-               '<p>{{#each members}}{{bboName}}{{#unless @last}}, {{/unless}}{{/each}}</p>' +
+               '<p>{{#each members}}{{name}} ({{bboName}}){{#unless @last}}, {{/unless}}{{/each}}</p>' +
                '<p>Regards,<br/><br/>BBO Fans Admin</p>'
         },
         {
           type : 'blackList',
           title: 'Blacklist',
-          text : '<h1>Dear {{member.name}},</h1>' +
+          text : '<h1>Hello {{#if member.name}}{{member.name}}{{#if member.bboName}} ({{member.bboName}}){{/if}}{{else}}{{member.bboName}}{{/if}},</h1>' +
                '<p>The TD {{entry.td}} has put you on the blacklist until {{entry.to}} for the following reason:</p>' +
                '<p>{{entry.reason}}</p>' +
                '<p>Regards,<br/><br/>BBO Fans Admin</p>'
@@ -72,7 +72,7 @@ Setup.findOne({}, function (err, setup) {
         {
           type : 'whiteList',
           title: 'Blacklist',
-          text : '<h1>Dear {{member.name}},</h1>' +
+          text : '<h1>Dear {{#if member.name}}{{member.name}}{{#if member.bboName}} ({{member.bboName}}){{/if}}{{else}}{{member.bboName}}{{/if}},</h1>' +
                '<p>The TD {{entry.td}} has removed you from the blacklist for the following reason:</p>' +
                '<p>{{entry.reason}}</p>' +
                '<p>Regards,<br/><br/>BBO Fans Admin</p>'

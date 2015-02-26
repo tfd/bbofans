@@ -77,8 +77,7 @@ module.exports = function (config) {
     if (!mailOptions.bcc) {
       mailOptions.bcc = config.mail.bcc;
     }
-    console.log('sendMail', mailOptions);
-    // transporter.sendMail(mailOptions, cb);
+    transporter.sendMail(mailOptions, cb);
   };
 
 };

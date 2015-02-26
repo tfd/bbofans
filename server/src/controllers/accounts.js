@@ -40,7 +40,7 @@ module.exports = function (config) {
         }
 
         var url = config.mail.resetPasswordUrl.replace(':id', member._id).replace(':password', password);
-        config.server.setup.getEmailText('resetPassword', {member: member, url: url, link: url}, function (err, setup) {
+        config.servers.setup.getEmailText('resetPassword', {member: member, url: url, link: url}, function (err, setup) {
           if (err) {
             console.error('admin.forgotPassword', err);
             return res.status(500).json({error: err});
@@ -103,8 +103,8 @@ module.exports = function (config) {
           }
           else {
             var url = config.mail.confirmationUrl.replace(':id', member._id);
-            config.server.setup.getEmailText('register', {member: member, url: url, link: url}, function (err, setup) {
-              if (err || setup) {
+            config.servers.setup.getEmailText('register', {member: member, url: url, link: url}, function (err, setup) {
+              if (err || ! setup) {
                 return res.status(500).json({error: err});
               }
 
