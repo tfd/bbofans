@@ -36,7 +36,7 @@ module.exports = function (config) {
       var email = {
         to     : config.mail.replyTo,
         bcc    : bcc,
-        subject: '[BBO Fans] ' + setup.title,
+        subject: 'BBO Fans ' + setup.title,
         html   : setup.text
       };
       config.servers.sendMail(email);
@@ -83,7 +83,7 @@ module.exports = function (config) {
                     config.servers.sendMail({
                       to     : member.emails[0],
                       bcc    : '',
-                      subject: '[BBO Fans] ' + setup.title,
+                      subject: 'BBO Fans ' + setup.title,
                       html   : setup.text
                     });
                   });
@@ -155,7 +155,7 @@ module.exports = function (config) {
                     config.servers.sendMail({
                       to     : member.emails[0],
                       bcc    : '',
-                      subject: '[BBO Fans] ' + setup.title,
+                      subject: 'BBO Fans ' + setup.title,
                       html   : setup.text
                     });
                   });

@@ -252,7 +252,7 @@ module.exports = function (config) {
                     var email = {
                       to     : to,
                       bcc    : bcc,
-                      subject: '[BBO Fans] ' + setup.title,
+                      subject: 'BBO Fans ' + setup.title,
                       html   : setup.text
                     };
                     config.servers.sendMail(email);

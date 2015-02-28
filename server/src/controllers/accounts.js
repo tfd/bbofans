@@ -52,7 +52,7 @@ module.exports = function (config) {
 
           config.servers.sendMail({
             to     : email || member.emails[0],
-            subject: '[BBO Fans] ' + setup.title,
+            subject: 'BBO Fans ' + setup.title,
             html   : setup.text
           });
         });
@@ -110,7 +110,7 @@ module.exports = function (config) {
 
               config.servers.sendMail({
                 to     : member.emails[0],
-                subject: '[BBO Fans] ' + setup.title,
+                subject: 'BBO Fans ' + setup.title,
                 html   : setup.text
               });
               res.json(member);
