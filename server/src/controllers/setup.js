@@ -65,7 +65,7 @@ Setup.findOne({}, function (err, setup) {
           type : 'blackList',
           title: 'Blacklist',
           text : '<h1>Hello {{#if member.name}}{{member.name}}{{#if member.bboName}} ({{member.bboName}}){{/if}}{{else}}{{member.bboName}}{{/if}},</h1>' +
-               '<p>The TD {{entry.td}} has put you on the blacklist until {{entry.to}} for the following reason:</p>' +
+               '<p>You\'ve been put on the blacklist until {{entry.to}} for the following reason:</p>' +
                '<p>{{entry.reason}}</p>' +
                '<p>Regards,<br/><br/>BBO Fans Admin</p>'
         },
@@ -73,7 +73,7 @@ Setup.findOne({}, function (err, setup) {
           type : 'whiteList',
           title: 'Blacklist',
           text : '<h1>Dear {{#if member.name}}{{member.name}}{{#if member.bboName}} ({{member.bboName}}){{/if}}{{else}}{{member.bboName}}{{/if}},</h1>' +
-               '<p>The TD {{entry.td}} has removed you from the blacklist for the following reason:</p>' +
+               '<p>You\'ve been removed you from the blacklist for the following reason:</p>' +
                '<p>{{entry.reason}}</p>' +
                '<p>Regards,<br/><br/>BBO Fans Admin</p>'
         }
