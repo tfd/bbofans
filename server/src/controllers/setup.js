@@ -71,7 +71,7 @@ Setup.findOne({}, function (err, setup) {
         },
         {
           type : 'whiteList',
-          title: 'Blacklist',
+          title: 'Whitelist',
           text : '<h1>Dear {{#if member.name}}{{member.name}}{{#if member.bboName}} ({{member.bboName}}){{/if}}{{else}}{{member.bboName}}{{/if}},</h1>' +
                '<p>You\'ve been removed you from the blacklist for the following reason:</p>' +
                '<p>{{entry.reason}}</p>' +
