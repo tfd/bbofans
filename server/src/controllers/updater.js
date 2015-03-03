@@ -58,6 +58,7 @@ module.exports = function (config) {
    * @param {GenericCallback} cb - function called with the downloaded content as result.
    */
   function download(address, cb) {
+console.error('download', address);
     var now = new Date();
     var offset = 'offset=' + now.getTimezoneOffset().toString();
     var parsedUrl = url.parse(address);
@@ -77,6 +78,7 @@ module.exports = function (config) {
     var request = http.request(options);
 
     request.on('response', httpUtils.handleHttpResponse(function (response) {
+console.error('download', address, response);
       cb(null, response);
     }));
     request.on('error', function (e) {
