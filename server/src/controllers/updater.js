@@ -13,6 +13,7 @@ var awards = require('../models/awards');
 var httpUtils = require('../utils/httpUtils');
 var _ = require('underscore');
 var moment = require('moment');
+var logger = require('../utils/logger');
 
 /**
  * Controller for updating tournament scores.
@@ -78,11 +79,10 @@ console.error('download', address);
     var request = http.request(options);
 
     request.on('response', httpUtils.handleHttpResponse(function (response) {
-console.error('download', address, response);
+      logger.debug('download', address, response);
       cb(null, response);
     }));
     request.on('error', function (e) {
-      console.error('download', e);
       cb(e, null);
     });
 
@@ -279,7 +279,7 @@ console.error('download', address, response);
       calculateAwards
     ], function (err, tournament) {
       if (err) {
-        console.error('Error in createTournament', link, err);
+        logger.error('Error in createTournament', link, err);
         // Ignore error, so other tournaments will be handled anyway.
       }
 
@@ -297,8 +297,10 @@ console.error('download', address, response);
   function isTournamentToBeAdded(link, cb) {
     Tournament.findOne({name: link.name}, function (err, t) {
       if (err) {
-        console.error('isTournamentToBeAdded', err);
+        logger.error('isTournamentToBeAdded', err);
       }
+
+      logger.debug('isTournamentToBeAdded', link.name, t === null || t === undefined);
 
       // Only download tournaments which don't exist.
       cb(t === null || t === undefined);
@@ -334,7 +336,7 @@ console.error('download', address, response);
         createTournaments
       ], function (err, tournaments) {
         if (err) {
-          console.error('update', err);
+          logger.error('update', err);
           return res.status(500).json({error: err});
         }
 
@@ -353,13 +355,13 @@ console.error('download', address, response);
           numPlayers += tournament.numPlayers;
           Tournament.addTournament(tournament, function (err, t) {
             if (err) {
-              console.error('addTournament ' + tournament.name, err);
+              logger.error('addTournament ' + tournament.name, err);
               // Ignore error, so other tournaments can still be added.
             }
             cb(null, t);
           });
         }, function (err) {
-          if (err) { console.error('updater.update', err); }
+          if (err) { logger.error('updater.update', err); }
 
           try {
             res.json({
@@ -371,7 +373,7 @@ console.error('download', address, response);
             });
           }
           catch (e) {
-            console.error('Unable to send response', e);
+            logger.error('Unable to send response', e);
           }
         });
       });

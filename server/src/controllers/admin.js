@@ -6,12 +6,13 @@ var Role = mongoose.model('Role');
 var Member = mongoose.model('Member');
 var Generator = require('password-generator');
 var async = require('async');
+var logger = require('../utils/logger');
 
 module.exports = function () {
 
   Role.find().count(function (err, count) {
     if (err) {
-      console.log(err);
+      logger.error(err);
       return;
     }
     if (count === 0) {
@@ -72,14 +73,14 @@ module.exports = function () {
             }
           ],
           function () {
-            console.log('Roles created');
+            logger.log('Roles created');
           });
     }
   });
 
   Member.findOne({bboName: 'pensando'}).exec(function (err, admin) {
     if (err) {
-      console.log('Find pensando', err);
+      logger.error('Find pensando', err);
       return;
     }
     if (admin && admin.hashed_password) { return; }
@@ -110,13 +111,13 @@ module.exports = function () {
       admin.password = password;
     }
 
-    console.log('Create admin', admin);
+    logger.log('Create admin', admin);
     admin.save(function (err) {
       if (err) {
-        console.log(err);
+        logger.error(err);
       }
       else {
-        console.log('Admin password ' + password);
+        logger.log('Admin password ' + password);
       }
     });
   });

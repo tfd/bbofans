@@ -4,6 +4,7 @@
 var localStrategy = require('./passport.strategies/local');
 var Member = require('../src/models/member');
 var Role = require('../src/models/role');
+var logger = require('../src/utils/logger');
 
 /**
  * Initialize passport.
@@ -19,7 +20,7 @@ module.exports = function (passport) {
       if (err) { return done(err, null); }
       member.getRole(function (err, role) {
         if (err) {
-          console.error('Passport.deserializeUser', id, err);
+          logger.error('Passport.deserializeUser', id, err);
           return done(err, null);
         }
 

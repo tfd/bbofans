@@ -8,7 +8,8 @@
 var express = require('express');
 var session = require('express-session');
 var compression = require('compression');
-var morgan = require('morgan');
+var winston = require('winston');
+var expressWinston = require('express-winston');
 // var cookieParser = require('cookie-parser');
 // var cookieSession = require('cookie-session');
 var bodyParser = require('body-parser');
@@ -40,7 +41,22 @@ module.exports = function (app, config, passport) {
 
   // Logging
   // Don't log during tests
-  if (env !== 'test') app.use(morgan('dev'));
+  if (env !== 'test') {
+    app.use(expressWinston.logger({
+      transports: [
+        new winston.transports.File({
+          filename: 'access.log',
+          colorize: false
+        })
+      ],
+
+      // optional: control whether you want to log the meta data about the request (default to true)
+      meta: true,
+
+      // optional: customize the default logging message. E.g. "{{res.statusCode}} {{req.method}} {{res.responseTime}}ms {{req.url}}"
+      msg: "HTTP {{req.method}} {{req.url}} - {{res.statusCode}} {{res.contentLength}} {{res.responseTime}}ms"
+    }));
+  }
 
   // Create handlebars engine
   var hbs = exphbs.create({

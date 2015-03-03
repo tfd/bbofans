@@ -5,6 +5,7 @@ var mongoose = require('mongoose');
 var Setup = mongoose.model('Setup');
 var moment = require('moment');
 var _ = require('underscore');
+var logger = require('../utils/logger');
 
 Setup.findOne({}, function (err, setup) {
   if (err || !setup) {
@@ -93,7 +94,7 @@ Setup.findOne({}, function (err, setup) {
       }
     }).save(function (err) {
           if (err) {
-            console.error('Unable to save default setup', err);
+            logger.error('Unable to save default setup', err);
           }
         });
   }
@@ -106,7 +107,7 @@ module.exports = function () {
     getEmailText: function (req, res) {
       Setup.findOne({}, function (err, setup) {
         if (err) {
-          console.error('Setup.getMailText', err);
+          logger.error('Setup.getMailText', err);
           return res.status(500).json({error: err});
         }
 
@@ -132,7 +133,7 @@ module.exports = function () {
     saveEmailText: function (req, res) {
       Setup.findOne({}, function (err, setup) {
         if (err) {
-          console.error('Setup.saveEmailText', err);
+          logger.error('Setup.saveEmailText', err);
           return res.status(500).json({error: err});
         }
 
@@ -155,7 +156,7 @@ module.exports = function () {
 
         setup.save(function (err) {
           if (err) {
-            console.error('Setup.saveEmailText', err);
+            logger.error('Setup.saveEmailText', err);
             return res.status(500).json({error: err});
           }
 
@@ -167,7 +168,7 @@ module.exports = function () {
     getRules: function (req, res) {
       Setup.findOne({}, function (err, setup) {
         if (err) {
-          console.error('Setup.getRules', err);
+          logger.error('Setup.getRules', err);
           return res.status(500).json({error: err});
         }
 
@@ -183,7 +184,7 @@ module.exports = function () {
       var newRules = req.body;
       Setup.findOne({}, function (err, setup) {
         if (err) {
-          console.error('Setup.saveRules', err);
+          logger.error('Setup.saveRules', err);
           return res.status(500).json({error: err});
         }
 
@@ -211,7 +212,7 @@ module.exports = function () {
 
         setup.save(function (err) {
           if (err) {
-            console.error('Setup.saveRules', err);
+            logger.error('Setup.saveRules', err);
             return res.status(500).json({error: err});
           }
 

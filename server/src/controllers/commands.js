@@ -6,6 +6,7 @@ var Member = mongoose.model('Member');
 var Blacklist = mongoose.model('Blacklist');
 var async = require('async');
 var moment = require('moment');
+var logger = require('../utils/logger');
 
 module.exports = function (config) {
 
@@ -42,7 +43,7 @@ module.exports = function (config) {
         Member.findByIdAndUpdate(row._id, {$set: setter}, {new: false}).exec(cb);
       }, function (err, results) {
         if (err) {
-          console.error("commandsFactory", func, err);
+          logger.error("commandsFactory", func, err);
           return res.status(500).json({error: err});
         }
 
@@ -66,7 +67,7 @@ module.exports = function (config) {
       Member.findByIdAndUpdate(row._id, {$set: {validatedAt: date, isEnabled: true}}, {new: false}).exec(cb);
     }, function (err, results) {
       if (err) {
-        console.error('commands.validate', err);
+        logger.error('commands.validate', err);
         return res.status(500).json({error: err});
       }
 
@@ -88,7 +89,7 @@ module.exports = function (config) {
       }, cb);
     }, function (err, info) {
       if (err) {
-        console.error('commands.email', err);
+        logger.error('commands.email', err);
         return res.status(500).json({error: err});
       }
 
@@ -103,7 +104,7 @@ module.exports = function (config) {
       Blacklist.addEntry(row.bboName, cmd.td, cmd.from, cmd.for, cmd.reason, cb);
     }, function (err, blacklisted) {
       if (err) {
-        console.error('commands.blacklist', err);
+        logger.error('commands.blacklist', err);
         return res.status(500).json({error: err});
       }
 

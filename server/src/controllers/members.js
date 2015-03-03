@@ -5,6 +5,7 @@ var mongoose = require('mongoose');
 var Member = mongoose.model('Member');
 var moment = require('moment');
 var _ = require('underscore');
+var logger = require('../utils/logger');
 
 /**
  * All field names in the table.
@@ -142,11 +143,11 @@ module.exports = function () {
       });
       Member.find(filter).count(function (err, count) {
         if (err) {
-          console.error('members.getRock', err);
+          logger.error('members.getRock', err);
           return res.status(500).json({error: err});
         }
 
-        console.log('sort', sort);
+        logger.log('sort', sort);
 
         var aggr = [];
         aggr.push({$match: filter});
@@ -160,7 +161,7 @@ module.exports = function () {
         aggr.push({$limit: limit});
         Member.aggregate(aggr, function (err, data) {
           if (err) {
-            console.error('members.getRock', err);
+            logger.error('members.getRock', err);
             return res.status(500).json({error: err});
           }
 
@@ -191,7 +192,7 @@ module.exports = function () {
       });
       Member.find(filter).count(function (err, count) {
         if (err) {
-          console.error('members.getRbd', err);
+          logger.error('members.getRbd', err);
           return res.status(500).json({error: err});
         }
 
@@ -207,7 +208,7 @@ module.exports = function () {
         aggr.push({$limit: limit});
         Member.aggregate(aggr, function (err, data) {
           if (err) {
-            console.error('members.getRbd', err);
+            logger.error('members.getRbd', err);
             return res.status(500).json({error: err});
           }
 
@@ -225,7 +226,7 @@ module.exports = function () {
     getRockWinners: function (req, res) {
       getWinners('rock', req, function (err, result) {
         if (err) {
-          console.error('members.getRockWinners', err);
+          logger.error('members.getRockWinners', err);
           return res.status(500).json({error: err});
         }
 
@@ -236,7 +237,7 @@ module.exports = function () {
     getRbdWinners: function (req, res) {
       getWinners('rbd', req, function (err, result) {
         if (err) {
-          console.error('members.getRockWinners', err);
+          logger.error('members.getRockWinners', err);
           return res.status(500).json({error: err});
         }
 
@@ -253,7 +254,7 @@ module.exports = function () {
       });
       Member.find(filter).count(function (err, count) {
             if (err) {
-              console.error('members.getAll', err);
+              logger.error('members.getAll', err);
               return res.status(500).json({error: err});
             }
 
@@ -411,7 +412,7 @@ module.exports = function () {
             aggr.push({$limit: limit});
             Member.aggregate(aggr, function (err, data) {
                   if (err) {
-                    console.error('members.getAll', err);
+                    logger.error('members.getAll', err);
                     return res.status(500).json({error: err});
                   }
 
@@ -434,7 +435,7 @@ module.exports = function () {
           .select('bboName -_id')
           .exec(function (err, data) {
             if (err) {
-              console.error('members.getBboName', err);
+              logger.error('members.getBboName', err);
               return res.status(500).json({error: err});
             }
 
@@ -454,7 +455,7 @@ module.exports = function () {
     getById: function (req, res) {
       Member.findById(req.params.id, function (err, player) {
         if (err) {
-          console.error('members.getById', err);
+          logger.error('members.getById', err);
           return res.status(500).json({error: err});
         }
 
@@ -470,7 +471,7 @@ module.exports = function () {
     getByBboName: function (req, res) {
       Member.findOne({bboName: req.params.bboName}, function (err, player) {
         if (err) {
-          console.error('members.getByBboName', err);
+          logger.error('members.getByBboName', err);
           return res.status(500).json({error: err});
         }
 
@@ -505,7 +506,7 @@ module.exports = function () {
               return res.status(409).json(errors);
             }
 
-            console.error('members.add', err);
+            logger.error('members.add', err);
             return res.status(422).json({bboName: error});
           }
 
@@ -524,7 +525,7 @@ module.exports = function () {
       delete member._id;
       Member.findById(id, function (err, originalMember) {
         if (err) {
-          console.error('members.update', err);
+          logger.error('members.update', err);
           return res.status(500).json({error: err});
         }
 
@@ -549,7 +550,7 @@ module.exports = function () {
               return res.status(409).json(errors);
             }
 
-            console.error('members.update', err);
+            logger.error('members.update', err);
             return res.status(422).json({bboName: error});
           }
 
@@ -565,7 +566,7 @@ module.exports = function () {
     remove: function (req, res) {
       Member.findOne({_id: req.params.id}, function (err, member) {
         if (err) {
-          console.error('members.remove', err);
+          logger.error('members.remove', err);
           return res.status(500).json({error: err});
         }
 
@@ -575,7 +576,7 @@ module.exports = function () {
 
         member.remove(function (err) {
           if (err) {
-            console.error('members.remove', err);
+            logger.error('members.remove', err);
             return res.status(500).json({error: err});
           }
 
@@ -589,7 +590,7 @@ module.exports = function () {
       var filter = listQueryParameters.getFindCriteria(req);
       Member.find(filter, function (err) {
             if (err) {
-              console.error('members.getAll', err);
+              logger.error('members.getAll', err);
               return res.status(500).json({error: err});
             }
 
@@ -599,7 +600,7 @@ module.exports = function () {
             aggr.push({$sort: sort});
             Member.aggregate(aggr, function (err, members) {
                   if (err) {
-                    console.error('members.saveAs', err);
+                    logger.error('members.saveAs', err);
                     return res.status(500).json({error: err});
                   }
 

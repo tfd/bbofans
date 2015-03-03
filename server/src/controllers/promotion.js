@@ -6,6 +6,7 @@ var Member = mongoose.model('Member');
 var moment = require('moment');
 var _ = require('underscore');
 var async = require('async');
+var logger = require('../utils/logger');
 
 module.exports = function (config) {
 
@@ -20,7 +21,7 @@ module.exports = function (config) {
   function sendToTds(setup) {
     Member.find().where('role').ne('member').exec(function (err, tds) {
       if (err) {
-        return console.error('sendToTds', err);
+        return logger.error('sendToTds', err);
       }
 
       var bcc = [];
@@ -63,7 +64,7 @@ module.exports = function (config) {
           })
           .exec(function (err, promotedMembers) {
             if (err) {
-              console.error('promotion.promote', err);
+              logger.error('promotion.promote', err);
               return res.status(500).json({error: err});
             }
 
@@ -91,13 +92,13 @@ module.exports = function (config) {
                 },
                 function (err) {
                   if (err) {
-                    console.error('promotion.promote', err);
+                    logger.error('promotion.promote', err);
                     return res.status(500).json({error: err});
                   }
 
                   config.servers.setup.getEmailText('promotedMembers', {members: members}, function (err, setup) {
                     if (err) {
-                      console.error('promotion.promote', err);
+                      logger.error('promotion.promote', err);
                       return res.status(500).json({error: err});
                     }
 
@@ -135,7 +136,7 @@ module.exports = function (config) {
                }])
           .exec(function (err, demotedMembers) {
             if (err) {
-              console.error('promotion.demote', err);
+              logger.error('promotion.demote', err);
               return res.status(500).json({error: err});
             }
 
@@ -163,13 +164,13 @@ module.exports = function (config) {
                 },
                 function (err) {
                   if (err) {
-                    console.error('promotion.demote', err);
+                    logger.error('promotion.demote', err);
                     return res.status(500).json({error: err});
                   }
 
                   config.servers.setup.getEmailText('demotedMembers', {members: members}, function (err, setup) {
                     if (err) {
-                      console.error('promotion.demote', err);
+                      logger.error('promotion.demote', err);
                       return res.status(500).json({error: err});
                     }
 

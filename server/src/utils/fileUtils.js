@@ -2,13 +2,14 @@
 "use strict";
 
 var fs = require('fs');
+var logger = require('../utils/logger');
 
 module.exports = {
 
   readFileToString: function (filename, callback) {
     fs.readFile(filename, 'utf8', function (err, contents) {
       if (err) {
-        console.error('fileUtils.readFileToString', err);
+        logger.error('fileUtils.readFileToString', err);
       }
       callback(err ? null : contents);
     });
