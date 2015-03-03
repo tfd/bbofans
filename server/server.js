@@ -12,7 +12,7 @@
 
 var express = require('express');
 var passport = require('passport');
-var logger = require('./src/utils/logger');
+var winston = require('winston');
 
 /*
  * Main application entry file.
@@ -23,6 +23,18 @@ var logger = require('./src/utils/logger');
 // if test env, load example file
 var env = process.env.NODE_ENV || 'prod';
 var config = require('./config/config')[env];
+
+// Setup logger
+winston.loggers.add('bbofans', {
+  console: {
+    level: config.logLevel,
+    colorize: true
+  },
+  file: {
+    level: config.logLevel,
+    filename: config.root + '/bbofans.log'
+  }
+});
 
 // connect to database
 require('./config/mongoose')(config);
@@ -47,7 +59,7 @@ var expressWinston = require('express-winston');
 app.use(expressWinston.errorLogger({
   transports: [
     new winston.transports.File({
-      filename: 'error.log',
+      filename: config.root + '/error.log',
       colorize: false
     })
   ]
@@ -56,7 +68,7 @@ app.use(expressWinston.errorLogger({
 // Start the app by listening on <port>
 var port = process.env.PORT || 3000;
 app.listen(port, function () {
-  logger.log('BBOFans express server listening on port ' + port);
+  require('./src/utils/logger').log('BBOFans express server listening on port ' + port);
 });
 
 // expose app

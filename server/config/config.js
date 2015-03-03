@@ -35,6 +35,7 @@ var config = {dev: {}, test: {}, prod: {}};
   config[type].app = {
     name: 'BBOFans Website'
   };
+  config[type].logLevel = 'debug';
   config[type].keyStoreFile = rootPath + '/server/data/keyStore.js';
   config[type].omitReCaptcha = false;
   config[type].reCaptcha = {
@@ -72,6 +73,7 @@ config.dev.mail.replyTo = '"BBO Fans Admin" <ronald@bbofans.com>';
 config.dev.mail.bcc = '"BBO Fans Admin" <ronald@bbofans.com>';
 config.dev.mail.confirmationUrl = 'http://local.bbofans.com:3000/register/confirm/:id';
 config.dev.mail.resetPasswordUrl = 'http://local.bbofans.com:3000/admin/account/reset/:id/:password';
+config.dev.logLevel = 'debug';
 
 config.test.db = 'mongodb://localhost/bbofans_test';
 config.test.omitReCaptcha = true;

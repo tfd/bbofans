@@ -45,7 +45,7 @@ module.exports = function (app, config, passport) {
     app.use(expressWinston.logger({
       transports: [
         new winston.transports.File({
-          filename: 'access.log',
+          filename: config.root + '/access.log',
           colorize: false
         })
       ],
