@@ -121,7 +121,7 @@ TournamentSchema.methods = {
 TournamentSchema.statics.addTournament = function (tournament, cb) {
   var Tournament = mongoose.model('Tournament');
 
-  Tournament.findOne({name: tournament.name.trim()}, function (err, t) {
+  Tournament.findOne({name: tournament.name.trim(), date: tournament.date}, function (err, t) {
     if (err) {
       logger.error('Tournament.addTournament', err);
       return cb(err, null);
