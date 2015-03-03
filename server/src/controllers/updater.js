@@ -295,7 +295,7 @@ console.error('download', address);
    *                               false otherwise.
    */
   function isTournamentToBeAdded(link, cb) {
-    Tournament.findOne({name: link.name}, function (err, t) {
+    Tournament.findOne({name: link.name, date: link.date}, function (err, t) {
       if (err) {
         logger.error('isTournamentToBeAdded', err);
       }
