@@ -6,6 +6,7 @@ var Member = mongoose.model('Member');
 var Generator = require('password-generator');
 var moment = require('moment');
 var _ = require('underscore');
+var logger = require('../utils/logger');
 
 module.exports = function (config) {
 
@@ -17,7 +18,7 @@ module.exports = function (config) {
   function forgotPassword(field, res, email) {
     return function (err, member) {
       if (err) {
-        console.error('admin.forgotPassword', err);
+        logger.error('admin.forgotPassword', err);
         return res.status(500).json({error: err});
       }
 
@@ -35,14 +36,14 @@ module.exports = function (config) {
       member.password = password;
       member.save(function (err) {
         if (err) {
-          console.error('admin.forgotPassword', err);
+          logger.error('admin.forgotPassword', err);
           return res.status(500).json({error: err});
         }
 
         var url = config.mail.resetPasswordUrl.replace(':id', member._id).replace(':password', password);
         config.servers.setup.getEmailText('resetPassword', {member: member, url: url, link: url}, function (err, setup) {
           if (err) {
-            console.error('admin.forgotPassword', err);
+            logger.error('admin.forgotPassword', err);
             return res.status(500).json({error: err});
           }
 
@@ -68,7 +69,7 @@ module.exports = function (config) {
       var member = req.body;
       config.servers.reCaptcha.checkDirect(req, member['g-recaptcha-response'], function (data) {
         if (data.success === false) {
-          console.error('members.register', data['error-codes']);
+          logger.error('members.register', data['error-codes']);
           return res.status(422).json({reCaptcha: 'bad captcha'});
         }
 
@@ -97,7 +98,7 @@ module.exports = function (config) {
               res.status(409).json(errors);
             }
             else {
-              console.error('members.register', err);
+              logger.error('members.register', err);
               res.status(422).json({bboName: error});
             }
           }
@@ -123,7 +124,7 @@ module.exports = function (config) {
     getRegistrant: function (req, res) {
       Member.findById(req.params.id, function (err, registrant) {
         if (err) {
-          console.error('members.getById', err);
+          logger.error('members.getById', err);
           return res.status(500).json({error: err});
         }
 
@@ -140,7 +141,7 @@ module.exports = function (config) {
       var date = moment.utc().toDate();
       Member.findByIdAndUpdate(req.params.id, {$set: {registeredAt: date}}, {new: false}, function (err, member) {
         if (err) {
-          console.error('members.confirmEmail', err);
+          logger.error('members.confirmEmail', err);
           return res.status(500).redirect('/#serverError');
         }
 
@@ -158,7 +159,7 @@ module.exports = function (config) {
       delete password._id;
       Member.findById(id, function (err, member) {
         if (err) {
-          console.error('members.changePassword', err);
+          logger.error('members.changePassword', err);
           return res.status(500).json({error: err});
         }
 
@@ -177,7 +178,7 @@ module.exports = function (config) {
         member.password = password.newPassword;
         member.save(function (err) {
           if (err) {
-            console.error('members.changePassword', err);
+            logger.error('members.changePassword', err);
             return res.status(500).json({error: 'Error changing password.'});
           }
 
@@ -201,24 +202,24 @@ module.exports = function (config) {
     resetPassword: function (req, res) {
       var id = req.params.id;
       var password = req.params.password;
-      console.log(id, password);
+      logger.log(id, password);
       Member.findById(id, function (err, member) {
         if (err) {
-          console.error('members.resetPassword', err);
+          logger.error('members.resetPassword', err);
           return res.status(500).json({error: err});
         }
 
         if (!member) {
-          console.log('no such member');
+          logger.log('no such member');
           return res.status(404).redirect('/#pageNotFound');
         }
 
         if (!member.authenticate(password)) {
-          console.log('bad password');
+          logger.log('bad password');
           return res.status(404).redirect('/#pageNotFound');
         }
 
-        console.log('redirect', '/#password/reset/' + member._id + '/' + password);
+        logger.log('redirect', '/#password/reset/' + member._id + '/' + password);
         return res.status(302).redirect('/#password/reset/' + member._id + '/' + password);
       });
     }

@@ -6,6 +6,7 @@ var async = require('async');
 
 var Tournament = mongoose.model('Tournament');
 var Member = mongoose.model('Member');
+var logger = require('../utils/logger');
 
 /**
  * All field names in the table.
@@ -35,7 +36,7 @@ function getTournaments(req, criteria, cb) {
   });
   Tournament.find(filter).count(function (err, count) {
     if (err) {
-      console.error('tournaments.index', err);
+      logger.error('tournaments.index', err);
       return cb({error: 'No tournament found.'});
     }
 
@@ -46,7 +47,7 @@ function getTournaments(req, criteria, cb) {
         .limit(limit)
         .exec(function (err, tournaments) {
           if (err) {
-            console.error('tournaments.index', err);
+            logger.error('tournaments.index', err);
             return cb({error: 'No tournament found.'});
           }
 
@@ -92,7 +93,7 @@ module.exports = function () {
     getById: function (req, res) {
       Tournament.find({_id: req.params.id}, function (err, tournament) {
         if (err) {
-          console.getById('tournaments.addTournament', err);
+          logger.error('tournaments.getById', err);
           res.json({error: 'Tournament not found.'});
         }
         else {
@@ -113,7 +114,7 @@ module.exports = function () {
     },
 
     // update: function(req, res) {
-    //     console.log(req.body);
+    //     logger.log(req.body);
     //     models.Contact.update({ _id: req.body.id }, req.body, function(err, updated) {
     //         if (err) {
     //             res.json({error: 'Contact not found.'});
@@ -126,7 +127,7 @@ module.exports = function () {
     delete: function (req, res) {
       Tournament.findOne({_id: req.params.id}, function (err, tournament) {
         if (err) {
-          console.error('tournaments.delete', err);
+          logger.error('tournaments.delete', err);
           res.json({error: 'Tournament not found.'});
         }
         else {

@@ -7,6 +7,7 @@ var Member = mongoose.model('Member');
 var Role = mongoose.model('Role');
 var async = require('async');
 var crypto = require('crypto');
+var logger = require('../../src/utils/logger');
 
 module.exports = new LocalStrategy({
   usernameField: 'username',
@@ -15,7 +16,7 @@ module.exports = new LocalStrategy({
   var re = new RegExp('^' + (username ? username.trim() : '') + '$', 'i');
   Member.findOne({bboName: re}, function (err, member) {
     if (err) {
-      console.error('LocalStrategy', err);
+      logger.error('LocalStrategy', err);
       return done(err, null);
     }
 

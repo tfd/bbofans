@@ -11,6 +11,7 @@ var fieldDefinitions = require('../utils/fieldDefinitions')(Blacklist, fields);
 var listQueryParameters = require('../utils/listQueryParameters')(fieldDefinitions);
 var exportToFile = require('../utils/exportToFile')('blacklist', 'member', fieldDefinitions);
 var _ = require('underscore');
+var logger = require('../utils/logger');
 
 exportToFile.setCsvHeaderWriter(function (fields, res) {
   res.write('bboName,from,to,reason');
@@ -116,13 +117,13 @@ module.exports = function (config) {
 
       Blacklist.find(filter).count(function (err, count) {
         if (err) {
-          console.err('blacklist.getList', err);
+          logger.error('blacklist.getList', err);
           return res.status(500).json({error: err});
         }
 
         aggregate.exec(function (err, data) {
           if (err) {
-            console.error('blacklists.getList', err);
+            logger.error('blacklists.getList', err);
             return res.status(500).json({error: err});
           }
 
@@ -149,7 +150,7 @@ module.exports = function (config) {
           .sort({bboName: -1})
           .exec(function (err, data) {
             if (err) {
-              console.error('blacklists.getBboNames', err);
+              logger.error('blacklists.getBboNames', err);
               return res.status(500).json({error: err});
             }
 
@@ -169,7 +170,7 @@ module.exports = function (config) {
     getById: function (req, res) {
       Blacklist.findOne({_id: req.params.id}, function (err, blacklist) {
         if (err) {
-          console.error('blacklist.getById', err);
+          logger.error('blacklist.getById', err);
           return res.status(500).json({error: err});
         }
 
@@ -184,7 +185,7 @@ module.exports = function (config) {
     getByBboName: function (req, res) {
       Blacklist.findOne({bboName: req.params.bboName}, function (err, blacklist) {
         if (err) {
-          console.error('blacklist.getByBboName', err);
+          logger.error('blacklist.getByBboName', err);
           return res.status(500).json({error: err});
         }
 
@@ -209,7 +210,7 @@ module.exports = function (config) {
                 return res.status(422).json(err.validationError);
               }
 
-              console.error('blacklist.addEntry', err);
+              logger.error('blacklist.addEntry', err);
               return res.status(500).json({error: err});
             }
 
@@ -221,7 +222,7 @@ module.exports = function (config) {
               if (!err) {
                 Member.find({role: {$in: ['admin', 'blacklist manager', 'td']}}, function (err, managers) {
                   if (err) {
-                    console.error('blacklist.addEntry::find blacklist managers', err);
+                    logger.error('blacklist.addEntry::find blacklist managers', err);
                   }
 
                   var bcc = [];
@@ -241,7 +242,7 @@ module.exports = function (config) {
 
                   getHtml(member, blacklist, function (err, setup) {
                     if (err && setup) {
-                      return console.error('blacklist.addEntry::find email blacklist', err);
+                      return logger.error('blacklist.addEntry::find email blacklist', err);
                     }
 
                     var to = 'info@bbofans.com';
@@ -270,7 +271,7 @@ module.exports = function (config) {
       delete req.body._id;
       Blacklist.findByIdAndUpdate(id, {$set: req.body}, function (err, blacklist) {
         if (err) {
-          console.error('blacklist.update', err);
+          logger.error('blacklist.update', err);
           return res.status(500).json({error: err});
         }
 
@@ -285,7 +286,7 @@ module.exports = function (config) {
     remove: function (req, res) {
       Blacklist.findOne({_id: req.params.id}, function (err, blacklist) {
         if (err) {
-          console.error('blacklist.remove', err);
+          logger.error('blacklist.remove', err);
           return res.status(500).json({error: err});
         }
 
@@ -295,7 +296,7 @@ module.exports = function (config) {
 
         blacklist.remove(function (err) {
           if (err) {
-            console.error('blacklist.remove', err);
+            logger.error('blacklist.remove', err);
             return res.status(500).json({error: err});
           }
 
@@ -316,7 +317,7 @@ module.exports = function (config) {
           .sort(sort)
           .exec(function (err, blacklisted) {
             if (err) {
-              console.error('blacklist.saveAs', err);
+              logger.error('blacklist.saveAs', err);
               return res.status(500).json({error: err});
             }
 
@@ -343,7 +344,7 @@ module.exports = function (config) {
         updateMembers(true, blackListedMembers)
       ], function (err) {
         if (err) {
-          console.error('blacklist.updateMembers', err);
+          logger.error('blacklist.updateMembers', err);
           return res.status(500).json({error: err});
         }
 

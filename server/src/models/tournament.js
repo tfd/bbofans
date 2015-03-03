@@ -8,6 +8,7 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var async = require('async');
+var logger = require('../utils/logger');
 
 /*
  * Tournament Schema
@@ -36,7 +37,7 @@ var TournamentSchema = new Schema({
 function addScoreToMember(tournament, callback) {
   return function (err, member) {
     if (err) {
-      console.log('Could not find member', err);
+      logger.error('Could not find member', err);
       callback(); // ignore error!
       return;
     }
@@ -48,7 +49,7 @@ function addScoreToMember(tournament, callback) {
         return;
       }
       catch (e) {
-        console.log('Exception thrown when adding scores for tournament ' + tournament.name + ' to member ' +
+        logger.error('Exception thrown when adding scores for tournament ' + tournament.name + ' to member ' +
                     member.bboName, e);
       }
     }
@@ -117,13 +118,13 @@ TournamentSchema.statics.addTournament = function (tournament, cb) {
 
   Tournament.findOne({name: tournament.name.trim()}, function (err, t) {
     if (err) {
-      console.log('Tournament.addTournament', err);
+      logger.error('Tournament.addTournament', err);
       return cb(err, null);
     }
 
     if (t) {
       // tournament already added, just skip
-      console.log('Tournament.addTournament', 'Tournament "' + t.name + '" already added');
+      logger.log('Tournament.addTournament', 'Tournament "' + t.name + '" already added');
       return cb(null, t);
     }
 
@@ -131,7 +132,7 @@ TournamentSchema.statics.addTournament = function (tournament, cb) {
       var newTournament = new Tournament(tournament);
       newTournament.save(function (err, tournament) {
         if (err) {
-          console.error('Tournament.addTournament', err);
+          logger.error('Tournament.addTournament', err);
           return cb({error: 'Error adding Tournament.'}, null);
         }
 
@@ -139,7 +140,7 @@ TournamentSchema.statics.addTournament = function (tournament, cb) {
       });
     }
     catch (e) {
-      console.log('Exception thrown when adding tournament ' + tournament.name, e);
+      logger.error('Exception thrown when adding tournament ' + tournament.name, e);
       cb({error: 'Exception ' + e.message}, null);
     }
   });

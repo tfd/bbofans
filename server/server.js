@@ -1,3 +1,4 @@
+"use strict";
 
 /*!
 * bbofans
@@ -11,11 +12,12 @@
 
 var express = require('express');
 var passport = require('passport');
+var logger = require('./src/utils/logger');
 
 /*
-* Main application entry file.
-* Please note that the order of loading is important.
-*/
+ * Main application entry file.
+ * Please note that the order of loading is important.
+ */
 
 // Load configurations
 // if test env, load example file
@@ -39,10 +41,22 @@ require('./config/services')(app, config, passport);
 // Bootstrap routes
 require('./config/routes')(app, config, passport);
 
+// Error logging
+var winston = require('winston');
+var expressWinston = require('express-winston');
+app.use(expressWinston.errorLogger({
+  transports: [
+    new winston.transports.File({
+      filename: 'error.log',
+      colorize: false
+    })
+  ]
+}));
+
 // Start the app by listening on <port>
 var port = process.env.PORT || 3000;
 app.listen(port, function () {
-  console.log('BBOFans express server listening on port ' + port);
+  logger.log('BBOFans express server listening on port ' + port);
 });
 
 // expose app

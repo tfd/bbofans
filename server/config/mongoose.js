@@ -3,6 +3,7 @@
 
 var mongoose = require('mongoose');
 var fs = require('fs');
+var logger = require('../src/utils/logger');
 
 module.exports = function (config) {
   // Bootstrap db connection
@@ -14,7 +15,7 @@ module.exports = function (config) {
 
   // Error handler
   mongoose.connection.on('error', function (err) {
-    console.log(err);
+    logger.error("mongoose connection", err);
   });
 
   // Reconnect when closed

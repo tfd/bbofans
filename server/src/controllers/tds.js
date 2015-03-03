@@ -20,6 +20,7 @@ var fields = ['bboName',
 var fieldDefinitions = require('../utils/fieldDefinitions')(Member, fields);
 var listQueryParameters = require('../utils/listQueryParameters')(fieldDefinitions);
 var exportToFile = require('../utils/exportToFile')('tds', 'td', fieldDefinitions);
+var logger = require('../utils/logger');
 
 module.exports = function () {
   return {
@@ -33,7 +34,7 @@ module.exports = function () {
       });
       Member.find(filter).count(function (err, count) {
             if (err) {
-              console.error('tournamentDirectors.getAll', err);
+              logger.error('tournamentDirectors.getAll', err);
               return res.status(500).json({error: err});
             }
 
@@ -128,7 +129,7 @@ module.exports = function () {
             aggr.push({$limit: limit});
             Member.aggregate(aggr, function (err, tds) {
               if (err) {
-                console.error('tournamentDirectors.getAll', err);
+                logger.error('tournamentDirectors.getAll', err);
                 return res.status(500).json({error: err});
               }
 
@@ -150,7 +151,7 @@ module.exports = function () {
       aggr.push({$project: listQueryParameters.projectFields(fields)});
       Member.aggregate(aggr, function (err, td) {
         if (err) {
-          if (err) { console.error('tournamentDirectors.getById', err); }
+          if (err) { logger.error('tournamentDirectors.getById', err); }
           return res.status(500).json({error: err});
         }
 
@@ -167,7 +168,7 @@ module.exports = function () {
       delete req.body._id;
       Member.findByIdAndUpdate(id, {$set: req.body}, function (err, updated) {
         if (err) {
-          console.error('tournamentDirectors.update', err);
+          logger.error('tournamentDirectors.update', err);
           return res.status(500).json({error: err});
         }
 
@@ -186,7 +187,7 @@ module.exports = function () {
       });
       Member.find(filter, function (err) {
             if (err) {
-              console.error('tournamentDirectors.saveAs', err);
+              logger.error('tournamentDirectors.saveAs', err);
               return res.status(500).json({error: err});
             }
 
@@ -196,7 +197,7 @@ module.exports = function () {
             aggr.push({$sort: sort});
             Member.aggregate(aggr, function (err, tds) {
                   if (err) {
-                    console.error('tournamentDirectors.saveAs', err);
+                    logger.error('tournamentDirectors.saveAs', err);
                     return res.status(500).json({error: err});
                   }
 

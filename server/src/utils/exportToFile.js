@@ -52,7 +52,6 @@ module.exports = function (collectionName, itemName, fieldDefinitions) {
   var writeCsvDoc = function (doc, res) {
     var sep = '';
     _.each(doc, function (val, field) {
-      console.log(field, val);
       res.write(sep);
       if (fieldDefinitions.isBooleanField(field)) {
         res.write((val ? 'Y' : 'N'));

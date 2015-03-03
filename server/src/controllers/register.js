@@ -4,7 +4,7 @@
 var mongoose = require('mongoose');
 var Member = mongoose.model('Member');
 var moment = require('moment');
-var Handlebars = require('handlebars');
+var logger = require('../utils/logger');
 
 module.exports = function (config) {
 
@@ -22,7 +22,7 @@ module.exports = function (config) {
       var member = req.body;
       config.servers.reCaptcha.checkDirect(req, member['g-recaptcha-response'], function (data) {
         if (data.success === false) {
-          console.error('members.register', data['error-codes']);
+          logger.error('members.register', data['error-codes']);
           return res.status(422).json({reCaptcha: 'bad captcha'});
         }
 
@@ -51,7 +51,7 @@ module.exports = function (config) {
               res.status(409).json(errors);
             }
             else {
-              console.error('members.register', err);
+              logger.error('members.register', err);
               res.status(422).json({bboName: error});
             }
           }
@@ -81,7 +81,7 @@ module.exports = function (config) {
     getRegistrant: function (req, res) {
       Member.findById(req.params.id, function (err, registrant) {
         if (err) {
-          console.error('members.getById', err);
+          logger.error('members.getById', err);
           return res.status(500).json({error: err});
         }
 
@@ -98,7 +98,7 @@ module.exports = function (config) {
       var date = moment.utc().toDate();
       Member.findByIdAndUpdate(req.params.id, {$set: {registeredAt: date}}, {new: false}, function (err, member) {
         if (err) {
-          console.error('members.confirmEmail', err);
+          logger.error('members.confirmEmail', err);
           return res.status(500).redirect('/#serverError');
         }
 
