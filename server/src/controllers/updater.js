@@ -59,7 +59,6 @@ module.exports = function (config) {
    * @param {GenericCallback} cb - function called with the downloaded content as result.
    */
   function download(address, cb) {
-console.error('download', address);
     var now = new Date();
     var offset = 'offset=' + now.getTimezoneOffset().toString();
     var parsedUrl = url.parse(address);
@@ -79,7 +78,6 @@ console.error('download', address);
     var request = http.request(options);
 
     request.on('response', httpUtils.handleHttpResponse(function (response) {
-      logger.debug('download', address, response);
       cb(null, response);
     }));
     request.on('error', function (e) {
@@ -299,8 +297,6 @@ console.error('download', address);
       if (err) {
         logger.error('isTournamentToBeAdded', err);
       }
-
-      logger.debug('isTournamentToBeAdded', link.name, t === null || t === undefined);
 
       // Only download tournaments which don't exist.
       cb(t === null || t === undefined);
