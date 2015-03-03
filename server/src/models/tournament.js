@@ -15,7 +15,7 @@ var logger = require('../utils/logger');
  */
 
 var TournamentSchema = new Schema({
-  name      : {type: String, required: 'Tournament name cannot be blank', trim: true, unique: true},
+  name      : {type: String, required: 'Tournament name cannot be blank', trim: true},
   date      : {type: Date, default: Date.now},
   resultsUrl: {type: String, default: ''},
   boardsUrl : {type: String, default: ''},
@@ -29,6 +29,11 @@ var TournamentSchema = new Schema({
                }],
   createdAt : {type: Date, default: Date.now}
 });
+
+/**
+ * Multi-field index
+ */
+TournamentSchema.index({name: 1, date: 1}, {unique: true});
 
 /*
  * Helper methods
