@@ -31,7 +31,7 @@ var NewEntryControllerImpl = function (options) {
     var durationEntry = new DurationEntry({
       bboName: '',
       from: moment.utc(),
-      for: '1w',
+      for: '1M',
       reason: '',
       isNew: true
     });

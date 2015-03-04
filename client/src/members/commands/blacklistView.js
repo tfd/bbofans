@@ -20,7 +20,7 @@ var MemberCommandsBlacklistView = FormWithErrorHandling.extend({
     });
     if (this.model.get('command') === 'blacklist') {
       this.ui.from.data("DateTimePicker").setDate(moment.utc());
-      this.ui.for.val('1w');
+      this.ui.for.val('1M');
     }
     else {
       this.ui.from.data("DateTimePicker").setDate(moment.utc().add(-2, 'd'));

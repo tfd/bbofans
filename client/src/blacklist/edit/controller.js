@@ -38,7 +38,7 @@ var BlacklistEditImpl = function (options) {
     var durationEntry = new DurationEntry({
       bboName: blacklist.get('bboName'),
       'from': moment.utc(),
-      'for': '1w',
+      'for': '1M',
       reason: '',
       blacklisting: 'blacklisting',
       createLabel: 'Add to blacklist'
