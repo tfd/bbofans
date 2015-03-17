@@ -85,7 +85,8 @@ module.exports = function (config) {
       config.servers.sendMail({
         to     : to,
         subject: subject,
-        text   : message
+        text   : message,
+        freeForm: true
       }, cb);
     }, function (err, info) {
       if (err) {

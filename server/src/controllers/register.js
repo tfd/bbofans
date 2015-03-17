@@ -68,7 +68,7 @@ module.exports = function (config) {
 
               config.servers.sendMail({
                 to     : member.emails[0],
-                subject: '[BBO Fans] ' + setup.title,
+                subject: setup.title,
                 html   : setup.text
               });
               res.json(member);

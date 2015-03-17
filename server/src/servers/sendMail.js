@@ -77,6 +77,11 @@ module.exports = function (config) {
     if (!mailOptions.bcc) {
       mailOptions.bcc = config.mail.bcc;
     }
+    if (!mailOptions.freeForm) {
+      mailOptions.subject = 'BBO Fans: ' + mailOptions.subject;
+    }
+    delete mailOptions.freeForm;
+
     transporter.sendMail(mailOptions, cb);
   };
 

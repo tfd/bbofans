@@ -86,11 +86,13 @@ module.exports = function (config) {
 
   function getHtml(member, blacklist, cb) {
     var entry = _.last(blacklist.entries);
-    config.servers.setup.getEmailText(member.isBlackListed ? 'blackList' : 'whiteList', {
+    var isBlackListed = moment().range(moment.utc(entry.from), moment.utc(entry.to)).contains(moment.utc());
+
+    config.servers.setup.getEmailText(isBlackListed ? 'blackList' : 'whiteList', {
           member: member,
           entry : {
             td    : entry.td,
-            from  : moment.utc(entry.to).format('MMMM Do YYYY'),
+            from  : moment.utc(entry.from).format('MMMM Do YYYY'),
             to    : moment.utc(entry.to).format('MMMM Do YYYY'),
             reason: entry.reason
           }
@@ -241,8 +243,11 @@ module.exports = function (config) {
                   }
 
                   getHtml(member, blacklist, function (err, setup) {
-                    if (err && setup) {
+                    if (err) {
                       return logger.error('blacklist.addEntry::find email blacklist', err);
+                    }
+                    if (! setup) {
+                      return logger.error('blacklist.addEntry::find email blacklist', {error: 'no setup'});
                     }
 
                     var to = 'info@bbofans.com';
@@ -253,7 +258,7 @@ module.exports = function (config) {
                     var email = {
                       to     : to,
                       bcc    : bcc,
-                      subject: 'BBO Fans ' + setup.title,
+                      subject: setup.title,
                       html   : setup.text
                     };
                     config.servers.sendMail(email);
