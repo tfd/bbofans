@@ -249,9 +249,15 @@ module.exports = function (config) {
   function calculateAwards(tournament, cb) {
     if (tournament.numPlayers > 0) {
       var system = awards.getSystem(tournament.isRbd ? 'rbd' : 'rock', tournament.numPlayers);
+      var prevScore = false;
+      var currentPos = 0;
 
       tournament.results.forEach(function (result, pos) {
-        result.awards = awards.getAwardPoints(system, pos);
+        if (prevScore === false || prevScore !== result.score) {
+          prevScore = result.score;
+          currentPos = pos;
+        }
+        result.awards = awards.getAwardPoints(system, currentPos);
       });
     }
 

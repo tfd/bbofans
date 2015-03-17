@@ -26,7 +26,7 @@ module.exports = {
    * Return the awards points for the given position in the given system.
    *
    * @param {Object} system - the calculation system used.
-   * @param {Numner} pos - position, starting from 0
+   * @param {Number} pos - position, starting from 0
    * @returns {number} the number of awards points
    */
   getAwardPoints: function (system, pos) {
