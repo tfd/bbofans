@@ -91,6 +91,7 @@ module.exports = function (config) {
                       subject: setup.title,
                       html   : setup.text
                     };
+
                     // config.servers.sendMail(email);
                     cb(err);
                   });
