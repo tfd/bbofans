@@ -43,14 +43,14 @@ module.exports = function (config) {
             html   : setup.text
           };
           console.log(email);
-          // config.servers.sendMail(email);
+          config.servers.sendMail(email);
         });
   }
 
   return {
 
     promote: function (req, res) {
-      var previousMonth = moment().utc().subtract(1, 'M');
+      var previousMonth = moment().utc().subtract(2, 'M');
       var month = previousMonth.month();
       var year = previousMonth.year();
 
