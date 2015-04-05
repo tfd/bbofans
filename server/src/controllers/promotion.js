@@ -50,7 +50,7 @@ module.exports = function (config) {
   return {
 
     promote: function (req, res) {
-      var previousMonth = moment().utc().subtract(2, 'M');
+      var previousMonth = moment().utc().subtract(1, 'M');
       var month = previousMonth.month();
       var year = previousMonth.year();
 
