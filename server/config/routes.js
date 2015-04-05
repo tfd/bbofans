@@ -41,6 +41,7 @@ module.exports = function (app, config, passport) {
   var tournaments = require('../src/controllers/tournaments')(config);
   var updater = require('../src/controllers/updater')(config);
   var setup = require('../src/controllers/setup')(config);
+  var promotion = require('../src/controllers/promotion')(config);
 
 
   /**
@@ -59,6 +60,7 @@ module.exports = function (app, config, passport) {
   router.post('/register', accounts.register);
   router.get('/register/:id', accounts.getRegistrant);
   router.get('/register/confirm/:id', accounts.confirmEmail);
+  router.get('/promotion/promote', promotion.promote);
   router.get('/countries', countries.get);
   router.get('/admin/session', admin.getUser);
   router.post('/admin/session', login(app, config, passport));
