@@ -74,7 +74,7 @@ module.exports = function (config) {
             var members = [];
             async.each(promotedMembers,
                 function (member, cb) {
-                  members.push(member.bboName);
+                  members.push({name: member.name, bboName: member.bboName});
 
                   config.servers.setup.getEmailText('promote', {member: member}, function (err, setup) {
                     if (err) {
@@ -91,10 +91,8 @@ module.exports = function (config) {
                       subject: setup.title,
                       html   : setup.text
                     };
-                    console.log(email);
-                    /*
-                     config.servers.sendMail(email);
-                     */
+                    // config.servers.sendMail(email);
+                    cb(err);
                   });
                 },
                 function (err) {
