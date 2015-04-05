@@ -76,29 +76,36 @@ module.exports = function (config) {
                 function (member, cb) {
                   members.push({name: member.name, bboName: member.bboName});
 
-                  config.servers.setup.getEmailText('promote', {member: member}, function (err, setup) {
+                  Member.update({bboName: member.bboName}, { $set: { isRbdPlayer: true }}, function (err) {
                     if (err) {
+                      console.error('Promotion.promote', member, err);
+                      return cb(null);
+                    }
+
+                    config.servers.setup.getEmailText('promote', {member: member}, function (err, setup) {
+                      if (err) {
+                        console.error('Promotion.promote', member, err);
+                        return cb(err);
+                      }
+
+                      if (!setup) {
+                        return cb({setup: 'No "promote" email text found'});
+                      }
+
+                      var email = {
+                        to     : member.emails[0],
+                        bcc    : '',
+                        subject: setup.title,
+                        html   : setup.text
+                      };
+
+                      config.servers.sendMail(email);
                       cb(err);
-                    }
-
-                    if (!setup) {
-                      cb({setup: 'No "promote" email text found'});
-                    }
-
-                    var email = {
-                      to     : member.emails[0],
-                      bcc    : '',
-                      subject: setup.title,
-                      html   : setup.text
-                    };
-
-                    // config.servers.sendMail(email);
-                    cb(err);
+                    });
                   });
                 },
                 function (err) {
                   if (err) {
-                    logger.error('promotion.promote', err);
                     return res.status(500).json({error: err});
                   }
 
