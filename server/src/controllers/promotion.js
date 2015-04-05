@@ -91,10 +91,8 @@ module.exports = function (config) {
                       subject: setup.title,
                       html   : setup.text
                     };
-                    console.log(email);
-                    /*
-                     config.servers.sendMail(email);
-                     */
+                    config.servers.sendMail(email);
+                    cb(null);
                   });
                 },
                 function (err) {
