@@ -25,4 +25,5 @@ update-tournaments.json
 update-tournaments.log
 update-blacklist.json
 update-blacklist.log
-
+promote.json
+promote.log
