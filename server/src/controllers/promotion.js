@@ -23,7 +23,7 @@ module.exports = function (config) {
         .where('role').equals('admin')
         .exec(function (err, tds) {
           if (err) {
-            return logger.error('sendToTds', err);
+            return logger.error('sendToAdmins', err);
           }
 
           var bcc = [];

@@ -16,80 +16,80 @@ Setup.findOne({}, function (err, setup) {
           type : 'register',
           title: 'Registration Confirmation',
           text : '<h1>Welcome {{member.name}} ({{member.bboName}}),</h1>' +
-               '<p>Thank you for your registration to the BBO Fans.<br/>To complete the procedure, please click on the following link.</p>' +
-               '<p><a href="{{url}}">{{link}}</a></p>' +
-               '<p>If you are unable to click on the link just cut&amp;paste it in the browser bar and press enter.</p>' +
-               '<p>Thanks.<br/><br/>BBO Fans Admin</p>'
+                 '<p>Thank you for your registration to the BBO Fans.<br/>To complete the procedure, please click on the following link.</p>' +
+                 '<p><a href="{{url}}">{{link}}</a></p>' +
+                 '<p>If you are unable to click on the link just cut&amp;paste it in the browser bar and press enter.</p>' +
+                 '<p>Thanks.<br/><br/>BBO Fans Admin</p>'
 
         },
         {
           type : 'resetPassword',
           title: 'Reset Password',
           text : '<h1>Hello {{member.name}} ({{member.bboName}}),</h1>' +
-               '<p>You requested a reset of your password.<br/>To complete the procedure, please click on the following link.</p>' +
-               '<p><a href="{{url}}">{{link}}</a></p>' +
-               '<p>If you are unable to click on the link just cut&amp;paste it in the browser bar and press enter.</p>' +
-               '<p>Even if you didn\'t request the change your password has been reset anyway, so you MUST click on the link!</p>' +
-               '<p>Thanks.<br/><br/>BBO Fans Admin</p>'
+                 '<p>You requested a reset of your password.<br/>To complete the procedure, please click on the following link.</p>' +
+                 '<p><a href="{{url}}">{{link}}</a></p>' +
+                 '<p>If you are unable to click on the link just cut&amp;paste it in the browser bar and press enter.</p>' +
+                 '<p>Even if you didn\'t request the change your password has been reset anyway, so you MUST click on the link!</p>' +
+                 '<p>Thanks.<br/><br/>BBO Fans Admin</p>'
         },
         {
           type : 'promote',
           title: 'Promotion to Rock Best Dancers',
           text : '<h1>Congratulations {{member.name}} ({{member.bboName}}),</h1>' +
-               '<p>Thanks to you outstanding performance in the last month, you have been promoted to the RBD league!</p>' +
-               '<p>Regards,<br/><br/>BBO Fans Admin</p>'
+                 '<p>Thanks to you outstanding performance in the last month, you have been promoted to the RBD league!</p>' +
+                 '<p>Regards,<br/><br/>BBO Fans Admin</p>'
         },
         {
           type : 'demote',
           title: 'Demotion to Rock Best Dancers',
           text : '<h1>Dear {{member.name}} ({{member.bboName}}),</h1>' +
-               '<p>Sorry, but your performance in the RBD league was far below average this month, so you have been removed from the RBD league.</p>' +
-               '<p>Regards,<br/><br/>BBO Fans Admin</p>'
+                 '<p>Sorry, but your performance in the RBD league was far below average this month, so you have been removed from the RBD league.</p>' +
+                 '<p>Regards,<br/><br/>BBO Fans Admin</p>'
         },
         {
           type : 'promotedMembers',
           title: 'Promotions',
           text : '<h1>Hello Td,</h1>' +
-               '<p>The following members have been promoted to RBD:</p>' +
-               '<p>{{#each members}}{{name}} ({{bboName}}){{#unless @last}}, {{/unless}}{{/each}}</p>' +
-               '<p>Regards,<br/><br/>BBO Fans Admin</p>'
+                 '<p>The following members have been promoted to RBD:</p>' +
+                 '<p>{{#each members}}{{bboName}} ({{name}}){{#unless @last}}<br />{{/unless}}{{/each}}</p>' +
+                 '<p>Regards,<br/><br/>BBO Fans Admin</p>'
         },
         {
           type : 'demotedMembers',
           title: 'Demotion',
           text : '<h1>Hello Td,</h1>' +
-               '<p>The following members have been demoted from RBD:</p>' +
-               '<p>{{#each members}}{{name}} ({{bboName}}){{#unless @last}}, {{/unless}}{{/each}}</p>' +
-               '<p>Regards,<br/><br/>BBO Fans Admin</p>'
+                 '<p>The following members have been demoted from RBD:</p>' +
+                 '<p>{{#each members}}{{bboName}} ({{name}}){{#unless @last}}<br />{{/unless}}{{/each}}</p>' +
+                 '<p>Regards,<br/><br/>BBO Fans Admin</p>'
         },
         {
           type : 'blackList',
           title: 'Blacklist',
           text : '<h1>Hello {{#if member.name}}{{member.name}}{{#if member.bboName}} ({{member.bboName}}){{/if}}{{else}}{{member.bboName}}{{/if}},</h1>' +
-               '<p>You\'ve been put on the blacklist until {{entry.to}} for the following reason:</p>' +
-               '<p>{{entry.reason}}</p>' +
-               '<p>Regards,<br/><br/>BBO Fans Admin</p>'
+                 '<p>You\'ve been put on the blacklist until {{entry.to}} for the following reason:</p>' +
+                 '<p>{{entry.reason}}</p>' +
+                 '<p>Regards,<br/><br/>BBO Fans Admin</p>'
         },
         {
           type : 'whiteList',
           title: 'Whitelist',
           text : '<h1>Dear {{#if member.name}}{{member.name}}{{#if member.bboName}} ({{member.bboName}}){{/if}}{{else}}{{member.bboName}}{{/if}},</h1>' +
-               '<p>You\'ve been removed from the blacklist for the following reason:</p>' +
-               '<p>{{entry.reason}}</p>' +
-               '<p>Regards,<br/><br/>BBO Fans Admin</p>'
+                 '<p>You\'ve been removed from the blacklist for the following reason:</p>' +
+                 '<p>{{entry.reason}}</p>' +
+                 '<p>Regards,<br/><br/>BBO Fans Admin</p>'
         }
       ],
       rules     : {
         promote: {
-          numTournaments: 4,
+          numTournaments: 10,
           field         : 'averageScore',
           minValue      : 50.0
         },
         demote : {
-          notPlayedForMonths: 3,
-          numTournaments    : 4,
+          notPlayedForMonths: 6,
+          numTournaments    : 1,
           field             : 'awards',
-          minValue          : 10
+          maxValue          : 2
         }
       }
     }).save(function (err) {
