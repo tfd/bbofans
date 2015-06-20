@@ -25,21 +25,27 @@ var MembersView = Marionette.ItemView.extend({
   template: require('./template.hbs'),
 
   ui: {
-    table   : "table",
-    filter  : "#filter-bar",
-    create  : '.form-create',
-    enabled : '.form-enabled',
-    rock    : '.form-rock',
-    rbd     : '.form-rbd',
-    validate: '.form-validate'
+    table    : "table",
+    filter   : "#filter-bar",
+    create   : '.form-create',
+    all      : '.form-all',
+    enabled  : '.form-enabled',
+    rock     : '.form-rock',
+    rbd      : '.form-rbd',
+    validate : '.form-validate',
+    blacklist: '.form-blacklist',
+    banned   : '.form-banned'
   },
 
   events: {
-    'click @ui.create'  : 'onCreateClicked',
-    'click @ui.enabled' : 'onEnabledClicked',
-    'click @ui.rock'    : 'onRockClicked',
-    'click @ui.rbd'     : 'onRbdClicked',
-    'click @ui.validate': 'onValidateClicked'
+    'click @ui.create'   : 'onCreateClicked',
+    'click @ui.all'      : 'onAllClicked',
+    'click @ui.enabled'  : 'onEnabledClicked',
+    'click @ui.rock'     : 'onRockClicked',
+    'click @ui.rbd'      : 'onRbdClicked',
+    'click @ui.validate' : 'onValidateClicked',
+    'click @ui.blacklist': 'onBlacklistedClicked',
+    'click @ui.banned'   : 'onBannedClicked'
   },
 
   triggers: {
@@ -236,6 +242,10 @@ var MembersView = Marionette.ItemView.extend({
     });
   },
 
+  onAllClicked: function () {
+    setFilter(this.ui.filter, {});
+  },
+
   onEnabledClicked: function () {
     setFilter(this.ui.filter, {
       isEnabled: {_values: ['true']}
@@ -263,6 +273,18 @@ var MembersView = Marionette.ItemView.extend({
   onValidateClicked: function () {
     setFilter(this.ui.filter, {
       validatedAt: {_values: ['true']}
+    });
+  },
+
+  onBlacklistedClicked: function () {
+    setFilter(this.ui.filter, {
+      isBlackListed: {_values: ['true']}
+    });
+  },
+
+  onBannedClicked: function () {
+    setFilter(this.ui.filter, {
+      isBanned: {_values: ['true']}
     });
   }
 
