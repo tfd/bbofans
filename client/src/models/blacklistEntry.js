@@ -8,6 +8,7 @@ var BlacklistEntry = Backbone.Model.extend({
   idAttribute: "_id",
   
   defaults: {
+    td: '',
     'from': moment().toDate(),
     'to': moment().add(6, 'D').toDate(),
     reason: ''

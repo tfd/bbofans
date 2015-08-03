@@ -6,24 +6,23 @@ var BlacklistEntryCollection = require('./blacklistEntryCollection');
 var $ = require('jquery');
 
 var Blacklist = Backbone.Model.extend({
-  urlRoot: 'admin/blacklist',
+  urlRoot    : 'admin/blacklist',
   idAttribute: '_id',
-  
+
   defaults: {
-    td: '',
     bboName: '',
     entries: new BlacklistEntryCollection()
   },
 
-  set: function(attributes, options) {
+  set: function (attributes, options) {
     if (attributes.entries !== undefined && !(attributes.entries instanceof BlacklistEntryCollection)) {
-        attributes.entries = new BlacklistEntryCollection(attributes.entries);
+      attributes.entries = new BlacklistEntryCollection(attributes.entries);
     }
     return Backbone.Model.prototype.set.call(this, attributes, options);
   },
 
-  fetchByBboName: function () { 
-    return this.fetch({ url: 'admin/blacklist/bboName/' + this.get('bboName') });
+  fetchByBboName: function () {
+    return this.fetch({url: 'admin/blacklist/bboName/' + this.get('bboName')});
   }
 });
 

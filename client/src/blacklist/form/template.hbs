@@ -1,7 +1,7 @@
 <form role="form">
 
 {{#authentication}}
-  <input type="hidden" id="blacklist-td" name="td" value="{{@user.username}}" />
+  <input type="hidden" id="blacklist-manager" name="manager" value="{{@user.username}}" />
 {{/authentication}}
 
 {{#if isNew}}
@@ -13,6 +13,13 @@
 {{else}}
   <input type="hidden" id="blacklist-bboName" name="bboName" value="{{bboName}}" />
 {{/if}}
+
+  <div class="form-group col-md-8">
+    <label for="blacklist-td" class="control-label">Td</label>
+    <select id="blacklist-td" name="td" class="form-control">
+    </select>
+  </div>
+  <div class="clearfix"></div>
 
   <div class="form-group col-md-4">
     <label for="blacklist-from-input" class="control-label">From</label>

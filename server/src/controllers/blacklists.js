@@ -91,7 +91,6 @@ module.exports = function (config) {
     config.servers.setup.getEmailText(isBlackListed ? 'blackList' : 'whiteList', {
           member: member,
           entry : {
-            td    : entry.td,
             from  : moment.utc(entry.from).format('MMMM Do YYYY'),
             to    : moment.utc(entry.to).format('MMMM Do YYYY'),
             reason: entry.reason
@@ -200,12 +199,13 @@ module.exports = function (config) {
     },
 
     addEntry: function (req, res) {
-      var bboName = req.body.bboName;
-      var td = req.body.td;
-      var from = req.body.from;
-      var period = req.body.for;
+      var bboName = req.body.bboName,
+          manager = req.body.manager,
+          td = req.body.td,
+          from = req.body.from,
+          period = req.body.for;
 
-      Blacklist.addEntry(bboName, td, from, period, req.body.reason,
+      Blacklist.addEntry(bboName, manager, td, from, period, req.body.reason,
           function (err, blacklist) {
             if (err) {
               if (err.validationError) {
@@ -222,7 +222,7 @@ module.exports = function (config) {
 
             Member.findOne({bboName: req.body.bboName}, function (err, member) {
               if (!err) {
-                Member.find({role: {$in: ['admin', 'blacklist manager', 'td']}}, function (err, managers) {
+                Member.find({role: {$in: ['admin', 'blacklist manager']}}, function (err, managers) {
                   if (err) {
                     logger.error('blacklist.addEntry::find blacklist managers', err);
                   }
@@ -246,7 +246,7 @@ module.exports = function (config) {
                     if (err) {
                       return logger.error('blacklist.addEntry::find email blacklist', err);
                     }
-                    if (! setup) {
+                    if (!setup) {
                       return logger.error('blacklist.addEntry::find email blacklist', {error: 'no setup'});
                     }
 
@@ -336,6 +336,19 @@ module.exports = function (config) {
             var type = req.params.type ? req.params.type.toLowerCase() : 'text';
             exportToFile.saveAs(type, blacklisted, res);
           });
+    },
+
+    getPeriod: function (req, res) {
+      var periods = [];
+
+      periods.push({key: '1d', value: '1 day'});
+      periods.push({key: '3d', value: '3 days'});
+      periods.push({key: '1w', value: '1 week'});
+      periods.push({key: '2w', value: '2 weeks'});
+      periods.push({key: '1M', value: '1 month'});
+      periods.push({key: '3M', value: '3 months'});
+      periods.push({key: '6M', value: '6 months'});
+      periods.push({key: 'F', value: 'Forever'});
     },
 
     updateMembers: function (req, res) {

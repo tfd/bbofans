@@ -6,30 +6,30 @@ var moment = require('moment');
 var _ = require('underscore');
 
 var Password = Backbone.Model.extend({
-  urlRoot: 'admin/commands/blacklist',
+  urlRoot    : 'admin/commands/blacklist',
   idAttribute: "_id",
-  
+
   defaults: {
-    rows: [],
-    from: moment.utc(),
-    for: '6d',
+    rows  : [],
+    from  : moment.utc(),
+    for   : '6d',
     reason: ''
   },
 
-  validate: function(attrs, options) {
+  validate: function (attrs, options) {
     var errors = {};
-    if (! attrs.reason) {
+    if (!attrs.reason) {
       errors.reason = "can't be blank";
     }
-    if (! attrs.from) {
+    if (!attrs.from) {
       errors.from = "can't be blank";
     }
     else {
-      if (! moment.utc(attrs.from).isValid()) {
+      if (!moment.utc(attrs.from).isValid()) {
         errors.from = "is invalid";
       }
     }
-    if (! attrs.for) {
+    if (!attrs.for) {
       errors.for = "can't be blank";
     }
     else {
@@ -39,16 +39,17 @@ var Password = Backbone.Model.extend({
         if (attrs.for !== 'F') {
           errors.for = "invalid period";
         }
-      } else if (isNaN(num) || num <= 0 || ['d', 'w', 'M'].indexOf(type) < 0) {
+      }
+      else if (isNaN(num) || num <= 0 || ['d', 'w', 'M'].indexOf(type) < 0) {
         errors.for = "invalid period";
       }
     }
-    if( ! _.isEmpty(errors)){
+    if (!_.isEmpty(errors)) {
       return errors;
     }
   },
 
-  set: function(attributes, options) {
+  set: function (attributes, options) {
     if (attributes.from) {
       attributes.from = moment.utc(attributes.from, "DD/MM/YYYY").toISOString();
     }

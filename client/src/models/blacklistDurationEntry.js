@@ -10,6 +10,7 @@ var BlacklistDurationEntry = Backbone.Model.extend({
   idAttribute: "_id",
   
   defaults: {
+    manager : '',
     td: '',
     bboName: '',
     'from': moment().toDate(),
@@ -19,6 +20,9 @@ var BlacklistDurationEntry = Backbone.Model.extend({
 
   validate: function (attrs) {
     var errors = {};
+    if (! attrs.td) {
+      errors.td = "can't be blank";
+    }
     if (! attrs.bboName) {
       errors.bboName = "can't be blank";
     }

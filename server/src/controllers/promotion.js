@@ -34,7 +34,6 @@ module.exports = function (config) {
               }
             });
           }
-          bcc.push('ronald.vanuffelen@gmail.com');
 
           var email = {
             to     : config.mail.replyTo,

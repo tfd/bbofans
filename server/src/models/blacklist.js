@@ -19,10 +19,11 @@ var async = require('async');
  */
 
 var EntrySchema = new Schema({
-  td    : {type: String, default: '', required: 'td cannot be blank', trim: true},
-  from  : {type: Date},
-  to    : {type: Date},
-  reason: {type: String, default: '', required: 'reason cannot be blank', trim: true}
+  manager: {type: String, default: '', required: 'manager cannot be blank', trim: true},
+  td     : {type: String, default: '', required: 'td cannot be blank', trim: true},
+  from   : {type: Date},
+  to     : {type: Date},
+  reason : {type: String, default: '', required: 'reason cannot be blank', trim: true}
 }, {
   _id: false
 });
@@ -64,10 +65,11 @@ BlacklistSchema.methods = {
 };
 
 BlacklistSchema.statics = {
-  addEntry: function (bboName, td, date, period, reason, callback) {
-    var Blacklist = this;
-    var Member = mongoose.model('Member');
-    var blacklist = null;
+  addEntry: function (bboName, manager, td, date, period, reason, callback) {
+    var Blacklist = this,
+        Member = mongoose.model('Member'),
+        blacklist = null,
+        managerMember = null;
 
     async.waterfall(
         [
@@ -76,6 +78,14 @@ BlacklistSchema.statics = {
           },
           function (bl, cb) {
             blacklist = bl;
+            Member.findOne({bboName: manager}, cb);
+          },
+          function (m, cb) {
+            if (m === null) {
+              return cb({validationError: {'manager': '"' + manager + '" is not a member of BBO fans'}});
+            }
+
+            managerMember = m;
             Member.findOne({bboName: td}, cb);
           },
           function (tdMember, cb) {
@@ -102,10 +112,11 @@ BlacklistSchema.statics = {
               blacklist.entries = [];
             }
             blacklist.entries.push({
-              td    : td,
-              'from': fromDate.toDate(),
-              'to'  : toDate.toDate(),
-              reason: reason
+              manager: manager,
+              td     : td,
+              'from' : fromDate.toDate(),
+              'to'   : toDate.toDate(),
+              reason : reason
             });
 
             blacklist.save(function (err, savedBlacklist) {
