@@ -58,7 +58,7 @@ module.exports = function () {
                   h7pm      : '$h7pm',
                   h11pm     : '$h11pm',
                   info      : '$info'
-                }, emails: {$cond: [{$eq: ['$emails', [] ]}, [''], '$emails']}
+                }, emails: {$cond: [{$eq: ['$emails', []]}, [''], '$emails']}
               }
             });
             aggr.push({$unwind: '$emails'});
@@ -99,7 +99,7 @@ module.exports = function () {
                   h7pm   : '$h7pm',
                   h11pm  : '$h11pm',
                   info   : '$info'
-                }, telephones: {$cond: [{$eq: ['$telephones', [] ]}, [''], '$telephones']}
+                }, telephones: {$cond: [{$eq: ['$telephones', []]}, [''], '$telephones']}
               }
             });
             aggr.push({$unwind: '$telephones'});
@@ -148,7 +148,6 @@ module.exports = function () {
     getById: function (req, res) {
       var aggr = [];
       aggr.push({$match: {_id: req.params.id}});
-      aggr.push({$project: listQueryParameters.projectFields(fields)});
       Member.aggregate(aggr, function (err, td) {
         if (err) {
           if (err) { logger.error('tournamentDirectors.getById', err); }
@@ -205,6 +204,26 @@ module.exports = function () {
                   exportToFile.saveAs(type, tds, res);
                 }
             );
+          }
+      );
+    },
+
+    getBboNames: function (req, res) {
+      Member
+          .find({'role': {$in: ['admin', 'blacklist manager', 'td manager', 'td']}},
+          {'bboName': 1, '_id': 0})
+          .sort({'bboName': 1})
+          .exec(function (err, tds) {
+            if (err) {
+              logger.error('tournamentDirectors.getBboNames', err);
+              return res.status(500).json({error: err});
+            }
+
+            var arr = [];
+            _.each(tds, function (td) {
+              arr.push(td.bboName);
+            });
+            res.json(arr);
           }
       );
     }

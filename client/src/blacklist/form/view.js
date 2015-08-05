@@ -39,11 +39,11 @@ var BlacklistFormView = FormWithErrorHandling.extend({
   loadTds: function () {
     var self = this;
 
-    $.getJSON('/admin/tds?limit=100', function (tds) {
-      _.each(tds.rows, function (td) {
+    $.getJSON('/admin/tds/bboNames', function (tds) {
+      _.each(tds, function (td) {
         $('<option/>', {
-          value: td.bboName,
-          text : td.bboName
+          value: td,
+          text : td
         }).appendTo(self.ui.td);
       });
 

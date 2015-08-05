@@ -94,6 +94,7 @@ module.exports = function (app, config, passport) {
   router.get('/admin/blacklist/:id', tdAuth, blacklists.getById);
   router.put('/admin/blacklist/:id', blacklistManagerAuth, blacklists.update);
   router.get('/admin/tds', tdOrTdManagerAuth, tds.getAll);
+  router.get('/admin/tds/bboNames', loginAuth, tds.getBboNames);
   router.get('/admin/tds/saveAs', tdManagerAuth, tds.saveAs);
   router.get('/admin/tds/saveAs/:type', tdManagerAuth, tds.saveAs);
   router.put('/admin/tds/:id', tdManagerAuth, tds.update);
