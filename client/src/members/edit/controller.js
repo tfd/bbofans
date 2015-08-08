@@ -35,6 +35,10 @@ var MemberEditImpl = function(options) {
   }
 
   function save(member, data) {
+    if (member.isNew()) {
+      member.attributes.password = member.attributes.bboName;
+    }
+
     var xhr = member.save(data);
     if (xhr === false) {
       self.view.triggerMethod("form:data:invalid", member.validationError);
