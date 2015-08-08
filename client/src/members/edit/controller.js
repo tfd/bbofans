@@ -11,11 +11,12 @@ var MemberEditLayout = require('./layout');
 var MemberEditView = require('./view');
 var MemberEditBlacklistView = require('../../blacklist/details/view');
 var Member = require('../../models/member');
+var NewMember = require('../../models/newMember');
 var Blacklist = require('../../models/blacklist');
 
 var _ = require('underscore');
 
-var MemberEditImpl = function(options) {
+var MemberEditImpl = function (options) {
   var self = this;
 
   function addToArray(data, fieldName) {
@@ -35,10 +36,6 @@ var MemberEditImpl = function(options) {
   }
 
   function save(member, data) {
-    if (member.isNew()) {
-      member.attributes.password = member.attributes.bboName;
-    }
-
     var xhr = member.save(data);
     if (xhr === false) {
       self.view.triggerMethod("form:data:invalid", member.validationError);
@@ -55,12 +52,10 @@ var MemberEditImpl = function(options) {
   }
 
   function show(region, model) {
-    var member = new Member(model);
+    var member = model.isNew ? new NewMember(model) : new Member(model);
 
     self.layout = new MemberEditLayout();
-    self.view = new MemberEditView({
-      model: member
-    });
+    self.view = new MemberEditView({model: member});
 
     self.view.on('form:submit', function (data) {
       addToArray(data, 'email');
@@ -80,11 +75,11 @@ var MemberEditImpl = function(options) {
     region.show(self.layout);
     self.layout.member.show(self.view);
 
-    var blacklist = new Blacklist({ bboName : member.get('bboName') });
+    var blacklist = new Blacklist({bboName: member.get('bboName')});
     blacklist.fetchByBboName().done(function (blacklist) {
       if (blacklist) {
         var blacklistView = new MemberEditBlacklistView({
-          model: new Blacklist(blacklist),
+          model    : new Blacklist(blacklist),
           className: 'well'
         });
         self.layout.blacklist.show(blacklistView);
@@ -93,7 +88,7 @@ var MemberEditImpl = function(options) {
   }
 
   this.show = function (region, id) {
-    var member = new Member({ _id : id });
+    var member = new Member({_id: id});
     member.fetch().done(function (model) {
       show(region, model);
     });
@@ -101,11 +96,12 @@ var MemberEditImpl = function(options) {
 
   this.create = function (region, bboName) {
     show(region, {
-      bboName: bboName,
-      role: 'member',
-      isEnabled: true,
+      isNew         : true,
+      bboName       : bboName,
+      role          : 'member',
+      isEnabled     : true,
       registeredDate: moment.utc(),
-      validatedDate: moment.utc()
+      validatedDate : moment.utc()
     });
   };
 

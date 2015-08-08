@@ -28,7 +28,7 @@ var MemberListControllerImpl = function (options) {
    * This is done by navigating to a route.
    *
    * @param id {String} unique id of the member to edit.
-    */
+   */
   function editMember(id) {
     messageBus.command('route:admin/members/:id', id);
   }
@@ -59,10 +59,10 @@ var MemberListControllerImpl = function (options) {
     this.view.on('members:create', createMember);
     this.view.on('members:command', executeCommand);
 
-    messageBus.on('members:changed', function  () {
+    messageBus.on('members:changed', function () {
       self.view.reloadTable();
     });
-    
+
     region.show(this.view);
   };
 
@@ -74,12 +74,12 @@ var MemberListControllerImpl = function (options) {
   this.module = options.module;
 
   this.commandsController = new MemberCommandsController({
-    app: this.app,
+    app   : this.app,
     module: this.module
   });
 
   this.newMemberController = new NewMemberController({
-    app: this.app,
+    app   : this.app,
     module: this.module
   });
 };

@@ -25,7 +25,7 @@ var MembersView = Marionette.ItemView.extend({
   template: require('./template.hbs'),
 
   ui: {
-    table    : "table",
+    table    : "table#list-members",
     filter   : "#filter-bar",
     create   : '.form-create',
     all      : '.form-all',

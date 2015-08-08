@@ -50,12 +50,12 @@ var MemberSchema = new Schema({
   name           : {type: String, required: 'Name cannot be blank', trim: true},
   nation         : {type: String, required: 'Nation cannot be blank', trim: true},
   emails         : [{
-                      type    : Email,
-                      required: 'Email cannot be blank',
-                      unique  : true,
-                      trim    : true,
-                      validate: emailValidator
-                    }],
+    type    : Email,
+    required: 'Email cannot be blank',
+    unique  : true,
+    trim    : true,
+    validate: emailValidator
+  }],
   telephones     : [{type: String, trim: true}],
   level          : {type: String, default: 'Beginner', trim: true, enum: levels},
   hashed_password: {type: String, required: 'Password cannot be blank', trim: true},
@@ -84,13 +84,13 @@ var MemberSchema = new Schema({
       awards        : {type: Number, default: 0}
     },
     monthlyScores      : [{
-                            _id           : false,
-                            month         : {type: Number},
-                            year          : {type: Number},
-                            numTournaments: {type: Number, default: 0},
-                            averageScore  : {type: Number, default: 0},
-                            awards        : {type: Number, default: 0}
-                          }]
+      _id           : false,
+      month         : {type: Number},
+      year          : {type: Number},
+      numTournaments: {type: Number, default: 0},
+      averageScore  : {type: Number, default: 0},
+      awards        : {type: Number, default: 0}
+    }]
   },
   rbd            : {
     lastPlayedAt       : {type: Date},
@@ -101,13 +101,13 @@ var MemberSchema = new Schema({
       awards        : {type: Number, default: 0}
     },
     monthlyScores      : [{
-                            _id           : false,
-                            month         : {type: Number},
-                            year          : {type: Number},
-                            numTournaments: {type: Number, default: 0},
-                            averageScore  : {type: Number, default: 0},
-                            awards        : {type: Number, default: 0}
-                          }]
+      _id           : false,
+      month         : {type: Number},
+      year          : {type: Number},
+      numTournaments: {type: Number, default: 0},
+      averageScore  : {type: Number, default: 0},
+      awards        : {type: Number, default: 0}
+    }]
   },
   registeredAt   : {type: Date},
   validatedAt    : {type: Date},

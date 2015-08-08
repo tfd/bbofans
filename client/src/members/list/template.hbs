@@ -14,7 +14,8 @@
     <button type="button" class="btn btn-info form-banned">Banned</button>
   </div>
   <div id="filter-bar"></div>
-  <table data-toggle="table"
+  <table id="list-members"
+         data-toggle="table"
          data-url="/admin/members"
          data-export-url="/admin/members/saveAs"
          data-cache="false"
@@ -57,4 +58,14 @@
       <th data-field="rbdAwards" data-sortable="true" data-visible="false">RBD Awards</th>
     </thead>
   </table>
+  <div>
+    <h2>Color legend</h2>
+    <table class="color-legend">
+      <tr><td>Normal</td><br/></tr>
+      <tr><td class="bg-info">Waiting for e-mail validation</td></tr>
+      <tr><td class="bg-success">To be validated</td></tr>
+      <tr><td class="bg-warning">Blacklisted</td></tr>
+      <tr><td class="bg-danger">Banned</td></tr>
+    </table>
+  </div>
 </div>
