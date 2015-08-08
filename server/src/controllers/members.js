@@ -497,7 +497,8 @@ module.exports = function () {
         var memberToSave = new Member(req.body);
         memberToSave.save(function (err, member) {
           if (err) {
-            var error = err.err.toString();
+            logger.error('members.add', err);
+            var error = err.err ? err.err.toString() : err.toString();
             if (error.indexOf('E11000 duplicate key error') === 0) {
               var fieldName = error.match(/members\.\$(.*)_\d/i)[1];
               var fieldValue = error.match(/dup\skey:\s\{\s:\s"(.*)"\s\}/)[1];
@@ -541,7 +542,8 @@ module.exports = function () {
 
         originalMember.save(function (err, updated) {
           if (err) {
-            var error = err.err.toString();
+            logger.error('members.add', err);
+            var error = err.err ? err.err.toString() : err.toString();
             if (error.indexOf('E11000 duplicate key error') === 0) {
               var fieldName = error.match(/members\.\$(.*)_\d/i)[1];
               var fieldValue = error.match(/dup\skey:\s\{\s:\s"(.*)"\s\}/)[1];
