@@ -50,7 +50,6 @@ var BlacklistView = Marionette.ItemView.extend({
             today = moment({hour: 0, minute: 0, seconds: 0, milliseconds: 0}),
             diff = end.diff(today, 'days');
 
-        console.log(today.format() + " : " + end.format() + " = " + diff);
         if (diff >= 210) {
           return {classes: 'bg-danger'};
         }
