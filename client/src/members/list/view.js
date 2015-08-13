@@ -67,7 +67,7 @@ var MembersView = Marionette.ItemView.extend({
         }
         return params;
       },
-      rowStyle   : function (item, i) {
+      rowStyle   : function (item) {
         if (item.isBanned) {
           return {classes: 'bg-danger'};
         }

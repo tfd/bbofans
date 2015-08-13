@@ -5,7 +5,8 @@
 <button type="button" class="btn btn-primary form-remove">Remove from blacklist</button>
   {{/if}}
 {{/authentication}}
-<table data-toggle="table"
+<table id="list-blacklist"
+       data-toggle="table"
        data-url="/admin/blacklist"
        data-export-url="/admin/blacklist/saveAs"
        data-cache="false"
@@ -27,3 +28,13 @@
     <th data-field="lastReason" data-sortable="false">Reason</th>
   </thead>
 </table>
+<div>
+  <h2>Color legend</h2>
+  <table class="color-legend">
+    <tr><td>Blacklisted for less then 7 days</td><br/></tr>
+    <tr><td class="bg-info">Blacklisted for 1 or 2 weeks</td></tr>
+    <tr><td class="bg-success">Blacklisted for 2 weeks up to 1 month</td></tr>
+    <tr><td class="bg-warning">Blacklisted for more then a month</td></tr>
+    <tr><td class="bg-danger">Banned</td></tr>
+  </table>
+</div>

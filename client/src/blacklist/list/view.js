@@ -2,6 +2,7 @@
 "use strict";
 
 var Marionette = require('backbone.marionette');
+var moment = require('moment');
 require('bootstrap-table-filter');
 require('../../common/table/bootstrap-table-colgroups');
 require('../../common/table/bootstrap-table-commands');
@@ -13,7 +14,7 @@ var BlacklistView = Marionette.ItemView.extend({
   className: 'well',
 
   ui: {
-    table : 'table',
+    table : 'table#list-blacklist',
     new   : '.form-new',
     remove: '.form-remove'
   },
@@ -32,7 +33,7 @@ var BlacklistView = Marionette.ItemView.extend({
 
     this.ui.table.bootstrapTable({
       responseHandler: function (res) {
-        res.rows.forEach(function (member, i) {
+        res.rows.forEach(function (member) {
           if (member.entries.length > 0) {
             var last = member.entries[member.entries.length - 1];
             member.lastTd = last.td;
@@ -42,6 +43,28 @@ var BlacklistView = Marionette.ItemView.extend({
           }
         });
         return res;
+      },
+
+      rowStyle: function (member) {
+        var end = moment(member.lastTo),
+            today = moment({hour: 0, minute: 0, seconds: 0, milliseconds: 0}),
+            diff = end.diff(today, 'days');
+
+        console.log(today.format() + " : " + end.format() + " = " + diff);
+        if (diff >= 210) {
+          return {classes: 'bg-danger'};
+        }
+        if (diff >= 32) {
+          return {classes: 'bg-warning'};
+        }
+        if (diff >= 14) {
+          return {classes: 'bg-success'};
+        }
+        if (diff >= 7) {
+          return {classes: 'bg-info'};
+        }
+
+        return {};
       }
     }).on('click-row.bs.table', function (e, row, $el) {
       e.preventDefault();
