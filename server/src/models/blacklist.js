@@ -123,7 +123,7 @@ BlacklistSchema.statics = {
               blacklist = savedBlacklist;
 
               if (err) {
-                var error = err.err.toString();
+                var error = err.err ? err.err.toString() : err.toString();
                 if (error.indexOf('E11000 duplicate key error') === 0) {
                   var fieldName = error.match(/blacklists\.\$(.*)_\d/i)[1];
                   var fieldValue = error.match(/dup\skey:\s\{\s:\s\"(.*)\"\s\}/)[1];
