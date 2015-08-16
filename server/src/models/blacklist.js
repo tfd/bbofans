@@ -13,6 +13,7 @@ mongooseTypes.loadTypes(mongoose);
 var moment = require('moment');
 require('moment-range');
 var async = require('async');
+var _ = require('underscore');
 
 /*
  * Blacklist Schema
