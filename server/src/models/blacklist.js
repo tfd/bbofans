@@ -68,8 +68,7 @@ BlacklistSchema.statics = {
   addEntry: function (bboName, manager, td, date, period, reason, callback) {
     var Blacklist = this,
         Member = mongoose.model('Member'),
-        blacklist = null,
-        managerMember = null;
+        blacklist = null;
 
     async.waterfall(
         [
@@ -85,11 +84,10 @@ BlacklistSchema.statics = {
               return cb({validationError: {'manager': '"' + manager + '" is not a member of BBO fans'}});
             }
 
-            managerMember = m;
             Member.findOne({bboName: td}, cb);
           },
-          function (tdMember, cb) {
-            if (tdMember === null) {
+          function (m, cb) {
+            if (m === null) {
               return cb({validationError: {'td': '"' + td + '" is not a member of BBO fans'}});
             }
 
@@ -117,6 +115,11 @@ BlacklistSchema.statics = {
               'from' : fromDate.toDate(),
               'to'   : toDate.toDate(),
               reason : reason
+            });
+
+            _.each(blacklist.entries, function (entry) {
+              entry.td = entry.td || 'pensando';
+              entry.manager = entry.manager || entry.td;
             });
 
             blacklist.save(function (err, savedBlacklist) {
