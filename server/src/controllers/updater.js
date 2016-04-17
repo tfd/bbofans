@@ -140,9 +140,9 @@ module.exports = function (config) {
           var date = moment().year().toString() + ' ' + row.td[0]['#'].substring(4);
           links.push({
             date      : moment(date, 'YYYY MMM DD hh:mm A').toDate(),
-            boardsUrl : row.td[4].a['@'].href.trim(),
-            name      : row.td[5].a['@'].title.trim(),
-            resultsUrl: config.bbo.tournamentUrlPrefix + row.td[5].a['@'].href.trim()
+            boardsUrl : row.td[5].a['@'].href.trim(),
+            name      : row.td[6].a['@'].title.trim(),
+            resultsUrl: config.bbo.tournamentUrlPrefix + row.td[6].a['@'].href.trim()
           });
         });
         cb(null, links);
@@ -159,6 +159,7 @@ module.exports = function (config) {
   function getTournamentResults(html, cb) {
     tidyHtml(html, function (err, xml) {
       if (err) { return cb(err, null); }
+      logger.error(xml);
       parser(xml, '//div[@class="onesection"]/table[@class="sectiontable"]/tr[@class]', function (err, rows) {
         if (err) { cb(err, null); }
         var results = [];
@@ -273,6 +274,7 @@ module.exports = function (config) {
   function createTournament(link, cb) {
     var url = link.resultsUrl;
 
+    logger.error(url);
     async.waterfall([
       function (cb) {
         download(url, cb);
