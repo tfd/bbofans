@@ -59,6 +59,8 @@ module.exports = function (config) {
    * @param {GenericCallback} cb - function called with the downloaded content as result.
    */
   function download(address, cb) {
+    logger.info("download " + address);
+
     var now = new Date();
     var offset = 'offset=' + now.getTimezoneOffset().toString();
     var parsedUrl = url.parse(address);
@@ -126,6 +128,8 @@ module.exports = function (config) {
    * @param {Function} cb - function called with an array of {@link TournamentLink}s as result.
    */
   function getLinks(html, cb) {
+    logger.info("getLinks");
+
     //<a class="ldr" target="_new2" title="#1869 Free Bingo Race" href="tview.php?t=1869-1419877321">#1869 Free Bingo
     // Race</a>
     tidyHtml(html, function (err, xml) {
@@ -134,6 +138,8 @@ module.exports = function (config) {
         if (err) {
           return cb(err, null);
         }
+
+        logger.info("getLinks found " + tr.length + " rows");
 
         var links = [];
         _.each(tr, function (row) {
@@ -157,10 +163,15 @@ module.exports = function (config) {
    * @param {GenericCallback} cb - function called with an array of {@link TournamentResult} as result.
    */
   function getTournamentResults(html, cb) {
+    logger.info("getTournamentResults");
+
     tidyHtml(html, function (err, xml) {
       if (err) { return cb(err, null); }
       parser(xml, '//div[@class="onesection"]/table[@class="sectiontable"]/tr[@class]', function (err, rows) {
         if (err) { cb(err, null); }
+
+        logger.info("getTournamentResults found " + rows.length + " results");
+
         var results = [];
         rows.forEach(function (row) {
           results.push({
@@ -180,6 +191,8 @@ module.exports = function (config) {
    * @param {GenericCallback} cb - function called with the sorted array as result.
    */
   function sortByScore(results, cb) {
+    logger.info("sortByScore " + results.length + " results");
+
     if (results[results.length - 1].score < 0) {
       // IMPs
       async.sortBy(results, function (result, cb) {
@@ -209,6 +222,8 @@ module.exports = function (config) {
    * @returns {setTournamentType}
    */
   function createSetTournamentTypeFunction(link) {
+    logger.info("createSetTournamentTypeFunction", link);
+
     return function (results, cb) {
       var tournament = {
         name      : link.name,
@@ -247,6 +262,8 @@ module.exports = function (config) {
    * @param {GenericCallback} cb - function called with the tournament filled with awards as result.
    */
   function calculateAwards(tournament, cb) {
+    logger.info("calculateAwards", tournament);
+
     if (tournament.numPlayers > 0) {
       var system = awards.getSystem(tournament.isRbd ? 'rbd' : 'rock', tournament.numPlayers);
       var prevScore = false;
@@ -271,9 +288,10 @@ module.exports = function (config) {
    * @param {GenericCallback} cb - function called with the tournament record as result.
    */
   function createTournament(link, cb) {
+    logger.info("CreateTournament", link);
+
     var url = link.resultsUrl;
 
-    logger.error("CreateTournament", link);
     async.waterfall([
       function (cb) {
         download(url, cb);
@@ -300,10 +318,14 @@ module.exports = function (config) {
    *                               false otherwise.
    */
   function isTournamentToBeAdded(link, cb) {
+    logger.info("isTournamentToBeAdded", link);
+    
     Tournament.findOne({name: link.name, date: link.date}, function (err, t) {
       if (err) {
         logger.error('isTournamentToBeAdded', err);
       }
+
+      logger.info("isTournamentToBeAdded for " + link.name + ": " + (t === null || t === undefined));
 
       // Only download tournaments which don't exist.
       cb(t === null || t === undefined);
@@ -317,6 +339,8 @@ module.exports = function (config) {
    * @param {GenericCallback} cb - function called with an array of tournaments as result.
    */
   function createTournaments(links, cb) {
+    logger.info("createTournaments " + links.length + " links");
+
     async.filter(links, isTournamentToBeAdded, function (newLinks) {
       // Ok add all tournaments that haven't already been processed.
       async.map(newLinks, createTournament, cb);

@@ -35,7 +35,7 @@ var config = {dev: {}, test: {}, prod: {}};
   config[type].app = {
     name: 'BBOFans Website'
   };
-  config[type].logLevel = 'debug';
+  config[type].logLevel = 'info';
   config[type].keyStoreFile = rootPath + '/server/data/keyStore.js';
   config[type].omitReCaptcha = false;
   config[type].reCaptcha = {
