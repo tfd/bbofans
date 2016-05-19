@@ -300,8 +300,6 @@ module.exports = function (config) {
    *                               false otherwise.
    */
   function isTournamentToBeAdded(link, cb) {
-    logger.info("isTournamentToBeAdded", link);
-    
     Tournament.findOne({name: link.name, date: link.date}, function (err, t) {
       if (err) {
         logger.error('isTournamentToBeAdded', err);
