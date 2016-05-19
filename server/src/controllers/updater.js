@@ -61,18 +61,17 @@ module.exports = function (config) {
   function download(address, cb) {
     logger.info("download " + address);
 
-    var now = new Date();
-    var offset = 'offset=' + now.getTimezoneOffset().toString();
+    // var now = new Date();
+    // var offset = 'offset=' + now.getTimezoneOffset().toString();
     var parsedUrl = url.parse(address);
-    // var parsedUrl = url.parse('http://webutil.bridgebase.com/v2/tarchive.php?m=h&h=bbo+fans');
     var options = {
       hostname: parsedUrl.hostname,
       port    : parsedUrl.port || 80,
       path    : parsedUrl.path,
-      method  : 'POST',
+      method  : 'GET',
       headers : {
-        'Content-Type'  : 'application/x-www-form-urlencoded',
-        'Content-Length': Buffer.byteLength(offset),
+        // 'Content-Type'  : 'application/x-www-form-urlencoded',
+        // 'Content-Length': Buffer.byteLength(offset),
         'User-Agent'    : 'bbo-fans/robot/1.0'
       }
     };
@@ -86,7 +85,7 @@ module.exports = function (config) {
       cb(e, null);
     });
 
-    request.write(offset);
+    // request.write(offset);
     request.end();
   }
 
