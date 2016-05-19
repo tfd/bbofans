@@ -325,7 +325,7 @@ module.exports = function (config) {
         logger.error('isTournamentToBeAdded', err);
       }
 
-      logger.info("isTournamentToBeAdded for " + link.name + ": " + t);
+      logger.info("isTournamentToBeAdded for " + link.name + ": " + t.name + " at " + t.date);
 
       // Only download tournaments which don't exist.
       cb(t === null || t === undefined);
