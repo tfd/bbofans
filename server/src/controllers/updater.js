@@ -159,7 +159,6 @@ module.exports = function (config) {
   function getTournamentResults(html, cb) {
     tidyHtml(html, function (err, xml) {
       if (err) { return cb(err, null); }
-      logger.error(xml);
       parser(xml, '//div[@class="onesection"]/table[@class="sectiontable"]/tr[@class]', function (err, rows) {
         if (err) { cb(err, null); }
         var results = [];
@@ -274,7 +273,7 @@ module.exports = function (config) {
   function createTournament(link, cb) {
     var url = link.resultsUrl;
 
-    logger.error(url);
+    logger.error("CreateTournament", link);
     async.waterfall([
       function (cb) {
         download(url, cb);
