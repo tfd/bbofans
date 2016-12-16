@@ -33,6 +33,14 @@ each.
 Grunt init:dev only needs to be run the first time to prepare the vendor.js
 files.
 
+## Directory layout
+
+ build   - where javascript and less files are concatenated and minified.
+ client  - the client side javascript, html and css (bootstrap, backbone+marionette, handlebars).
+ install - some install scripts to prepare a raw server.
+ public  - static files for the website. Final javascript and css files are also copied here after the build-
+ server  - the server side javascript (nodejs)
+ 
 ## Running the App:
 
 Start the server in DEV mode, with nodemon watching the app for a relaunch,
