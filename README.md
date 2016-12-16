@@ -111,7 +111,7 @@ will run all tests - both server and client
 
 ## Structure:
 
-We have to modules:
+We have two modules:
 
 * homepage - displays the homepage and related info, handles the login
 * admin - displays the console after the user login, this module won't start if the user isn't logged in.
@@ -124,7 +124,7 @@ The admin has three sub-modules:
 
 ### Regions:
 
-I need to device a natural way to bing the various modules to a single region so I can change layout without having to
+I need to device a natural way to bring the various modules to a single region so I can change layout without having to
 restructure all modules. The problem is the following:
 
 If the user goes to the url #members/edit/<id> the following should happen:
@@ -152,7 +152,7 @@ controllers but not yet give the region.
 
 After the modules are started I have everything in place to draw the layout so I should probably trigger a show, but on
 which module? At the start I made every controller bind to a global event like 'admin:members:edit:show' which would
-show it's view. But in this scenario this isn't possible because the admin module hasn't rendered yet to there's now
+show it's view. But in this scenario this isn't possible because the admin module hasn't rendered yet so there's now
 place to show the view.
 
 I need to activate the correct controller and show all needed views. The path '[admin:members]edit.show' should have
@@ -196,4 +196,23 @@ module(parents + '.moduleName', {
 }
 ```
 
+## Deploy on Amazon
 
+### New version of bbofans
+
+To deploy on amazon:
+
+```bash
+ssh -i ~/.ssh/id_ronald@macbook-pro ubuntu@54.93.62.43
+cd /data/bbofans
+sudo monit stop bbofans
+git pull
+grunt build:prod
+sudo monit start bbofans
+sudo monit status
+```
+
+Obviously you need a SSH key and an Amazon EC2 instance. You may need to add your IP address to the Amazon Security 
+roup.
+
+### Backup MongoDB
