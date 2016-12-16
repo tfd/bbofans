@@ -19,6 +19,8 @@ module.exports = function (config) {
 
   return {
     register: function (req, res) {
+      return res.status(403).json({error: 'Temporarily unavailable'});
+      /*
       var member = req.body;
       config.servers.reCaptcha.checkDirect(req, member['g-recaptcha-response'], function (data) {
         if (data.success === false) {
@@ -76,6 +78,7 @@ module.exports = function (config) {
           }
         });
       });
+      */
     },
 
     getRegistrant: function (req, res) {
