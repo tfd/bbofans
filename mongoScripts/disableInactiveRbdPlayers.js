@@ -14,7 +14,7 @@ cursor = db.members.find({
           },
           { isEnabled: true }, { isBanned: false }, { isBlackListed: false }
         ]
-  });
+  }).sort({ bboName: 1});
 print('bboName,name');
 cursor.forEach(function (p) {
   print('"' + p.bboName + '","' + p.name + '"');
