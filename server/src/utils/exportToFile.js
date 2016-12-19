@@ -38,12 +38,7 @@ module.exports = function (collectionName, itemName, fieldDefinitions) {
   }
 
   function csvEscape (val) {
-    try {
-      return val.replace(/"/g, '""');
-    }
-    catch (e) {
-      return "";
-    }
+    return val.replace(/"/g, '""');
   }
 
   var writeCsvHeader = function (fields, res) {
