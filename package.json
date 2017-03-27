@@ -40,7 +40,7 @@
     "underscore": "./build/vendor/underscore/underscore.js"
   },
   "engines": {
-    "node": "4.2.x",
+    "node": "6.1.x",
     "npm": "3.5.x"
   },
   "scripts": {
