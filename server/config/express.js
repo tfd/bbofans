@@ -75,7 +75,7 @@ module.exports = function (app, config, passport) {
   // bodyParser should be above methodOverride
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({ extended: true }));
-  app.use(multer());
+  app.use(multer({ dest: './uploads' }));
   app.use(methodOverride());
 
   // Passport using a cookie sesssion to store user info.
