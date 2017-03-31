@@ -16,10 +16,10 @@ var AdminMenuController = Marionette.Controller.extend({
     });
     this.view.on('navigate', function (route) {
       if (route.indexOf(':id') > 0) {
-        messageBus.command('route:' + route, authentication.getUser().get('_id'));
+        messageBus.trigger('route:' + route, authentication.getUser().get('_id'));
       }
       else {
-        messageBus.command('route:' + route);
+        messageBus.trigger('route:' + route);
       }
     });
   },

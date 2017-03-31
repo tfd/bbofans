@@ -25,7 +25,9 @@ module.exports = function (grunt) {
       install: {
         options: {
           targetDir: 'build/vendor',
-          layout   : 'byComponent'
+          layout   : 'byComponent',
+          verbose  : true,
+          copy     : true
         }
       }
     },
@@ -123,7 +125,7 @@ module.exports = function (grunt) {
             // 'client/styles/reset.css',
             'build/vendor/bootstrap/less/bootstrap.less',
             'build/vendor/bootstrap-dialog/less/bootstrap-dialog.less',
-            'client/vendor/bootstrap-datetimepicker/less/bootstrap-datetimepicker.less',
+            'client/vendor/bootstrap-datetimepicker/css/bootstrap-datetimepicker.less',
             'client/vendor/typeahead/less/typeahead.less',
             'build/vendor/bootstrap-table/*.css',
             'build/vendor/bootstrap-table-filter/css/*.css',
@@ -135,22 +137,22 @@ module.exports = function (grunt) {
       }
     },
 
-    copy       : {
+    copy: {
       bootstrap: {
         files: [{
-                  expand : true,
-                  flatten: true,
-                  src    : 'build/vendor/bootstrap/fonts/*',
-                  dest   : 'public/fonts/'
-                }]
+          expand : true,
+          flatten: true,
+          src    : 'build/vendor/bootstrap/fonts/*',
+          dest   : 'public/fonts/'
+        }]
       },
       tinymce  : {
         files: [{
-                  expand : true,
-                  flatten: true,
-                  src    : 'build/vendor/tinymce/css/*',
-                  dest   : 'public/js/skins/lightgray/'
-                },
+          expand : true,
+          flatten: true,
+          src    : 'build/vendor/tinymce/css/*',
+          dest   : 'public/js/skins/lightgray/'
+        },
                 {
                   expand : true,
                   flatten: true,
@@ -166,32 +168,32 @@ module.exports = function (grunt) {
       },
       dev      : {
         files: [{
-                  src : 'build/<%= pkg.name %>.js',
-                  dest: 'public/js/<%= pkg.name %>.js'
-                }, {
-                  src : 'build/<%= pkg.name %>.css',
-                  dest: 'public/css/<%= pkg.name %>.css'
-                }, {
-                  src : 'client/img/**/*',
-                  dest: 'public/img/**/*'
-                }]
+          src : 'build/<%= pkg.name %>.js',
+          dest: 'public/js/<%= pkg.name %>.js'
+        }, {
+          src : 'build/<%= pkg.name %>.css',
+          dest: 'public/css/<%= pkg.name %>.css'
+        }, {
+          src : 'client/img/**/*',
+          dest: 'public/img/**/*'
+        }]
       },
       prod     : {
         files: [{
-                  src : 'dist/js/<%= pkg.name %>.js',
-                  dest: 'public/js/<%= pkg.name %>.js'
-                }, {
-                  src : 'dist/css/<%= pkg.name %>.css',
-                  dest: 'public/css/<%= pkg.name %>.css'
-                }, {
-                  src : ['client/img/**/*'],
-                  dest: 'dist/img/'
-                }]
+          src : 'dist/js/<%= pkg.name %>.js',
+          dest: 'public/js/<%= pkg.name %>.js'
+        }, {
+          src : 'dist/css/<%= pkg.name %>.css',
+          dest: 'public/css/<%= pkg.name %>.css'
+        }, {
+          src : ['client/img/**/*'],
+          dest: 'dist/img/'
+        }]
       }
     },
 
     // CSS minification.
-    cssmin     : {
+    cssmin: {
       minify: {
         src : ['build/<%= pkg.name %>.css'],
         dest: 'dist/css/<%= pkg.name %>.css'
@@ -199,21 +201,21 @@ module.exports = function (grunt) {
     },
 
     // Javascript minification.
-    uglify     : {
+    uglify: {
       compile: {
         options: {
           compress: {},
           verbose : true
         },
         files  : [{
-                    src : 'build/<%= pkg.name %>.js',
-                    dest: 'dist/js/<%= pkg.name %>.js'
-                  }]
+          src : 'build/<%= pkg.name %>.js',
+          dest: 'dist/js/<%= pkg.name %>.js'
+        }]
       }
     },
 
     // for changes to the front-end code
-    watch      : {
+    watch: {
       devScripts : {
         files: ['client/src/**/*.hbs', 'client/src/**/*.js'],
         tasks: ['clean:dev:js', 'browserify:dev', 'copy:dev']
@@ -241,9 +243,9 @@ module.exports = function (grunt) {
     },
 
     // for changes to the node code
-    nodemon    : {
+    nodemon: {
       dev : {
-        script : 'server/server.js',
+        script : 'server/bbofans.js',
         options: {
           nodeArgs: ['--debug'],
           ignore  : ['bower_components/**', 'build/**', 'client/**', 'node_modules/**', 'public/**'],
@@ -256,7 +258,7 @@ module.exports = function (grunt) {
         }
       },
       prod: {
-        script : 'server/server.js',
+        script : 'server/bbofans.js',
         options: {
           ignore: ['bower_components/**', 'build/**', 'client/**', 'node_modules/**', 'public/**'],
           watch : ['server/src', 'server/config'],
@@ -285,7 +287,7 @@ module.exports = function (grunt) {
     },
 
     // mongod server launcher
-    shell      : {
+    shell: {
       mongo: {
         command: 'mongod',
         options: {
@@ -318,7 +320,7 @@ module.exports = function (grunt) {
     },
 
     // for front-end tdd
-    karma     : {
+    karma: {
       options: {
         configFile: 'karma.conf.js'
       },
@@ -332,7 +334,7 @@ module.exports = function (grunt) {
     },
 
     // Check JavaScript correctness
-    jshint    : {
+    jshint: {
       options   : {
         plusplus: false
       },

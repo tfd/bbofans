@@ -21,7 +21,7 @@ var RbdMembersController = Marionette.Controller.extend({
 
     region.show(view);
 
-    messageBus.command('show:winners:rbd');
+    messageBus.trigger('show:winners:rbd');
   }
 });
 

@@ -45,9 +45,9 @@ var HomepageRegisterController = Marionette.Controller.extend({
       }
       else {
         xhr.done(function () {
-          messageBus.command("route:register/:id", registrant.get("_id"));
+          messageBus.trigger("route:register/:id", registrant.get("_id"));
         }).fail(function (xhr) {
-          messageBus.command('log', "fail", xhr.responseJSON);
+          messageBus.trigger('log', "fail", xhr.responseJSON);
           convertArrayErrorToFieldError(xhr.responseJSON);
           registerView.triggerMethod("form:data:invalid", xhr.responseJSON);
         });
@@ -56,7 +56,7 @@ var HomepageRegisterController = Marionette.Controller.extend({
 
     region.show(registerView);
 
-    messageBus.command('hide:winners');
+    messageBus.trigger('hide:winners');
   },
 
   success: function (region, id) {

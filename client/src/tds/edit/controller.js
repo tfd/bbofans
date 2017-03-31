@@ -39,7 +39,7 @@ var TdEditImpl = function(options) {
         routerHistory.back();
         messageBus.trigger('members:changed', data);
       }).fail(function (xhr) {
-        messageBus.command('log', "fail", xhr.responseJSON);
+        messageBus.trigger('log', "fail", xhr.responseJSON);
         self.view.triggerMethod("form:data:invalid", xhr.responseJSON);
       });
     }

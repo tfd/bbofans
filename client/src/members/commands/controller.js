@@ -139,7 +139,7 @@ var CommandsController = Marionette.Controller.extend({
         xhr.done(function (data) {
           messageBus.trigger('members:changed', data);
         }).fail(function (xhr) {
-          messageBus.command('log', "fail", xhr.responseJSON);
+          messageBus.trigger('log', "fail", xhr.responseJSON);
         });
         self.app.hidePopup();
       }

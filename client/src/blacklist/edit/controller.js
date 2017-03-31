@@ -27,7 +27,7 @@ var BlacklistEditImpl = function (options) {
         routerHistory.back();
         messageBus.trigger('blacklist:entry:changed', data);
       }).fail(function (xhr) {
-        messageBus.command('log', 'fail', xhr.responseJSON);
+        messageBus.trigger('log', 'fail', xhr.responseJSON);
         self.form.triggerMethod("form:data:invalid", xhr.responseJSON);
       });
     }

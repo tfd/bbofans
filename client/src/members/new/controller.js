@@ -13,10 +13,10 @@ var NewMemberControllerImpl = function (options) {
   function save(model) {
     $.getJSON('/admin/members/bboName/' + model.bboName)
         .done(function (member) {
-          messageBus.command('route:admin/members/:id', member._id);
+          messageBus.trigger('route:admin/members/:id', member._id);
         })
         .fail(function () {
-          messageBus.command('route:admin/members/create/:bboName', model.bboName);
+          messageBus.trigger('route:admin/members/create/:bboName', model.bboName);
         });
 
     self.app.hidePopup();

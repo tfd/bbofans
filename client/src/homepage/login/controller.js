@@ -20,7 +20,7 @@ var HomepageLoginController = Marionette.Controller.extend({
     authentication.isAuthenticated(function (auth) {
       if (auth) {
         // User already logged in, bring him to the menu.
-        messageBus.command('route:admin/home');
+        messageBus.trigger('route:admin/home');
         return;
       }
 
@@ -30,18 +30,18 @@ var HomepageLoginController = Marionette.Controller.extend({
             loginView.triggerMethod("form:data:invalid", err);
           }
           else {
-            messageBus.command('route:admin/home');
+            messageBus.trigger('route:admin/home');
           }
         });
       });
       loginView.on('forgot:password', function () {
-        messageBus.command('route:password/forgot');
+        messageBus.trigger('route:password/forgot');
       });
 
       region.show(loginView);
     });
 
-    messageBus.command('hide:winners');
+    messageBus.trigger('hide:winners');
   }
 
 });

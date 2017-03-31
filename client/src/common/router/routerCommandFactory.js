@@ -21,7 +21,7 @@ function routerCommandFactory(app, routes) {
     var moduleName = pathObj.getFullModuleName();
 
     // Route internally
-    messageBus.comply('route:' + route, function () {
+    messageBus.on('route:' + route, function () {
       // Replace :xxx parameters in route for the navigation.
       var n = 0;
       var args = _.toArray(arguments);

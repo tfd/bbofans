@@ -22,10 +22,10 @@ var TdListControllerImpl = function (options) {
    */
   function editMember(id) {
     if (authentication.getUser().get('isMemberManager')) {
-      messageBus.command('route:admin/members/:id', id);
+      messageBus.trigger('route:admin/members/:id', id);
     }
     else {
-      messageBus.command('route:admin/tds/:id', id);
+      messageBus.trigger('route:admin/tds/:id', id);
     }
   }
 

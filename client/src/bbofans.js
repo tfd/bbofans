@@ -6,9 +6,13 @@ var Backbone = require('backbone');
 var $ = require('jquery');
 Backbone.$ = $;
 var Marionette = require('backbone.marionette');
+var patch = require('marionette-v3-compat');
+patch();
+
 var messageBus = require('./common/router/messageBus');
 // Add radio shim to Marionette, as version 2.1 still uses wreqr instead of radio
-require('./common/utils/radioShim');
+// Not needed for Marionette 3.
+// require('./common/utils/radioShim');
 var User = require('./models/user');
 var MainLayoutController = require('./mainLayout/controller');
 var moment = require('moment');
@@ -123,13 +127,13 @@ var BboFansApp = Marionette.Application.extend({
         if (route) { route = route.substring(1); }
         else { route = 'login';}
         self.authentication.logout(function () {
-          messageBus.command('route:login');
+          messageBus.trigger('route:login');
         });
       }
     });
 
-    messageBus.comply('navigate', this.navigate, this);
-    messageBus.comply('log', function () {
+    messageBus.on('navigate', this.navigate, this);
+    messageBus.on('log', function () {
       /* global console */
       var args = _.flatten([
         moment().format(),
@@ -152,7 +156,7 @@ var BboFansApp = Marionette.Application.extend({
         });
 
         if (self.getCurrentRoute() === '') {
-          messageBus.command('route:home');
+          messageBus.trigger('route:home');
         }
       }
     });
