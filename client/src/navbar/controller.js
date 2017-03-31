@@ -17,12 +17,12 @@ var NavbarController = Marionette.Controller.extend({
       var params = route.split(',');
       if (params.length > 0) {
         params[0] = 'route:' + params[0];
-        return messageBus.command.apply(messageBus, params);
+        return messageBus.trigger.apply(messageBus, params);
       }
-      messageBus.command('route:' + route);
+      messageBus.trigger('route:' + route);
     });
 
-    messageBus.comply('navbar:changeMenu', function (menu) {
+    messageBus.on('navbar:changeMenu', function (menu) {
       self.collection.reset(menu);
     });
   },

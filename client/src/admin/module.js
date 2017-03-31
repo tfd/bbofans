@@ -31,7 +31,7 @@ module.exports = function (app, parentModuleName) {
         this.controllers.layout.show(region);
         this.controllers.menu.show(this.controllers.layout.regions.menu);
 
-        messageBus.command('navbar:changeMenu', require('./navbar/collection')(authentication.getUser()));
+        messageBus.trigger('navbar:changeMenu', require('./navbar/collection')(authentication.getUser()));
       };
 
       adminModule.getSubModuleRegion = function () {

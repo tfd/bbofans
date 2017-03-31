@@ -70,7 +70,7 @@ var BlacklistListController = Marionette.Controller.extend({
    * @param id {String} unique id of the member to edit.
    */
   editBlacklist  : function (id) {
-    messageBus.command('route:admin/blacklist/:id', id);
+    messageBus.trigger('route:admin/blacklist/:id', id);
   }
 });
 

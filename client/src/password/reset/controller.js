@@ -26,7 +26,7 @@ var PasswordResetController = Marionette.Controller.extend({
       }
       else {
         xhr.done(function (data) {
-          messageBus.command("route:login");
+          messageBus.trigger("route:login");
         }).fail(function (xhr) {
           resetView.triggerMethod("form:data:invalid", xhr.responseJSON);
         });

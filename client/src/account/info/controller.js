@@ -22,10 +22,10 @@ var AdminAccountInfoController = Marionette.Controller.extend({
       });
 
       userView.on('user:edit', function () {
-        messageBus.command("route:admin/account/edit/:id", account.get("_id"));
+        messageBus.trigger("route:admin/account/edit/:id", account.get("_id"));
       });
       userView.on('user:password', function () {
-        messageBus.command("route:admin/account/password/:id", account.get("_id"));
+        messageBus.trigger("route:admin/account/password/:id", account.get("_id"));
       });
 
       region.show(userView);

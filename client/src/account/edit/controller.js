@@ -48,7 +48,7 @@ var AdminAccountEditController = Marionette.Controller.extend({
         }
         else {
           xhr.done(function (data) {
-            messageBus.command("route:admin/account/:id", account.get("_id"));
+            messageBus.trigger("route:admin/account/:id", account.get("_id"));
           }).fail(function (xhr) {
             editView.triggerMethod("form:data:invalid", xhr.responseJSON);
           });
@@ -56,7 +56,7 @@ var AdminAccountEditController = Marionette.Controller.extend({
       });
 
       editView.on('form:cancel', function () {
-        messageBus.command("route:admin/account/:id", account.get("_id"));
+        messageBus.trigger("route:admin/account/:id", account.get("_id"));
       });
 
       region.show(editView);

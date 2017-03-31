@@ -26,7 +26,7 @@ var AdminAccountPasswordController = Marionette.Controller.extend({
       }
       else {
         xhr.done(function (data) {
-          messageBus.command("route:admin/account/:id", password.get("_id"));
+          messageBus.trigger("route:admin/account/:id", password.get("_id"));
         }).fail(function (xhr) {
           passwordView.triggerMethod("form:data:invalid", xhr.responseJSON);
         });

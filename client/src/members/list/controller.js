@@ -30,7 +30,7 @@ var MemberListControllerImpl = function (options) {
    * @param id {String} unique id of the member to edit.
    */
   function editMember(id) {
-    messageBus.command('route:admin/members/:id', id);
+    messageBus.trigger('route:admin/members/:id', id);
   }
 
   /*

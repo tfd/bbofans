@@ -24,55 +24,55 @@ var HomepagePageController = Marionette.Controller.extend({
   showServerError: function (region) {
     region.show(createStaticView(homepageServerErrorTemplate));
 
-    messageBus.command('hide:winners');
+    messageBus.trigger('hide:winners');
   },
 
   showPageNotFound: function (region) {
     region.show(createStaticView(homepagePageNotFoundTemplate));
 
-    messageBus.command('hide:winners');
+    messageBus.trigger('hide:winners');
   },
 
   showAbout: function (region) {
     region.show(createStaticView(homepageAboutTemplate));
 
-    messageBus.command('hide:winners');
+    messageBus.trigger('hide:winners');
   },
 
   showRules: function (region) {
     region.show(createStaticView(homepageRulesTemplate));
 
-    messageBus.command('hide:winners');
+    messageBus.trigger('hide:winners');
   },
 
   showAwards: function (region) {
     region.show(createStaticView(homepageAwardsTemplate));
 
-    messageBus.command('hide:winners');
+    messageBus.trigger('hide:winners');
   },
 
   showMatchPoints: function (region) {
     region.show(createStaticView(homepageMathPointsTemplate));
 
-    messageBus.command('hide:winners');
+    messageBus.trigger('hide:winners');
   },
 
   showBboLinks: function (region) {
     region.show(createStaticView(homepageBboLinksTemplate));
 
-    messageBus.command('hide:winners');
+    messageBus.trigger('hide:winners');
   },
 
   showConfirmRegistration: function (region) {
     region.show(createStaticView(homepageConfirmRegistrationTemplate));
 
-    messageBus.command('hide:winners');
+    messageBus.trigger('hide:winners');
   },
 
   showPasswordReset: function (region) {
     region.show(createStaticView(homepagePasswordResetTemplate));
 
-    messageBus.command('hide:winners');
+    messageBus.trigger('hide:winners');
   }
 });
 

@@ -22,7 +22,7 @@ var RemoveEntryControllerImpl = function (options) {
       xhr.done(function () {
         messageBus.trigger('blacklist:changed');
       }).fail(function (xhr) {
-        messageBus.command('log', "fail", xhr.responseJSON);
+        messageBus.trigger('log', "fail", xhr.responseJSON);
       });
       self.app.hidePopup();
     }

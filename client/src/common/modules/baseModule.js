@@ -147,13 +147,13 @@ var BaseModule = Marionette.Module.extend({
   existsControllerMethod: function (controllerName, methodName) {
     if (!this.controllers[controllerName]) {
       // oops no such controller.
-      messageBus.command('log', 'No controller "' + controllerName + '" in module ' + this.moduleName);
+      messageBus.trigger('log', 'No controller "' + controllerName + '" in module ' + this.moduleName);
       return false;
     }
 
     if (!this.controllers[controllerName][methodName]) {
       // oops no such method.
-      messageBus.command('log', 'No method "' + controllerName + ':' + methodName + '" in module ' + this.moduleName);
+      messageBus.trigger('log', 'No method "' + controllerName + ':' + methodName + '" in module ' + this.moduleName);
       return false;
     }
 

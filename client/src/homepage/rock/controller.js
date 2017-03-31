@@ -21,7 +21,7 @@ var RockMembersController = Marionette.Controller.extend({
 
     region.show(view);
 
-    messageBus.command('show:winners:rock');
+    messageBus.trigger('show:winners:rock');
   }
 });
 

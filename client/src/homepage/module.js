@@ -49,7 +49,7 @@ module.exports = function (app, parentModuleName) {
         this.controllers.carousel.show(this.controllers.layout.regions.td);
         this.controllers.winners.show(this.controllers.layout.regions.winners);
 
-        messageBus.command('navbar:changeMenu', require('./navbar/collection'));
+        messageBus.trigger('navbar:changeMenu', require('./navbar/collection'));
       };
 
       homepageModule.getSubModuleRegion = function () {

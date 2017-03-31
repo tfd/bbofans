@@ -16,14 +16,14 @@ var AdminHomeController = Marionette.Controller.extend({
       model: authentication.getUser()
     });
 
-    messageBus.comply('admin:logout', function () {
+    messageBus.on('admin:logout', function () {
       self.logout();
     });
   },
 
   logout: function () {
     authentication.logout(function () {
-      messageBus.command('route:login');
+      messageBus.trigger('route:login');
     });
   },
 

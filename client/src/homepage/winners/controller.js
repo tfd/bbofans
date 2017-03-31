@@ -18,19 +18,19 @@ var WinnersController = Marionette.Controller.extend({
     this.rockController = new RockController();
     this.rbdController = new RbdController();
 
-    messageBus.comply('show:winners:rock', function () {
+    messageBus.on('show:winners:rock', function () {
       self.rbd = false;
       self.rbdController.stop();
       self.rockController.show(self.region);
     });
 
-    messageBus.comply('show:winners:rbd', function () {
+    messageBus.on('show:winners:rbd', function () {
       self.rbd = true;
       self.rockController.stop();
       self.rbdController.show(self.region);
     });
 
-    messageBus.comply('hide:winners', function () {
+    messageBus.on('hide:winners', function () {
       self.rbd = false;
       self.rockController.stop();
       self.rbdController.stop();

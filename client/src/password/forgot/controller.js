@@ -27,9 +27,9 @@ var PasswordForgotController = Marionette.Controller.extend({
       }
       else {
         xhr.done(function () {
-          messageBus.command("route:passwordReset");
+          messageBus.trigger("route:passwordReset");
         }).fail(function (xhr) {
-          messageBus.command('log', "fail", xhr.responseJSON);
+          messageBus.trigger('log', "fail", xhr.responseJSON);
           passwordForgotView.triggerMethod("form:data:invalid", xhr.responseJSON);
         });
       }
@@ -37,7 +37,7 @@ var PasswordForgotController = Marionette.Controller.extend({
 
     region.show(passwordForgotView);
 
-    messageBus.command('hide:winners');
+    messageBus.trigger('hide:winners');
   }
 
 });

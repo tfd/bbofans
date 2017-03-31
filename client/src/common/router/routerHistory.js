@@ -30,7 +30,7 @@ module.exports = {
       var parts = fragment.split('/');
       route = parts.slice(0, parts.length - 1).join('/');
     }
-    messageBus.command('route:' + route);
+    messageBus.trigger('route:' + route);
   }
 
 };

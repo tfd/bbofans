@@ -39,7 +39,7 @@ var HomepageHomeController = Marionette.Controller.extend({
     this.rockController.show(this.view.rock);
     this.rbdController.show(this.view.rbd);
 
-    messageBus.command('hide:winners');
+    messageBus.trigger('hide:winners');
   },
 
   onDestroy: function () {
