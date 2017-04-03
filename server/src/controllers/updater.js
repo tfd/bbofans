@@ -181,7 +181,7 @@ module.exports = function (config) {
    * @param {GenericCallback} cb - function called with the sorted array as result.
    */
   function sortByScore(results, cb) {
-    if (results.length == 0) {
+    if (results.length === 0) {
       cb(null, results);
     }
 
