@@ -181,6 +181,10 @@ module.exports = function (config) {
    * @param {GenericCallback} cb - function called with the sorted array as result.
    */
   function sortByScore(results, cb) {
+    if (results.length == 0) {
+      cb(null, results);
+    }
+
     if (results[results.length - 1].score < 0) {
       // IMPs
       async.sortBy(results, function (result, cb) {
@@ -276,6 +280,7 @@ module.exports = function (config) {
 
     async.waterfall([
       function (cb) {
+        logger.info(url);
         download(url, cb);
       },
       getTournamentResults,
@@ -306,7 +311,7 @@ module.exports = function (config) {
       }
 
       // Only download tournaments which don't exist.
-      cb(t === null || t === undefined);
+      cb(null, t === null || t === undefined);
     });
   }
 
@@ -317,7 +322,7 @@ module.exports = function (config) {
    * @param {GenericCallback} cb - function called with an array of tournaments as result.
    */
   function createTournaments(links, cb) {
-    async.filter(links, isTournamentToBeAdded, function (newLinks) {
+    async.filter(links, isTournamentToBeAdded, function (err, newLinks) {
       // Ok add all tournaments that haven't already been processed.
       async.map(newLinks, createTournament, cb);
     });
