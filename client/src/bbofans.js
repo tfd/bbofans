@@ -36,12 +36,12 @@ var BboFansApp = Marionette.Application.extend({
     });
     this.navbarModule = require('./navbar/module')(this);
     require('./homepage/module')(this);
-    require('./admin/module')(this);
-    require('./password/module')(this);
-    require('./members/module')(this, 'admin');
-    require('./blacklist/module')(this, 'admin');
-    require('./tds/module')(this, 'admin');
-    require('./account/module')(this, 'admin');
+    // require('./admin/module')(this);
+    // require('./password/module')(this);
+    // require('./members/module')(this, 'admin');
+    // require('./blacklist/module')(this, 'admin');
+    // require('./tds/module')(this, 'admin');
+    // require('./account/module')(this, 'admin');
   },
 
   getPopupRegion: function () {
